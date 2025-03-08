@@ -1,15 +1,16 @@
 package br.com.devjf.salessync.service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import br.com.devjf.salessync.dao.CustomerDAO;
 import br.com.devjf.salessync.dao.SaleDAO;
 import br.com.devjf.salessync.dao.ServiceOrderDAO;
 import br.com.devjf.salessync.model.Customer;
 import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.model.ServiceOrder;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class CustomerService {
     
@@ -75,6 +76,69 @@ public class CustomerService {
         history.put("serviceOrders", serviceOrders);
         
         return history;
+    }
+    
+    public boolean deleteCustomer(Integer id) {
+        Customer customer = customerDAO.findById(id);
+        if (customer == null) {
+            return false;
+        }        
+        // Perform direct deletion without soft delete
+        return customerDAO.delete(id);
+    }
+    
+    public List<Customer> searchCustomers(String searchTerm) {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return listAllCustomers();
+        }
+        
+        // Search in all customer fields
+        List<Customer> allCustomers = customerDAO.findAll();
+        String term = searchTerm.toLowerCase().trim();
+        
+        return allCustomers.stream()
+            .filter(customer -> 
+                (customer.getName() != null && customer.getName().toLowerCase().contains(term)) ||
+                (customer.getTaxId() != null && customer.getTaxId().contains(term)) ||
+                (customer.getEmail() != null && customer.getEmail().toLowerCase().contains(term)) ||
+                (customer.getPhone() != null && customer.getPhone().contains(term)) ||
+                (customer.getAddress() != null && customer.getAddress().toLowerCase().contains(term))
+            )
+            .collect(Collectors.toList());
+    }
+    
+    public Map<String, Object> getCustomerStatistics(Integer customerId) {
+        Customer customer = customerDAO.findById(customerId);
+        if (customer == null) {
+            return null;
+        }
+        
+        Map<String, Object> statistics = new HashMap<>();
+        statistics.put("customer", customer);
+        
+        // Get all sales for this customer
+        List<Sale> sales = saleDAO.findByCustomer(customer);
+        statistics.put("totalSales", sales.size());
+        
+        // Calculate total revenue from sales
+        double totalRevenue = sales.stream()
+            .mapToDouble(Sale::getTotalAmount)
+            .sum();
+        statistics.put("totalRevenue", totalRevenue);
+        
+        // Get all service orders for this customer
+        List<ServiceOrder> serviceOrders = serviceOrderDAO.findByCustomer(customer);
+        statistics.put("totalServiceOrders", serviceOrders.size());
+        
+        // Calculate average sale value
+        statistics.put("averageSaleValue", sales.isEmpty() ? 0 : totalRevenue / sales.size());
+        
+        // Get last purchase date
+        sales.stream()
+            .max((s1, s2) -> s1.getDate().compareTo(s2.getDate()))
+            .ifPresent(sale -> statistics.put("lastPurchaseDate", sale.getDate()));
+        
+        return statistics;
     }
     
     public boolean validateTaxId(String taxId) {

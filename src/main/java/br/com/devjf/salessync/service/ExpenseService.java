@@ -111,4 +111,52 @@ public class ExpenseService {
             expense.setCategory(defaultCategory);
         }
     }
+    
+    /**
+     * Returns all expense categories from the database
+     * @return List of all expense categories
+     */
+    public List<ExpenseCategory> getAllCategories() {
+        return categoryDAO.findAll();
+    }
+    
+    /**
+     * Finds an expense category by its ID
+     * @param id The ID of the category to find
+     * @return The found category or null if not found
+     */
+    public ExpenseCategory findCategoryById(Integer id) {
+        return categoryDAO.findById(id);
+    }
+    
+    /**
+     * Creates a new expense category
+     * @param category The category to create
+     * @return true if successful, false otherwise
+     */
+    public boolean createExpenseCategory(ExpenseCategory category) {
+        return categoryDAO.save(category);
+    }
+    
+    /**
+     * Updates an existing expense category
+     * @param category The category with updated information
+     * @return true if successful, false otherwise
+     */
+    public boolean updateExpenseCategory(ExpenseCategory category) {
+        ExpenseCategory existingCategory = categoryDAO.findById(category.getId());
+        if (existingCategory == null) {
+            return false;
+        }
+        return categoryDAO.update(category);
+    }
+    
+    /**
+     * Deletes an expense category by its ID
+     * @param id The ID of the category to delete
+     * @return true if successful, false otherwise
+     */
+    public boolean deleteExpenseCategory(Integer id) {
+        return categoryDAO.delete(id);
+    }
 }
