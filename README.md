@@ -1,11 +1,5 @@
 # SalesSync
 
-<p align="center">
-  <img src="doc/images/db_diagram.png" alt="DB Diagram" width="200"/>
-  
-  <img src="doc/images/sales_sync-UML.png" alt="UML Diagram" width="200"/>
-</p>
-
 ## Sobre o Projeto
 
 **Este é meu projeto integrador do Senac**. O SalesSync é um sistema de gestão de vendas e serviços desenvolvido para pequenos negócios. O sistema permite o controle de vendas, ordens de serviço, despesas e clientes, oferecendo uma solução completa para a gestão financeira e operacional do negócio.
@@ -69,9 +63,11 @@ mvn clean package
 ```bash
 java -jar target/salessync-1.0-SNAPSHOT.jar
 ```
+---
 
 ## Estrutura do Projeto
 
+```plaintext
 sales-sync/
 ├── src/
 │   ├── main/
@@ -89,6 +85,9 @@ sales-sync/
 │   └── test/                  # Testes unitários e de integração
 ├── doc/                       # Documentação
 └── target/                    # Arquivos compilados
+```
+
+---
 
 ## Uso
 
@@ -152,3 +151,12 @@ Este projeto está licenciado sob a licença MIT - veja o arquivo LICENSE para d
 ## Contato
 
 ©DevJF - djfcoder@outlook.com
+
+## Diagrama
+
+<div align="center">
+  <p>EER</p>
+    <img src="doc/images/db_diagram.png" alt="DB Diagram" width="1000"/>
+  <p>UML</p>
+    <img src="doc/images/sales_sync-UML.png" alt="UML Diagram" width="1000"/>
+</div>
