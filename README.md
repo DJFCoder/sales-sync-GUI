@@ -13,6 +13,11 @@
 - **Relatórios Financeiros**: Balanços diários, mensais e anuais para análise financeira
 - **Controle de Acesso**: Diferentes níveis de acesso para administradores, proprietários e funcionários
 - **Logs de Sistema**: Registro completo de atividades para auditoria e segurança
+- **Gestão de Usuários**: Cadastro e ativação/desativação de usuários do sistema para o administrador
+
+<div align="center">
+  <a href="doc/images/wireframes.pdf">Wireframes</a>
+</div>
 
 ## Tecnologias Utilizadas
 
@@ -98,23 +103,23 @@ sales-sync/
 
 ### Principais Telas
 
-1. Dashboard : Visão geral do negócio com indicadores principais
-2. Vendas : Registro e consulta de vendas
-3. Ordens de Serviço : Gerenciamento de serviços
-4. Clientes : Cadastro e histórico de clientes
-5. Despesas : Controle de gastos
-6. Relatórios : Análises financeiras e operacionais
-7. Configurações : Ajustes do sistema e usuários
+1. Login : Validação de usuário
+2. Dashboard : Visão geral do negócio com indicadores principais
+3. Vendas : Registro e consulta de vendas
+4. Ordens de Serviço : Gerenciamento de serviços
+5. Clientes : Cadastro e histórico de clientes
+6. Despesas : Controle de gastos
+7. Relatórios : Análises financeiras e operacionais
+8. Usuários : Ajustes do sistema e usuários
+9. Logs do Sistema : Lista de atividades e ações 
 
 ## Relatórios Disponíveis
 
-- Balanço diário
-- Balanço mensal
-- Balanço anual
-- Histórico de clientes
-- Ordens de serviço por status
+- Balancete diário
+- Balancete semanal
+- Balancete mensal
+- Balancete anual
 - Análise de lucratividade
-- Relatórios fiscais
 
 ## Desenvolvimento
 
