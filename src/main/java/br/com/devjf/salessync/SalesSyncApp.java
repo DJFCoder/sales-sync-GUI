@@ -1,6 +1,10 @@
 package br.com.devjf.salessync;
 
-import br.com.devjf.salessync.controller.UserController;
+import br.com.devjf.salessync.view.Login;
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  *
@@ -8,8 +12,15 @@ import br.com.devjf.salessync.controller.UserController;
  */
 public class SalesSyncApp {
     public static void main(String[] args) {
-        UserController admin = new UserController();
-        admin.showUserLogged("admin",
-                "@devjf123admin");
+        try {
+            UIManager.setLookAndFeel(new FlatIntelliJLaf());
+            new Login().setVisible(true);
+        } catch (UnsupportedLookAndFeelException e) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Failed to initialize LaF " + e.getMessage(),
+                    "ERRO",
+                    JOptionPane.WARNING_MESSAGE);
+        }
     }
 }
