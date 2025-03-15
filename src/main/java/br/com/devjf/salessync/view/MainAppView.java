@@ -1,14 +1,12 @@
 package br.com.devjf.salessync.view;
 
+import javax.swing.event.ListSelectionEvent;
+
 import br.com.devjf.salessync.model.User;
 import br.com.devjf.salessync.model.UserType;
 import br.com.devjf.salessync.util.UserSession;
-import com.formdev.flatlaf.FlatClientProperties;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 public class MainAppView extends javax.swing.JFrame {
-
     public MainAppView() {
         initComponents();
         setupListeners();
@@ -16,16 +14,13 @@ public class MainAppView extends javax.swing.JFrame {
 
     private void setupListeners() {
         // Refresh title label when selected
-        jList1.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-                    titleLbl.setText(jList1.getSelectedValue());
-                }
+        jList1.addListSelectionListener((ListSelectionEvent e) -> {
+            if (!e.getValueIsAdjusting()) {
+                titleLbl.setText(jList1.getSelectedValue());
             }
         });
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -62,7 +57,9 @@ public class MainAppView extends javax.swing.JFrame {
         jList1.setForeground(new java.awt.Color(160, 174, 192));
         jList1.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Dashboard", "Vendas", "Clientes", "Ordens de Serviço", "Despesas", "Relatórios", "Usuários", "Logs do Sistema" };
+            @Override
             public int getSize() { return strings.length; }
+            @Override
             public String getElementAt(int i) { return strings[i]; }
         });
         jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -88,21 +85,31 @@ public class MainAppView extends javax.swing.JFrame {
         titlePanel.setPreferredSize(new java.awt.Dimension(1007, 60));
         titlePanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        permitionLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        permitionLabel.setText(getPermitionLabel());
-        titlePanel.add(permitionLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(950, 20, 30, -1));
-
+        javax.swing.JLayeredPane permissionLayeredPane = new javax.swing.JLayeredPane();
+        permissionLayeredPane.setBounds(942, 7, 45, 45);
+        
         permitionIcon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         permitionIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/EllipsePermission.png"))); // NOI18N
         permitionIcon.setToolTipText("Permissão");
-        titlePanel.add(permitionIcon, new org.netbeans.lib.awtextra.AbsoluteConstraints(942, 7, -1, -1));
+        permitionIcon.setBounds(0, 0, 45, 45);
+        permissionLayeredPane.add(permitionIcon, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        
+        permitionLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        permitionLabel.setVerticalAlignment(javax.swing.SwingConstants.CENTER);
+        permitionLabel.setText(getPermitionLabel());
+        permitionLabel.setFont(new java.awt.Font("Segoe UI", 1, 11));
+        permitionLabel.setForeground(new java.awt.Color(60, 63, 65));
+        permitionLabel.setBounds(0, 0, 45, 45);
+        permissionLayeredPane.add(permitionLabel, javax.swing.JLayeredPane.PALETTE_LAYER);
+        
+        titlePanel.add(permissionLayeredPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(942, 7, 45, 45));
 
         titleLbl.setBackground(new java.awt.Color(51, 51, 51));
         titleLbl.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         titleLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         titleLbl.setText(jList1.getSelectedValue());
         titleLbl.setToolTipText("");
-        titlePanel.add(titleLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 10, -1, 45));
+        titlePanel.add(titleLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 1007, 45));
 
         selectedPanel.setLayout(new java.awt.CardLayout());
 
@@ -135,13 +142,10 @@ public class MainAppView extends javax.swing.JFrame {
 
     private String getPermitionLabel() {
         User loggedUser = UserSession.getInstance().getLoggedUser();
-        
         if (loggedUser == null) {
             return "???";
         }
-        
         UserType userType = loggedUser.getType();
-        
         switch (userType) {
             case ADMIN:
                 return "ADM";

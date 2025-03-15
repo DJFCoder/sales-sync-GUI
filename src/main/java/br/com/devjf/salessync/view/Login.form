@@ -215,7 +215,7 @@
             <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>
           </AccessibilityProperties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="passwordField.putClientProperty(FlatClientProperties.STYLE, &quot;&quot; +&#xa;&quot;showRevealButton:true&quot;);&#xa;&#xa;passwordField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, &quot;Senha&quot;);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="passwordField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, &quot;Senha&quot;);"/>
           </AuxValues>
         </Component>
         <Component class="javax.swing.JButton" name="loginBtn">
