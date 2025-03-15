@@ -55,4 +55,8 @@ public class UserController {
     public User findUserByLogin(String login) {
         return userService.getUserByLogin(login);
     }
+    
+    public User authenticateUser(String login, String password) {
+        return userService.authenticateUser(login, password);
+    }
 }
