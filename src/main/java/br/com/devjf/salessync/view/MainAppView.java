@@ -1,22 +1,146 @@
 package br.com.devjf.salessync.view;
 
+import java.awt.CardLayout;
+
+import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 
 import br.com.devjf.salessync.model.User;
 import br.com.devjf.salessync.model.UserType;
 import br.com.devjf.salessync.util.UserSession;
+import br.com.devjf.salessync.view.forms.CustomersForm;
+import br.com.devjf.salessync.view.forms.DashboardForm;
+import br.com.devjf.salessync.view.forms.ExpensesForm;
+import br.com.devjf.salessync.view.forms.LogsForm;
+import br.com.devjf.salessync.view.forms.ReportsForm;
+import br.com.devjf.salessync.view.forms.SalesForm;
+import br.com.devjf.salessync.view.forms.ServiceOrdersForm;
+import br.com.devjf.salessync.view.forms.UsersForm;
 
 public class MainAppView extends javax.swing.JFrame {
+    private static final String DASHBOARD_PANEL = "Dashboard";
+    private static final String SALES_PANEL = "Vendas";
+    private static final String CUSTOMERS_PANEL = "Clientes";
+    private static final String SERVICE_ORDERS_PANEL = "Ordens de Serviço";
+    private static final String EXPENSES_PANEL = "Despesas";
+    private static final String REPORTS_PANEL = "Relatórios";
+    private static final String USERS_PANEL = "Usuários";
+    private static final String SYSTEM_LOGS_PANEL = "Logs do Sistema";
+    
     public MainAppView() {
         initComponents();
+        initPanels();
         setupListeners();
+    }
+    
+    // Adicione esta variável de instância para implementar lazy loading
+    private final java.util.Map<String, JPanel> loadedPanels = new java.util.HashMap<>();
+    
+    private void initPanels() {
+        CardLayout cardLayout = (CardLayout) selectedPanel.getLayout();
+        
+        // Inicializa apenas o painel inicial (Dashboard) para melhorar o tempo de inicialização
+        try {
+            // Carrega apenas o Dashboard inicialmente
+            JPanel dashboardPanel = createPanelFromForm(new DashboardForm());
+            selectedPanel.add(dashboardPanel, DASHBOARD_PANEL);
+            loadedPanels.put(DASHBOARD_PANEL, dashboardPanel);
+            
+            // Mostra o painel inicial
+            cardLayout.show(selectedPanel, DASHBOARD_PANEL);
+        } catch (Exception e) {
+            System.err.println("Erro ao inicializar painel inicial: " + e.getMessage());
+        }
+    }
+    
+    private void navigateToPanel(String panelName) {
+        CardLayout cardLayout = (CardLayout) selectedPanel.getLayout();
+        String panelKey = getPanelKeyFromName(panelName);
+        
+        // Verifica se o painel já foi carregado
+        if (!loadedPanels.containsKey(panelKey)) {
+            try {
+                // Carrega o painel sob demanda
+                JPanel newPanel = createPanelForKey(panelKey);
+                if (newPanel != null) {
+                    selectedPanel.add(newPanel, panelKey);
+                    loadedPanels.put(panelKey, newPanel);
+                }
+            } catch (Exception e) {
+                System.err.println("Erro ao carregar painel " + panelName + ": " + e.getMessage());
+                return;
+            }
+        }
+        
+        // Exibe o painel
+        cardLayout.show(selectedPanel, panelKey);
+    }
+    
+    private String getPanelKeyFromName(String panelName) {
+        switch (panelName) {
+            case "Dashboard": return DASHBOARD_PANEL;
+            case "Vendas": return SALES_PANEL;
+            case "Clientes": return CUSTOMERS_PANEL;
+            case "Ordens de Serviço": return SERVICE_ORDERS_PANEL;
+            case "Despesas": return EXPENSES_PANEL;
+            case "Relatórios": return REPORTS_PANEL;
+            case "Usuários": return USERS_PANEL;
+            case "Logs do Sistema": return SYSTEM_LOGS_PANEL;
+            default: return DASHBOARD_PANEL;
+        }
+    }
+    
+    private JPanel createPanelForKey(String panelKey) {
+        try {
+            switch (panelKey) {
+                case DASHBOARD_PANEL:
+                    return createPanelFromForm(new DashboardForm());
+                case SALES_PANEL:
+                    return createPanelFromForm(new SalesForm());
+                case CUSTOMERS_PANEL:
+                    return createPanelFromForm(new CustomersForm());
+                case SERVICE_ORDERS_PANEL:
+                    return createPanelFromForm(new ServiceOrdersForm());
+                case EXPENSES_PANEL:
+                    return createPanelFromForm(new ExpensesForm());
+                case REPORTS_PANEL:
+                    return createPanelFromForm(new ReportsForm());
+                case USERS_PANEL:
+                    return createPanelFromForm(new UsersForm());
+                case SYSTEM_LOGS_PANEL:
+                    return createPanelFromForm(new LogsForm());
+                default:
+                    return null;
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao criar painel " + panelKey + ": " + e.getMessage());
+            return null;
+        }
+    }
+    
+    private JPanel createPanelFromForm(javax.swing.JFrame form) {
+        // Configura o formulário para não fechar a aplicação quando fechado
+        form.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        
+        // Cria um novo painel para conter o conteúdo do formulário
+        JPanel panel = new JPanel();
+        panel.setLayout(new java.awt.BorderLayout());
+        
+        // Adiciona o conteúdo do formulário ao painel
+        panel.add(form.getContentPane(), java.awt.BorderLayout.CENTER);
+                
+        return panel;
     }
 
     private void setupListeners() {
-        // Refresh title label when selected
+        // Refresh title label when selected and navigate to the corresponding panel
         jList1.addListSelectionListener((ListSelectionEvent e) -> {
             if (!e.getValueIsAdjusting()) {
-                titleLbl.setText(jList1.getSelectedValue());
+                String selectedItem = jList1.getSelectedValue();
+                titleLbl.setText(selectedItem);
+                
+                // Navega para o painel correspondente
+                navigateToPanel(selectedItem);
             }
         });
     }
