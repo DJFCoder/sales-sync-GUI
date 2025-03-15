@@ -77,7 +77,7 @@
             </Constraint>
           </Constraints>
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabel1">
+        <Component class="javax.swing.JLabel" name="sSyncLogo">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Segoe UI" size="24" style="0"/>
@@ -96,7 +96,7 @@
             </Constraint>
           </Constraints>
         </Component>
-        <Component class="javax.swing.JList" name="jList1">
+        <Component class="javax.swing.JList" name="selectionList">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="42" green="30" red="2a" type="rgb"/>
@@ -132,7 +132,7 @@
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="jList1.setBorder(javax.swing.BorderFactory.createEmptyBorder());&#xa;jList1.setFixedCellHeight(40);&#xa;        jList1.setCellRenderer(new javax.swing.DefaultListCellRenderer() {&#xa;            @Override&#xa;            public java.awt.Component getListCellRendererComponent(javax.swing.JList&lt;?&gt; list, Object value, int index, boolean isSelected, boolean cellHasFocus) {&#xa;                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);&#xa;                setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 15, 8, 0));&#xa;                return this;&#xa;            }&#xa;        });&#xa;jList1.setSelectedIndex(0);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="selectionList.setBorder(javax.swing.BorderFactory.createEmptyBorder());&#xa;selectionList.setFixedCellHeight(40);&#xa;        selectionList.setCellRenderer(new javax.swing.DefaultListCellRenderer() {&#xa;            @Override&#xa;            public java.awt.Component getListCellRendererComponent(javax.swing.JList&lt;?&gt; list, Object value, int index, boolean isSelected, boolean cellHasFocus) {&#xa;                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);&#xa;                setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 15, 8, 0));&#xa;                return this;&#xa;            }&#xa;        });&#xa;selectionList.setSelectedIndex(0);"/>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
           </AuxValues>
           <Constraints>
@@ -201,7 +201,7 @@
             </Property>
             <Property name="horizontalAlignment" type="int" value="0"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="jList1.getSelectedValue()" type="code"/>
+              <Connection code="selectionList.getSelectedValue()" type="code"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value=""/>
           </Properties>
