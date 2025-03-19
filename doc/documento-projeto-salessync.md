@@ -2,15 +2,15 @@
 
 ## Apresentação (introdução ao sistema)
 
-O SalesSync é um sistema de gestão de recursos empresariais (ERP) desenvolvido para atender às necessidades de pequenas e médias empresas. Projetado como uma aplicação desktop utilizando Java e MySQL, o sistema visa facilitar o gerenciamento de clientes, vendas, despesas e serviços, proporcionando uma visão integrada dos recursos e operações financeiras da empresa.
+O SalesSync é um sistema de gestão de recursos empresariais (ERP) especializado em análise financeira e geração de relatórios detalhados, desenvolvido para atender às necessidades de pequenas e médias empresas. Projetado como uma aplicação desktop utilizando Java e MySQL, o sistema tem como foco principal a emissão de relatórios financeiros precisos e detalhados, permitindo uma visão clara do balancete empresarial em diferentes períodos (diário, semanal, mensal e anual).
 
-O diferencial do SalesSync está na sua interface intuitiva e na capacidade de gerar relatórios financeiros detalhados, permitindo ao gestor uma visão clara e objetiva do desempenho da empresa em diferentes períodos, auxiliando na tomada de decisões estratégicas.
+O diferencial do SalesSync está na sua capacidade avançada de processamento de dados financeiros, gerando relatórios detalhados em formato CSV que incluem métricas essenciais como lucro bruto, impostos estimados, lucro líquido, total de vendas e despesas. Essas informações permitem ao gestor uma análise aprofundada do desempenho da empresa, facilitando a tomada de decisões estratégicas baseadas em dados concretos.
 
 ## Descrição do projeto (descrição básica do sistema planejado)
 
-O SalesSync é um sistema desktop para gestão de recursos empresariais com foco nas operações de vendas, finanças e relacionamento com clientes. O sistema será desenvolvido em Java utilizando Swing para a interface gráfica com a biblioteca FlatLaf para melhorar a aparência e usabilidade, proporcionando um visual moderno e consistente com o sistema operacional. O MySQL será utilizado como sistema gerenciador de banco de dados, seguindo o padrão de arquitetura MVC (Model-View-Controller) e utilizando Hibernate para mapeamento objeto-relacional.
+O SalesSync é um sistema desktop para gestão de recursos empresariais com foco principal na geração de relatórios financeiros detalhados. O sistema será desenvolvido em Java utilizando Swing para a interface gráfica com a biblioteca FlatLaf para melhorar a aparência e usabilidade, proporcionando um visual moderno e consistente com o sistema operacional. O MySQL será utilizado como sistema gerenciador de banco de dados, seguindo o padrão de arquitetura MVC (Model-View-Controller) e utilizando Hibernate para mapeamento objeto-relacional.
 
-O sistema contará com módulos para gerenciamento de clientes, controle de vendas, registro de despesas, emissão de ordens de serviço e geração de relatórios financeiros. Cada módulo terá funcionalidades específicas para atender às necessidades operacionais da empresa, com diferentes níveis de acesso baseados no perfil do usuário.
+O sistema contará com módulos para gerenciamento de clientes, controle de vendas, registro de despesas e emissão de ordens de serviço, todos integrados ao módulo central de geração de relatórios financeiros. Os relatórios serão exportados em formato CSV, contendo informações detalhadas sobre vendas, despesas, lucros, impostos e análises de desempenho. Diferentes níveis de acesso aos relatórios serão implementados com base no perfil do usuário, permitindo que proprietários tenham acesso a relatórios mais abrangentes, enquanto funcionários possam consultar apenas relatórios diários.
 
 ## Descrição dos usuários (quem serão os usuários do sistema)
 
@@ -25,7 +25,8 @@ O sistema SalesSync foi projetado para atender três perfis distintos de usuári
 2. **Proprietário (OWNER)**:
    - Proprietário ou gestor da empresa.
    - Possui acesso completo às funcionalidades operacionais do sistema.
-   - Pode visualizar e emitir todos os tipos de relatórios.
+   - Pode gerar relatórios detalhados diários, semanais, mensais e anuais.
+   - Tem acesso a métricas avançadas como lucro bruto, impostos estimados e lucro líquido.
    - Tem permissão para excluir registros do sistema.
    - Não tem acesso às funções administrativas do sistema.
 
@@ -34,18 +35,20 @@ O sistema SalesSync foi projetado para atender três perfis distintos de usuári
    - Pode inserir, visualizar e editar registros de vendas.
    - Tem permissão para cadastrar e editar informações de clientes.
    - Pode gerar ordens de serviço.
-   - Tem acesso limitado à geração de relatórios (apenas do dia atual).
+   - Tem acesso limitado à geração de relatórios (apenas relatórios diários).
 
 ## Necessidades observadas e regras de negócio
 
 ### Necessidades observadas:
 
-1. Centralização das informações de clientes, vendas e despesas em um único sistema.
-2. Controle eficiente de fluxo de caixa com registro detalhado de entradas e saídas.
-3. Necessidade de emissão de ordens de serviço para formalização dos trabalhos realizados.
-4. Geração de relatórios financeiros para análise de desempenho em diferentes períodos.
-5. Segurança no acesso às informações com diferentes níveis de permissão.
-6. Interface gráfica moderna e amigável utilizando FlatLaf para melhor experiência do usuário.
+1. Geração de relatórios financeiros detalhados em formato CSV para análise de desempenho em diferentes períodos (diário, semanal, mensal e anual).
+2. Cálculo preciso de métricas financeiras como lucro bruto, impostos estimados, lucro líquido, total de vendas e despesas.
+3. Identificação de produtos com melhor desempenho de vendas através de relatórios analíticos.
+4. Controle eficiente de fluxo de caixa com registro detalhado de entradas e saídas.
+5. Centralização das informações de clientes, vendas e despesas em um único sistema.
+6. Necessidade de emissão de ordens de serviço para formalização dos trabalhos realizados.
+7. Segurança no acesso às informações com diferentes níveis de permissão para geração de relatórios.
+8. Interface gráfica moderna e amigável utilizando FlatLaf para melhor experiência do usuário.
 
 ### Regras de negócio:
 
@@ -56,7 +59,7 @@ O sistema SalesSync foi projetado para atender três perfis distintos de usuári
 
 2. **Registro de Vendas:**
    - Toda venda deve estar associada a um cliente cadastrado.
-   - É obrigatório o registro da data, valor total e forma de pagamento.
+   - É obrigatório o registro da data da venda, data de pagamento, nome do cliente, forma de pagamento, status da venda (concluída/pendente/cancelada), data de conclusão, valor total e nome do vendedor.
    - Uma venda pode conter diversos itens com suas respectivas quantidades e valores unitários.
    - O sistema deve calcular automaticamente o valor total da venda com base nos itens adicionados.
 
@@ -71,9 +74,13 @@ O sistema SalesSync foi projetado para atender três perfis distintos de usuári
    - A ordem de serviço deve ter um status (pendente, em andamento, concluído, cancelado).
 
 5. **Geração de Relatórios:**
-   - Relatórios diários são acessíveis a todos os perfis de usuário.
-   - Relatórios mensais e anuais são restritos aos perfis OWNER e ADMIN.
+   - Relatórios diários são acessíveis a todos os perfis de usuário (ADMIN, OWNER e EMPLOYEE).
+   - Relatórios semanais, mensais e anuais são restritos aos perfis OWNER e ADMIN.
+   - Os relatórios devem ser exportados em formato CSV.
    - Os relatórios devem apresentar o balanço entre vendas e despesas no período selecionado.
+   - Os relatórios devem calcular e apresentar o lucro bruto, impostos estimados, lucro líquido, total de vendas e total de despesas.
+   - Os relatórios de vendas devem incluir: data da venda, data de pagamento, nome do cliente, forma de pagamento, status da venda, data de conclusão, valor total e nome do vendedor.
+   - Os relatórios devem identificar e incluir o produto mais vendido no período.
 
 6. **Controle de Acesso:**
    - O acesso ao sistema é permitido apenas mediante autenticação válida.
@@ -99,9 +106,9 @@ O sistema SalesSync foi projetado para atender três perfis distintos de usuári
 - O sistema deve permitir a visualização do histórico de compras e serviços do cliente.
 
 ### RF04 - Registro de Vendas
-- O sistema deve permitir o registro de vendas com os seguintes dados: código, cliente, data, itens vendidos, quantidades, valores unitários, valor total, forma de pagamento e observações.
+- O sistema deve permitir o registro de vendas com os seguintes dados: código, cliente, data da venda, data de pagamento, itens vendidos, quantidades, valores unitários, valor total, forma de pagamento, status da venda (concluída/pendente/cancelada), data de conclusão, nome do vendedor e observações.
 - O sistema deve permitir a edição de vendas ainda não finalizadas.
-- O sistema deve permitir a consulta de vendas por código, cliente ou período.
+- O sistema deve permitir a consulta de vendas por código, cliente, período ou status.
 - O sistema deve permitir a exclusão de vendas (apenas para perfil OWNER).
 
 ### RF05 - Registro de Despesas
@@ -117,10 +124,14 @@ O sistema SalesSync foi projetado para atender três perfis distintos de usuári
 - O sistema deve permitir a impressão das ordens de serviço.
 
 ### RF07 - Geração de Relatórios Financeiros
-- O sistema deve permitir a geração de relatório balancete diário com detalhamento de vendas e despesas.
+- O sistema deve permitir a geração de relatório balancete diário com detalhamento de vendas e despesas, acessível para todos os perfis de usuário.
+- O sistema deve permitir a geração de relatório balancete semanal com resumo de vendas e despesas por categoria (apenas para perfis OWNER e ADMIN).
 - O sistema deve permitir a geração de relatório balancete mensal com resumo de vendas e despesas por categoria (apenas para perfis OWNER e ADMIN).
 - O sistema deve permitir a geração de relatório balancete anual com análise comparativa de períodos (apenas para perfis OWNER e ADMIN).
-- O sistema deve permitir a exportação dos relatórios em formato PDF.
+- O sistema deve calcular automaticamente o lucro bruto, impostos estimados, lucro líquido, total de vendas e total de despesas para cada relatório gerado.
+- O sistema deve identificar e incluir no relatório o produto mais vendido no período analisado.
+- O sistema deve incluir nos relatórios de vendas: data da venda, data de pagamento, nome do cliente, forma de pagamento, status da venda, data de conclusão, valor total e nome do vendedor.
+- O sistema deve exportar os relatórios em formato CSV.
 
 ## Requisitos não funcionais
 
