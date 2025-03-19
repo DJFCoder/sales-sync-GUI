@@ -46,7 +46,7 @@
 
 1. Clone o repositório:
 ```bash
-git clone https://github.com/seu-usuario/sales-sync.git
+git clone https://github.com/seu-usuario/sales-sync-GUI.git
 cd sales-sync
 ```
 
@@ -74,22 +74,105 @@ java -jar target/salessync-1.0-SNAPSHOT.jar
 
 ```plaintext
 sales-sync/
-├── src/
-│   ├── main/
-│   │   ├── java/br/com/devjf/salessync/
-│   │   │   ├── controller/    # Controladores da aplicação
-│   │   │   ├── dao/           # Camada de acesso a dados
-│   │   │   ├── model/         # Entidades e modelos de dados
-│   │   │   ├── service/       # Lógica de negócio
-│   │   │   ├── util/          # Classes utilitárias
-│   │   │   └── view/          # Interfaces gráficas
-│   │   └── resources/
-│   │       ├── db/            # Scripts SQL
-│   │       ├── images/        # Imagens e ícones
-│   │       └── META-INF/      # Configuração JPA
-│   └── test/                  # Testes unitários e de integração
-├── doc/                       # Documentação
-└── target/                    # Arquivos compilados
+└── src
+    └── main
+        ├── java
+            └── br
+            │   └── com
+            │       └── devjf
+            │           └── salessync
+            │               ├── SalesSyncApp.java                # Classe de chamada do programa
+            │               ├── controller                       # Controladores da aplicação
+            │                   ├── CustomerController.java
+            │                   ├── ExpenseController.java
+            │                   ├── LogController.java
+            │                   ├── ReportController.java
+            │                   ├── SaleController.java
+            │                   ├── ServiceOrderController.java
+            │                   └── UserController.java
+            │               ├── dao                              # Camada de acesso a dados
+            │                   ├── CustomerDAO.java
+            │                   ├── DAO.java
+            │                   ├── ExpenseCategoryDAO.java
+            │                   ├── ExpenseDAO.java
+            │                   ├── SaleDAO.java
+            │                   ├── SaleItemDAO.java
+            │                   ├── ServiceOrderDAO.java
+            │                   ├── SystemLogDAO.java
+            │                   └── UserDAO.java
+            │               ├── model                            # Entidades e modelos de dados
+            │                   ├── Customer.java
+            │                   ├── Expense.java
+            │                   ├── ExpenseCategory.java
+            │                   ├── PaymentMethod.java
+            │                   ├── RecurrenceType.java
+            │                   ├── Sale.java
+            │                   ├── SaleItem.java
+            │                   ├── ServiceOrder.java
+            │                   ├── ServiceStatus.java
+            │                   ├── SystemLog.java
+            │                   ├── User.java
+            │                   └── UserType.java
+            │               ├── service                          # Lógica de negócio
+            │                   ├── CustomerService.java
+            │                   ├── ExpenseService.java
+            │                   ├── LogService.java
+            │                   ├── ReportService.java
+            │                   ├── SaleService.java
+            │                   ├── ServiceOrderService.java
+            │                   └── UserService.java
+            │               ├── util                             # Classes utilitárias
+            │                   ├── CSVExporter.java
+            │                   ├── HibernateUtil.java
+            │                   └── UserSession.java
+            │               └── view                             # Interfaces gráficas
+            │                   ├── Login.form
+            │                   ├── Login.java
+            │                   ├── MainAppView.form
+            │                   ├── MainAppView.java
+            │                   └── forms
+            │                       ├── CustomersForm.form
+            │                       ├── CustomersForm.java
+            │                       ├── DashboardForm.form
+            │                       ├── DashboardForm.java
+            │                       ├── ExpensesForm.form
+            │                       ├── ExpensesForm.java
+            │                       ├── LogsForm.form
+            │                       ├── LogsForm.java
+            │                       ├── ReportsForm.form
+            │                       ├── ReportsForm.java
+            │                       ├── SalesForm.form
+            │                       ├── SalesForm.java
+            │                       ├── ServiceOrdersForm.form
+            │                       ├── ServiceOrdersForm.java
+            │                       ├── UsersForm.form
+            │                       ├── UsersForm.java
+            │                       └── newobjectforms
+            │                           ├── NewCustomerForm.form
+            │                           ├── NewCustomerForm.java
+            │                           ├── NewExpenseForm.form
+            │                           ├── NewExpenseForm.java
+            │                           ├── NewSaleForm.form
+            │                           ├── NewSaleForm.java
+            │                           ├── NewServiceOrderForm.form
+            │                           ├── NewServiceOrderForm.java
+            │                           ├── NewUserForm.form
+            │                           └── NewUserForm.java
+        └── resources
+            ├── META-INF                    # Configuração JPA
+                └── persistence.xml
+            ├── db                          # Scripts SQL
+                ├── db_engeering
+                │   ├── data.sql
+                │   ├── indexes.sql
+                │   ├── init.sql
+                │   ├── script.sql
+                │   └── views.sql
+                └── schema.sql
+            └── images                      # Imagens e ícones
+                ├── EllipsePermission.png
+                ├── SalesSync-logo1.png
+                └── SalesSync-logo2-small.png
 ```
 
 ---
