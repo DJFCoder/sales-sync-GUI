@@ -1,6 +1,8 @@
 # SalesSync
 
-![SalesSync Logo](doc/images/SalesSync-logo2-small.png)
+<div align="center">
+  <img src="src/main/resources/images/SalesSync-logo1.png" alt="Logo" width="100"/>
+</div>
 
 ## Sobre o Projeto
 
