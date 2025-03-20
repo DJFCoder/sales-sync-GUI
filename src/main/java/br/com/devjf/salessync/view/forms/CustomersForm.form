@@ -120,6 +120,9 @@
               <Dimension value="[150, 40]"/>
             </Property>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(newCustomerButton);"/>
+          </AuxValues>
         </Component>
         <Component class="javax.swing.JButton" name="deleteCustomerButton">
           <Properties>
@@ -137,6 +140,9 @@
               <Dimension value="[150, 40]"/>
             </Property>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(deleteCustomerButton);"/>
+          </AuxValues>
         </Component>
         <Container class="javax.swing.JPanel" name="filterPanel">
           <Properties>
@@ -144,6 +150,9 @@
               <Dimension value="[917, 50]"/>
             </Property>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(filterPanel);"/>
+          </AuxValues>
 
           <Layout>
             <DimensionLayout dim="0">
@@ -199,6 +208,9 @@
                   <Dimension value="[121, 30]"/>
                 </Property>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(idField);"/>
+              </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="idLbl">
               <Properties>
@@ -226,6 +238,9 @@
                   <Dimension value="[121, 30]"/>
                 </Property>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(taxIdField);"/>
+              </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="customerLbl">
               <Properties>
@@ -245,6 +260,9 @@
                   <Dimension value="[121, 30]"/>
                 </Property>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(customerField);"/>
+              </AuxValues>
             </Component>
           </SubComponents>
         </Container>
@@ -265,6 +283,9 @@
                   </Table>
                 </Property>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(customerField);"/>
+              </AuxValues>
             </Component>
           </SubComponents>
         </Container>

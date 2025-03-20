@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
   </Properties>
@@ -120,6 +120,9 @@
               <Dimension value="[150, 40]"/>
             </Property>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(newSaleButton);"/>
+          </AuxValues>
         </Component>
         <Component class="javax.swing.JButton" name="deleteSaleButton">
           <Properties>
@@ -137,6 +140,9 @@
               <Dimension value="[150, 40]"/>
             </Property>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(deleteSaleButton);"/>
+          </AuxValues>
         </Component>
         <Container class="javax.swing.JPanel" name="filterPanel">
           <Properties>
@@ -144,6 +150,9 @@
               <Dimension value="[917, 50]"/>
             </Property>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(filterPanel);"/>
+          </AuxValues>
 
           <Layout>
             <DimensionLayout dim="0">
@@ -154,13 +163,13 @@
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="customerField" min="-2" pref="181" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
-                      <Component id="initialDateLbl" min="-2" max="-2" attributes="0"/>
+                      <Component id="dateLbl" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="initialDateField" min="-2" max="-2" attributes="0"/>
+                      <Component id="dateField" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
-                      <Component id="finalDateLbl" min="-2" max="-2" attributes="0"/>
+                      <Component id="paymentMethodLbl" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="finalDateField" min="-2" max="-2" attributes="0"/>
+                      <Component id="paymentMethodField" min="-2" max="-2" attributes="0"/>
                       <EmptySpace pref="83" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -171,12 +180,12 @@
                       <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                              <Component id="finalDateLbl" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="finalDateField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="paymentMethodLbl" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="paymentMethodField" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="initialDateLbl" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="initialDateField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="dateLbl" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="dateField" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="customerLbl" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -189,7 +198,7 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JTextField" name="initialDateField">
+            <Component class="javax.swing.JTextField" name="dateField">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Liberation Sans" size="14" style="0"/>
@@ -199,8 +208,11 @@
                   <Dimension value="[121, 30]"/>
                 </Property>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(dateField);"/>
+              </AuxValues>
             </Component>
-            <Component class="javax.swing.JLabel" name="initialDateLbl">
+            <Component class="javax.swing.JLabel" name="dateLbl">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Liberation Sans" size="14" style="0"/>
@@ -208,7 +220,7 @@
                 <Property name="text" type="java.lang.String" value="Data:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="finalDateLbl">
+            <Component class="javax.swing.JLabel" name="paymentMethodLbl">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Liberation Sans" size="14" style="0"/>
@@ -216,7 +228,7 @@
                 <Property name="text" type="java.lang.String" value="Forma de Pagamento:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="finalDateField">
+            <Component class="javax.swing.JTextField" name="paymentMethodField">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Liberation Sans" size="14" style="0"/>
@@ -226,6 +238,9 @@
                   <Dimension value="[121, 30]"/>
                 </Property>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(paymentMethodField);"/>
+              </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="customerLbl">
               <Properties>
@@ -245,6 +260,9 @@
                   <Dimension value="[121, 30]"/>
                 </Property>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(customerField);"/>
+              </AuxValues>
             </Component>
           </SubComponents>
         </Container>

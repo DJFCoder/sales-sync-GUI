@@ -1,5 +1,7 @@
 package br.com.devjf.salessync.view.forms;
 
+import br.com.devjf.salessync.util.ViewUtil;
+
 public class DashboardForm extends javax.swing.JFrame {
     public DashboardForm() {
         initComponents();
@@ -49,6 +51,7 @@ public class DashboardForm extends javax.swing.JFrame {
         lastAccessLbl.setText("Último acesso: ");
 
         sellPnl.setPreferredSize(new java.awt.Dimension(170, 125));
+        ViewUtil.standardCornerRadius(sellPnl);
 
         sellsLbl.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         sellsLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -90,10 +93,11 @@ public class DashboardForm extends javax.swing.JFrame {
                 .addComponent(newSaleLink)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(salesLink)
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addContainerGap(31, Short.MAX_VALUE))
         );
 
         customerPnl.setPreferredSize(new java.awt.Dimension(170, 125));
+        ViewUtil.standardCornerRadius(customerPnl);
 
         customersLbl.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         customersLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -116,7 +120,7 @@ public class DashboardForm extends javax.swing.JFrame {
         customerPnlLayout.setHorizontalGroup(
             customerPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, customerPnlLayout.createSequentialGroup()
-                .addContainerGap(39, Short.MAX_VALUE)
+                .addContainerGap(46, Short.MAX_VALUE)
                 .addGroup(customerPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(customersLink)
                     .addComponent(newCustormerLink)
@@ -132,10 +136,11 @@ public class DashboardForm extends javax.swing.JFrame {
                 .addComponent(newCustormerLink)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(customersLink)
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addContainerGap(31, Short.MAX_VALUE))
         );
 
         serviceOrderPnl.setPreferredSize(new java.awt.Dimension(170, 125));
+        ViewUtil.standardCornerRadius(serviceOrderPnl);
 
         serviceOrdersLbl.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         serviceOrdersLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -163,7 +168,7 @@ public class DashboardForm extends javax.swing.JFrame {
                     .addComponent(serviceOrdersLbl)
                     .addComponent(newServiceOrderLink)
                     .addComponent(serviceOrdersLink))
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
         serviceOrderPnlLayout.setVerticalGroup(
             serviceOrderPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -174,10 +179,11 @@ public class DashboardForm extends javax.swing.JFrame {
                 .addComponent(newServiceOrderLink)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(serviceOrdersLink)
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addContainerGap(31, Short.MAX_VALUE))
         );
 
         userPnl.setPreferredSize(new java.awt.Dimension(291, 373));
+        ViewUtil.standardCornerRadius(userPnl);
 
         profileLbl.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         profileLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -203,7 +209,7 @@ public class DashboardForm extends javax.swing.JFrame {
                     .addComponent(profileLbl)
                     .addComponent(permitionLbl)
                     .addComponent(statusLbl))
-                .addContainerGap(99, Short.MAX_VALUE))
+                .addContainerGap(107, Short.MAX_VALUE))
         );
         userPnlLayout.setVerticalGroup(
             userPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -216,10 +222,11 @@ public class DashboardForm extends javax.swing.JFrame {
                 .addComponent(permitionLbl)
                 .addGap(20, 20, 20)
                 .addComponent(statusLbl)
-                .addContainerGap(145, Short.MAX_VALUE))
+                .addContainerGap(146, Short.MAX_VALUE))
         );
 
         activitiesPnl.setPreferredSize(new java.awt.Dimension(570, 219));
+        ViewUtil.standardCornerRadius(activitiesPnl);
 
         activitiesLbl.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         activitiesLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -254,7 +261,7 @@ public class DashboardForm extends javax.swing.JFrame {
         activitiesPnlLayout.setHorizontalGroup(
             activitiesPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(activitiesPnlLayout.createSequentialGroup()
-                .addContainerGap(127, Short.MAX_VALUE)
+                .addContainerGap(134, Short.MAX_VALUE)
                 .addGroup(activitiesPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(fstActivitieLbl)
                     .addComponent(activitiesLbl)
@@ -263,12 +270,12 @@ public class DashboardForm extends javax.swing.JFrame {
                     .addComponent(scdTimeActivitieLbl)
                     .addComponent(trdActivitieLbl)
                     .addComponent(trdTimeActivitieLbl))
-                .addGap(0, 141, Short.MAX_VALUE))
+                .addGap(0, 148, Short.MAX_VALUE))
         );
         activitiesPnlLayout.setVerticalGroup(
             activitiesPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(activitiesPnlLayout.createSequentialGroup()
-                .addGap(35, 35, 35)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, activitiesPnlLayout.createSequentialGroup()
+                .addContainerGap(21, Short.MAX_VALUE)
                 .addComponent(activitiesLbl)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(fstActivitieLbl)
@@ -282,7 +289,7 @@ public class DashboardForm extends javax.swing.JFrame {
                 .addComponent(trdActivitieLbl)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(trdTimeActivitieLbl)
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addGap(22, 22, 22))
         );
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
@@ -324,7 +331,7 @@ public class DashboardForm extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(activitiesPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(userPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(145, Short.MAX_VALUE))
+                .addContainerGap(150, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -346,7 +353,7 @@ public class DashboardForm extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
+
     // new DashboardForm().setVisible(true);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

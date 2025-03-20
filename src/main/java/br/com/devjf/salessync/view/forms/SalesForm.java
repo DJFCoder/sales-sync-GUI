@@ -1,5 +1,7 @@
 package br.com.devjf.salessync.view.forms;
 
+import br.com.devjf.salessync.util.ViewUtil;
+
 public class SalesForm extends javax.swing.JFrame {
     public SalesForm() {
         initComponents();
@@ -14,10 +16,10 @@ public class SalesForm extends javax.swing.JFrame {
         newSaleButton = new javax.swing.JButton();
         deleteSaleButton = new javax.swing.JButton();
         filterPanel = new javax.swing.JPanel();
-        initialDateField = new javax.swing.JTextField();
-        initialDateLbl = new javax.swing.JLabel();
-        finalDateLbl = new javax.swing.JLabel();
-        finalDateField = new javax.swing.JTextField();
+        dateField = new javax.swing.JTextField();
+        dateLbl = new javax.swing.JLabel();
+        paymentMethodLbl = new javax.swing.JLabel();
+        paymentMethodField = new javax.swing.JTextField();
         customerLbl = new javax.swing.JLabel();
         customerField = new javax.swing.JTextField();
         tableScrollPanel = new javax.swing.JScrollPane();
@@ -36,28 +38,33 @@ public class SalesForm extends javax.swing.JFrame {
         newSaleButton.setForeground(new java.awt.Color(255, 255, 255));
         newSaleButton.setText("Nova Venda");
         newSaleButton.setPreferredSize(new java.awt.Dimension(150, 40));
+        ViewUtil.standardCornerRadius(newSaleButton);
 
         deleteSaleButton.setBackground(new java.awt.Color(175, 76, 78));
         deleteSaleButton.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         deleteSaleButton.setForeground(new java.awt.Color(255, 255, 255));
         deleteSaleButton.setText("Excluir Venda");
         deleteSaleButton.setPreferredSize(new java.awt.Dimension(150, 40));
+        ViewUtil.standardCornerRadius(deleteSaleButton);
 
         filterPanel.setPreferredSize(new java.awt.Dimension(917, 50));
+        ViewUtil.standardCornerRadius(filterPanel);
 
-        initialDateField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        initialDateField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        initialDateField.setPreferredSize(new java.awt.Dimension(121, 30));
+        dateField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        dateField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        dateField.setPreferredSize(new java.awt.Dimension(121, 30));
+        ViewUtil.standardCornerRadius(dateField);
 
-        initialDateLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        initialDateLbl.setText("Data:");
+        dateLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        dateLbl.setText("Data:");
 
-        finalDateLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        finalDateLbl.setText("Forma de Pagamento:");
+        paymentMethodLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        paymentMethodLbl.setText("Forma de Pagamento:");
 
-        finalDateField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        finalDateField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        finalDateField.setPreferredSize(new java.awt.Dimension(121, 30));
+        paymentMethodField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        paymentMethodField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        paymentMethodField.setPreferredSize(new java.awt.Dimension(121, 30));
+        ViewUtil.standardCornerRadius(paymentMethodField);
 
         customerLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         customerLbl.setText("Cliente:");
@@ -65,6 +72,7 @@ public class SalesForm extends javax.swing.JFrame {
         customerField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         customerField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         customerField.setPreferredSize(new java.awt.Dimension(121, 30));
+        ViewUtil.standardCornerRadius(customerField);
 
         javax.swing.GroupLayout filterPanelLayout = new javax.swing.GroupLayout(filterPanel);
         filterPanel.setLayout(filterPanelLayout);
@@ -76,13 +84,13 @@ public class SalesForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(customerField, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(34, 34, 34)
-                .addComponent(initialDateLbl)
+                .addComponent(dateLbl)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(initialDateField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(dateField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(34, 34, 34)
-                .addComponent(finalDateLbl)
+                .addComponent(paymentMethodLbl)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(finalDateField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(paymentMethodField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(83, Short.MAX_VALUE))
         );
         filterPanelLayout.setVerticalGroup(
@@ -91,11 +99,11 @@ public class SalesForm extends javax.swing.JFrame {
                 .addGap(10, 10, 10)
                 .addGroup(filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(finalDateLbl)
-                        .addComponent(finalDateField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(paymentMethodLbl)
+                        .addComponent(paymentMethodField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(initialDateLbl)
-                        .addComponent(initialDateField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(dateLbl)
+                        .addComponent(dateField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(customerLbl)
                         .addComponent(customerField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -178,15 +186,15 @@ public class SalesForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField customerField;
     private javax.swing.JLabel customerLbl;
+    private javax.swing.JTextField dateField;
+    private javax.swing.JLabel dateLbl;
     private javax.swing.JButton deleteSaleButton;
     private javax.swing.JLabel filterLbl;
     private javax.swing.JPanel filterPanel;
-    private javax.swing.JTextField finalDateField;
-    private javax.swing.JLabel finalDateLbl;
-    private javax.swing.JTextField initialDateField;
-    private javax.swing.JLabel initialDateLbl;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JButton newSaleButton;
+    private javax.swing.JTextField paymentMethodField;
+    private javax.swing.JLabel paymentMethodLbl;
     private javax.swing.JTable salesTable;
     private javax.swing.JScrollPane tableScrollPanel;
     // End of variables declaration//GEN-END:variables

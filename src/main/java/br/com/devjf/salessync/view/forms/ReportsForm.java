@@ -1,5 +1,7 @@
 package br.com.devjf.salessync.view.forms;
 
+import br.com.devjf.salessync.util.ViewUtil;
+
 public class ReportsForm extends javax.swing.JFrame {
     public ReportsForm() {
         initComponents();
@@ -11,15 +13,15 @@ public class ReportsForm extends javax.swing.JFrame {
 
         mainPanel = new javax.swing.JPanel();
         filterLbl = new javax.swing.JLabel();
-        newExpenseButton = new javax.swing.JButton();
-        manageCategorysButton = new javax.swing.JButton();
+        newReportButton = new javax.swing.JButton();
+        filterReportButton = new javax.swing.JButton();
         filterPanel = new javax.swing.JPanel();
-        descriptionField = new javax.swing.JTextField();
-        descriptionLbl = new javax.swing.JLabel();
-        valueLbl = new javax.swing.JLabel();
-        valueField = new javax.swing.JTextField();
-        categoryLbl = new javax.swing.JLabel();
-        categoryField = new javax.swing.JTextField();
+        recurrenceLbl = new javax.swing.JLabel();
+        statusLbl = new javax.swing.JLabel();
+        paymentMethodLbl = new javax.swing.JLabel();
+        paymentMethodCmb = new javax.swing.JComboBox<>();
+        recurrenceCmb = new javax.swing.JComboBox<>();
+        statusCmb = new javax.swing.JComboBox<>();
         tableScrollPanel = new javax.swing.JScrollPane();
         expenseTable = new javax.swing.JTable();
         jSeparator1 = new javax.swing.JSeparator();
@@ -46,79 +48,77 @@ public class ReportsForm extends javax.swing.JFrame {
         filterLbl.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         filterLbl.setText("Filtar");
 
-        newExpenseButton.setBackground(new java.awt.Color(76, 175, 80));
-        newExpenseButton.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        newExpenseButton.setForeground(new java.awt.Color(255, 255, 255));
-        newExpenseButton.setText("Nova Despesa");
-        newExpenseButton.setPreferredSize(new java.awt.Dimension(150, 40));
+        newReportButton.setBackground(new java.awt.Color(76, 175, 80));
+        newReportButton.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        newReportButton.setForeground(new java.awt.Color(255, 255, 255));
+        newReportButton.setText("Emitir Relatório");
+        newReportButton.setPreferredSize(new java.awt.Dimension(150, 40));
+        ViewUtil.standardCornerRadius(newReportButton);
 
-        manageCategorysButton.setBackground(new java.awt.Color(255, 178, 0));
-        manageCategorysButton.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        manageCategorysButton.setForeground(new java.awt.Color(255, 255, 255));
-        manageCategorysButton.setText("Gerenciar Categorias");
-        manageCategorysButton.setPreferredSize(new java.awt.Dimension(170, 40));
-        manageCategorysButton.addActionListener(new java.awt.event.ActionListener() {
+        filterReportButton.setBackground(new java.awt.Color(255, 178, 0));
+        filterReportButton.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        filterReportButton.setForeground(new java.awt.Color(255, 255, 255));
+        filterReportButton.setText("Relatório Filtrado");
+        filterReportButton.setToolTipText("");
+        filterReportButton.setPreferredSize(new java.awt.Dimension(170, 40));
+        filterReportButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                manageCategorysButtonActionPerformed(evt);
+                filterReportButtonActionPerformed(evt);
             }
         });
+        ViewUtil.standardCornerRadius(filterReportButton);
 
         filterPanel.setPreferredSize(new java.awt.Dimension(917, 50));
+        ViewUtil.standardCornerRadius(filterPanel);
 
-        descriptionField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        descriptionField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        descriptionField.setPreferredSize(new java.awt.Dimension(121, 30));
+        recurrenceLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        recurrenceLbl.setText("Recorrência:");
 
-        descriptionLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        descriptionLbl.setText("Descrição:");
+        statusLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        statusLbl.setText("Status:");
 
-        valueLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        valueLbl.setText("Valor:");
+        paymentMethodLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        paymentMethodLbl.setText("Forma de Pagamento:");
 
-        valueField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        valueField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        valueField.setPreferredSize(new java.awt.Dimension(121, 30));
+        paymentMethodCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecione", "DINHEIRO", "CRÉDITO", "DÉBITO", "TRANSFERÊNCIA", "PIX", "BOLETO", "CHEQUE" }));
+        paymentMethodCmb.setPreferredSize(new java.awt.Dimension(140, 30));
 
-        categoryLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        categoryLbl.setText("Categoria:");
+        recurrenceCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecione", "DIÁRIO", "SEMANAL", "MENSAL", "ANUAL" }));
+        recurrenceCmb.setPreferredSize(new java.awt.Dimension(140, 30));
 
-        categoryField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        categoryField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        categoryField.setPreferredSize(new java.awt.Dimension(121, 30));
+        statusCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecione", "CANCELADA", "PENDENTE", "CONCLUÍDA" }));
+        statusCmb.setPreferredSize(new java.awt.Dimension(140, 30));
 
         javax.swing.GroupLayout filterPanelLayout = new javax.swing.GroupLayout(filterPanel);
         filterPanel.setLayout(filterPanelLayout);
         filterPanelLayout.setHorizontalGroup(
             filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(filterPanelLayout.createSequentialGroup()
-                .addGap(113, 113, 113)
-                .addComponent(categoryLbl)
+                .addContainerGap(61, Short.MAX_VALUE)
+                .addComponent(paymentMethodLbl)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(categoryField, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
-                .addComponent(descriptionLbl)
+                .addComponent(paymentMethodCmb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(36, 36, 36)
+                .addComponent(statusLbl)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(descriptionField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
-                .addComponent(valueLbl)
+                .addComponent(statusCmb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(36, 36, 36)
+                .addComponent(recurrenceLbl)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(valueField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(114, Short.MAX_VALUE))
+                .addComponent(recurrenceCmb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(61, 61, 61))
         );
         filterPanelLayout.setVerticalGroup(
             filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(filterPanelLayout.createSequentialGroup()
                 .addGap(10, 10, 10)
-                .addGroup(filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(descriptionLbl)
-                        .addComponent(descriptionField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(valueLbl)
-                        .addComponent(valueField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(categoryLbl)
-                        .addComponent(categoryField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(recurrenceLbl)
+                    .addComponent(paymentMethodCmb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(paymentMethodLbl)
+                    .addComponent(statusLbl)
+                    .addComponent(recurrenceCmb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(statusCmb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(10, 10, 10))
         );
 
@@ -129,21 +129,13 @@ public class ReportsForm extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Código", "Descrição", "Categoria", "Data", "Valor", "Ações"
+                "Código", "Data Venda", "Data Pagamento", "Cliente", "Pagamento", "Status", "Data Conclusão", "Valor Total", "Vendedor"
             }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
+        ));
         tableScrollPanel.setViewportView(expenseTable);
 
-        jPanel1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
         jPanel1.setPreferredSize(new java.awt.Dimension(575, 270));
+        ViewUtil.standardCornerRadius(jPanel1);
 
         resumeTitleLbl.setFont(new java.awt.Font("Liberation Sans", 0, 16)); // NOI18N
         resumeTitleLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -237,7 +229,7 @@ public class ReportsForm extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(clearAmountLbl)
                     .addComponent(amountValueLbl))
-                .addContainerGap(50, Short.MAX_VALUE))
+                .addContainerGap(42, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
@@ -249,15 +241,14 @@ public class ReportsForm extends javax.swing.JFrame {
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-                            .addComponent(manageCategorysButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(filterReportButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(18, 18, 18)
-                            .addComponent(newExpenseButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(newReportButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addComponent(tableScrollPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 917, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(filterPanel, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.PREFERRED_SIZE, 916, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.CENTER, mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                        .addComponent(filterLbl)
-                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 800, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(filterLbl, javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.PREFERRED_SIZE, 800, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(19, Short.MAX_VALUE))
         );
         mainPanelLayout.setVerticalGroup(
@@ -275,8 +266,8 @@ public class ReportsForm extends javax.swing.JFrame {
                 .addComponent(tableScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(newExpenseButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(manageCategorysButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(newReportButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(filterReportButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(20, 20, 20))
         );
 
@@ -300,40 +291,40 @@ public class ReportsForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void manageCategorysButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manageCategorysButtonActionPerformed
+    private void filterReportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterReportButtonActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_manageCategorysButtonActionPerformed
+    }//GEN-LAST:event_filterReportButtonActionPerformed
     
     // new ReportsForm().setVisible(true);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel amountValueLbl;
-    private javax.swing.JTextField categoryField;
-    private javax.swing.JLabel categoryLbl;
     private javax.swing.JLabel clearAmountLbl;
-    private javax.swing.JTextField descriptionField;
-    private javax.swing.JLabel descriptionLbl;
     private javax.swing.JLabel estimatedTaxesLbl;
     private javax.swing.JTable expenseTable;
     private javax.swing.JLabel expensesValueLbl;
     private javax.swing.JLabel filterLbl;
     private javax.swing.JPanel filterPanel;
+    private javax.swing.JButton filterReportButton;
     private javax.swing.JLabel grossProfitLbl;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JPanel mainPanel;
-    private javax.swing.JButton manageCategorysButton;
-    private javax.swing.JButton newExpenseButton;
+    private javax.swing.JButton newReportButton;
+    private javax.swing.JComboBox<String> paymentMethodCmb;
+    private javax.swing.JLabel paymentMethodLbl;
     private javax.swing.JLabel profitValueLbl;
+    private javax.swing.JComboBox<String> recurrenceCmb;
+    private javax.swing.JLabel recurrenceLbl;
     private javax.swing.JLabel resumeTitleLbl;
     private javax.swing.JLabel salesValueLbl;
+    private javax.swing.JComboBox<String> statusCmb;
+    private javax.swing.JLabel statusLbl;
     private javax.swing.JScrollPane tableScrollPanel;
     private javax.swing.JLabel taxesValueLbl;
     private javax.swing.JLabel totalExpensesLbl;
     private javax.swing.JLabel totalSalesLbl;
-    private javax.swing.JTextField valueField;
-    private javax.swing.JLabel valueLbl;
     // End of variables declaration//GEN-END:variables
 }

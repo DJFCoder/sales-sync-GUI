@@ -1,5 +1,7 @@
 package br.com.devjf.salessync.view;
 
+import br.com.devjf.salessync.util.ViewUtil;
+import com.formdev.flatlaf.FlatClientProperties;
 import javax.swing.JOptionPane;
 
 public class Login extends javax.swing.JFrame {
@@ -89,6 +91,7 @@ public class Login extends javax.swing.JFrame {
         getContentPane().add(borderTop, java.awt.BorderLayout.PAGE_START);
 
         mainPanel.setBackground(new java.awt.Color(255, 255, 255));
+        ViewUtil.standardCornerRadius(mainPanel);
 
         loginField.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         loginField.setToolTipText("");
@@ -97,36 +100,33 @@ public class Login extends javax.swing.JFrame {
         loginField.setMinimumSize(new java.awt.Dimension(310, 50));
         loginField.setName(""); // NOI18N
         loginField.setPreferredSize(new java.awt.Dimension(310, 50));
-        loginField.putClientProperty("FlatLaf.style",
-                "arc: 10");
-        loginField.putClientProperty("JTextField.placeholderText", "Usuário");
-        
+        loginField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Usuário");
+
+        ViewUtil.standardCornerRadius(loginField);
+
         passwordField.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         passwordField.setToolTipText("");
         passwordField.setMargin(new java.awt.Insets(2, 25, 2, 25));
         passwordField.setPreferredSize(new java.awt.Dimension(310, 50));
-        passwordField.putClientProperty("FlatLaf.style",
-                "arc: 10; showRevealButton: true");
-        passwordField.putClientProperty("JTextField.placeholderText", "Senha");
+        passwordField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Senha");
+
+        ViewUtil.standardCornerRadius(passwordField);
 
         loginBtn.setBackground(new java.awt.Color(33, 150, 243));
         loginBtn.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         loginBtn.setForeground(new java.awt.Color(255, 255, 255));
         loginBtn.setText("ENTRAR");
         loginBtn.setPreferredSize(new java.awt.Dimension(310, 50));
+        ViewUtil.standardCornerRadius(loginBtn);
         loginBtn.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loginBtnActionPerformed(evt);
             }
         });
-        loginBtn.putClientProperty("FlatLaf.style",
-                "arc: 10");
 
         jLabel1.setForeground(new java.awt.Color(134, 157, 249));
         jLabel1.setText("Esqueceu a senha?");
         jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel1MouseClicked(evt);
             }
@@ -170,8 +170,6 @@ public class Login extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addGap(90, 90, 90))
         );
-        mainPanel.putClientProperty("FlatLaf.style",
-                "arc: 10");
 
         passwordField.getAccessibleContext().setAccessibleName("");
 

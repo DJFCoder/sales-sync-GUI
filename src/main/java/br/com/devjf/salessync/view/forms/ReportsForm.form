@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
   </Properties>
@@ -63,18 +63,16 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="103" alignment="0" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="manageCategorysButton" min="-2" max="-2" attributes="0"/>
+                              <Component id="filterReportButton" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="newExpenseButton" min="-2" max="-2" attributes="0"/>
+                              <Component id="newReportButton" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="tableScrollPanel" alignment="1" min="-2" pref="917" max="-2" attributes="0"/>
                       </Group>
                       <Component id="filterPanel" alignment="2" min="-2" pref="916" max="-2" attributes="0"/>
-                      <Group type="103" alignment="2" groupAlignment="2" attributes="0">
-                          <Component id="filterLbl" alignment="2" min="-2" max="-2" attributes="0"/>
-                          <Component id="jSeparator1" alignment="2" min="-2" pref="800" max="-2" attributes="0"/>
-                          <Component id="jPanel1" alignment="2" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="filterLbl" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="jSeparator1" alignment="2" min="-2" pref="800" max="-2" attributes="0"/>
+                      <Component id="jPanel1" alignment="2" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace pref="19" max="32767" attributes="0"/>
               </Group>
@@ -95,8 +93,8 @@
                   <Component id="tableScrollPanel" min="-2" pref="180" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="newExpenseButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="manageCategorysButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="newReportButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="filterReportButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
               </Group>
@@ -112,7 +110,7 @@
             <Property name="text" type="java.lang.String" value="Filtar"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="newExpenseButton">
+        <Component class="javax.swing.JButton" name="newReportButton">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="50" green="af" red="4c" type="rgb"/>
@@ -123,13 +121,16 @@
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Nova Despesa"/>
+            <Property name="text" type="java.lang.String" value="Emitir Relat&#xf3;rio"/>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[150, 40]"/>
             </Property>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(newReportButton);"/>
+          </AuxValues>
         </Component>
-        <Component class="javax.swing.JButton" name="manageCategorysButton">
+        <Component class="javax.swing.JButton" name="filterReportButton">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="0" green="b2" red="ff" type="rgb"/>
@@ -140,14 +141,18 @@
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Gerenciar Categorias"/>
+            <Property name="text" type="java.lang.String" value="Relat&#xf3;rio Filtrado"/>
+            <Property name="toolTipText" type="java.lang.String" value=""/>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[170, 40]"/>
             </Property>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="manageCategorysButtonActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filterReportButtonActionPerformed"/>
           </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_ListenersCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(filterReportButton);"/>
+          </AuxValues>
         </Component>
         <Container class="javax.swing.JPanel" name="filterPanel">
           <Properties>
@@ -155,24 +160,27 @@
               <Dimension value="[917, 50]"/>
             </Property>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(filterPanel);"/>
+          </AuxValues>
 
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="113" max="-2" attributes="0"/>
-                      <Component id="categoryLbl" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="61" max="32767" attributes="0"/>
+                      <Component id="paymentMethodLbl" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="categoryField" min="-2" pref="181" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
-                      <Component id="descriptionLbl" min="-2" max="-2" attributes="0"/>
+                      <Component id="paymentMethodCmb" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
+                      <Component id="statusLbl" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="descriptionField" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
-                      <Component id="valueLbl" min="-2" max="-2" attributes="0"/>
+                      <Component id="statusCmb" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
+                      <Component id="recurrenceLbl" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="valueField" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="114" max="32767" attributes="0"/>
+                      <Component id="recurrenceCmb" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="61" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -180,19 +188,13 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                              <Component id="descriptionLbl" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="descriptionField" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                              <Component id="valueLbl" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="valueField" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                              <Component id="categoryLbl" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="categoryField" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="recurrenceLbl" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="paymentMethodCmb" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="paymentMethodLbl" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="statusLbl" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="recurrenceCmb" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="statusCmb" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                   </Group>
@@ -200,62 +202,88 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JTextField" name="descriptionField">
+            <Component class="javax.swing.JLabel" name="recurrenceLbl">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Liberation Sans" size="14" style="0"/>
                 </Property>
-                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="Recorr&#xea;ncia:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="statusLbl">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Liberation Sans" size="14" style="0"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Status:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="paymentMethodLbl">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Liberation Sans" size="14" style="0"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Forma de Pagamento:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JComboBox" name="paymentMethodCmb">
+              <Properties>
+                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                  <StringArray count="8">
+                    <StringItem index="0" value="Selecione"/>
+                    <StringItem index="1" value="DINHEIRO"/>
+                    <StringItem index="2" value="CR&#xc9;DITO"/>
+                    <StringItem index="3" value="D&#xc9;BITO"/>
+                    <StringItem index="4" value="TRANSFER&#xca;NCIA"/>
+                    <StringItem index="5" value="PIX"/>
+                    <StringItem index="6" value="BOLETO"/>
+                    <StringItem index="7" value="CHEQUE"/>
+                  </StringArray>
+                </Property>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[121, 30]"/>
+                  <Dimension value="[140, 30]"/>
                 </Property>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+              </AuxValues>
             </Component>
-            <Component class="javax.swing.JLabel" name="descriptionLbl">
+            <Component class="javax.swing.JComboBox" name="recurrenceCmb">
               <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Liberation Sans" size="14" style="0"/>
+                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                  <StringArray count="5">
+                    <StringItem index="0" value="Selecione"/>
+                    <StringItem index="1" value="DI&#xc1;RIO"/>
+                    <StringItem index="2" value="SEMANAL"/>
+                    <StringItem index="3" value="MENSAL"/>
+                    <StringItem index="4" value="ANUAL"/>
+                  </StringArray>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Descri&#xe7;&#xe3;o:"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="valueLbl">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Liberation Sans" size="14" style="0"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="Valor:"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JTextField" name="valueField">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Liberation Sans" size="14" style="0"/>
-                </Property>
-                <Property name="horizontalAlignment" type="int" value="0"/>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[121, 30]"/>
+                  <Dimension value="[140, 30]"/>
                 </Property>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+              </AuxValues>
             </Component>
-            <Component class="javax.swing.JLabel" name="categoryLbl">
+            <Component class="javax.swing.JComboBox" name="statusCmb">
               <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Liberation Sans" size="14" style="0"/>
+                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                  <StringArray count="4">
+                    <StringItem index="0" value="Selecione"/>
+                    <StringItem index="1" value="CANCELADA"/>
+                    <StringItem index="2" value="PENDENTE"/>
+                    <StringItem index="3" value="CONCLU&#xcd;DA"/>
+                  </StringArray>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Categoria:"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JTextField" name="categoryField">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Liberation Sans" size="14" style="0"/>
-                </Property>
-                <Property name="horizontalAlignment" type="int" value="0"/>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[121, 30]"/>
+                  <Dimension value="[140, 30]"/>
                 </Property>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+              </AuxValues>
             </Component>
           </SubComponents>
         </Container>
@@ -271,13 +299,16 @@
             <Component class="javax.swing.JTable" name="expenseTable">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="6" rowCount="0">
+                  <Table columnCount="9" rowCount="0">
                     <Column editable="true" title="C&#xf3;digo" type="java.lang.Object"/>
-                    <Column editable="true" title="Descri&#xe7;&#xe3;o" type="java.lang.Object"/>
-                    <Column editable="true" title="Categoria" type="java.lang.Object"/>
-                    <Column editable="true" title="Data" type="java.lang.Object"/>
-                    <Column editable="true" title="Valor" type="java.lang.Object"/>
-                    <Column editable="true" title="A&#xe7;&#xf5;es" type="java.lang.Boolean"/>
+                    <Column editable="true" title="Data Venda" type="java.lang.Object"/>
+                    <Column editable="true" title="Data Pagamento" type="java.lang.Object"/>
+                    <Column editable="true" title="Cliente" type="java.lang.Object"/>
+                    <Column editable="true" title="Pagamento" type="java.lang.Object"/>
+                    <Column editable="true" title="Status" type="java.lang.Object"/>
+                    <Column editable="true" title="Data Conclus&#xe3;o" type="java.lang.Object"/>
+                    <Column editable="true" title="Valor Total" type="java.lang.Object"/>
+                    <Column editable="true" title="Vendedor" type="java.lang.Object"/>
                   </Table>
                 </Property>
               </Properties>
@@ -288,17 +319,13 @@
         </Component>
         <Container class="javax.swing.JPanel" name="jPanel1">
           <Properties>
-            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-              <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
-                <LineBorder roundedCorners="true" thickness="2">
-                  <Color PropertyName="color" blue="cc" green="cc" red="cc" type="rgb"/>
-                </LineBorder>
-              </Border>
-            </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[575, 270]"/>
             </Property>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(jPanel1);"/>
+          </AuxValues>
 
           <Layout>
             <DimensionLayout dim="0">
@@ -369,7 +396,7 @@
                           <Component id="clearAmountLbl" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="amountValueLbl" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="50" max="32767" attributes="0"/>
+                      <EmptySpace pref="42" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>

@@ -1,5 +1,7 @@
 package br.com.devjf.salessync.view.forms;
 
+import br.com.devjf.salessync.util.ViewUtil;
+
 public class LogsForm extends javax.swing.JFrame {
     public LogsForm() {
         initComponents();
@@ -30,10 +32,12 @@ public class LogsForm extends javax.swing.JFrame {
         filterLbl.setText("Filtar");
 
         filterPanel.setPreferredSize(new java.awt.Dimension(917, 50));
+        ViewUtil.standardCornerRadius(filterPanel);
 
         statusField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         statusField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         statusField.setPreferredSize(new java.awt.Dimension(121, 30));
+        ViewUtil.standardCornerRadius(statusField);
 
         statusLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         statusLbl.setText("Data/Hora:");
@@ -44,6 +48,7 @@ public class LogsForm extends javax.swing.JFrame {
         userTypeField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         userTypeField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         userTypeField.setPreferredSize(new java.awt.Dimension(121, 30));
+        ViewUtil.standardCornerRadius(userTypeField);
 
         nameLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         nameLbl.setText("Usuário:");
@@ -51,6 +56,7 @@ public class LogsForm extends javax.swing.JFrame {
         nameField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         nameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         nameField.setPreferredSize(new java.awt.Dimension(121, 30));
+        ViewUtil.standardCornerRadius(nameField);
 
         javax.swing.GroupLayout filterPanelLayout = new javax.swing.GroupLayout(filterPanel);
         filterPanel.setLayout(filterPanelLayout);

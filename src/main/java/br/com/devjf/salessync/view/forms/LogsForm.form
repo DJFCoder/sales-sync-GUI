@@ -98,6 +98,9 @@
               <Dimension value="[917, 50]"/>
             </Property>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(filterPanel);"/>
+          </AuxValues>
 
           <Layout>
             <DimensionLayout dim="0">
@@ -153,6 +156,9 @@
                   <Dimension value="[121, 30]"/>
                 </Property>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(statusField);"/>
+              </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="statusLbl">
               <Properties>
@@ -180,6 +186,9 @@
                   <Dimension value="[121, 30]"/>
                 </Property>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(userTypeField);"/>
+              </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="nameLbl">
               <Properties>
@@ -199,6 +208,9 @@
                   <Dimension value="[121, 30]"/>
                 </Property>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(nameField);"/>
+              </AuxValues>
             </Component>
           </SubComponents>
         </Container>
