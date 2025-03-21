@@ -19,7 +19,7 @@ public class NewCustomerForm extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 710, Short.MAX_VALUE)
+            .addGap(0, 712, Short.MAX_VALUE)
         );
 
         pack();

@@ -1,6 +1,7 @@
 USE sales_sync;
 
 -- View for customer purchase history
+-- Update the vw_customer_history view to include subtotal and discount
 CREATE OR REPLACE VIEW vw_customer_history AS
 SELECT 
     c.id AS customer_id,
@@ -9,6 +10,8 @@ SELECT
     'SALE' AS record_type,
     s.id AS record_id,
     s.date AS record_date,
+    s.subtotal_amount,
+    s.discount_amount,
     s.total_amount,
     s.payment_method,
     NULL AS status
@@ -26,6 +29,8 @@ SELECT
     'SERVICE' AS record_type,
     so.id AS record_id,
     so.creation_date AS record_date,
+    NULL AS subtotal_amount,
+    NULL AS discount_amount,
     NULL AS total_amount,
     NULL AS payment_method,
     so.status

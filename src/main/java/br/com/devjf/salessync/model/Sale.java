@@ -23,11 +23,19 @@ public class Sale {
     @Column(name = "total_amount", nullable = false)
     private Double totalAmount;
     
+    @Column(name = "subtotal_amount")
+    private Double subtotalAmount;
+    
+    @Column(name = "discount_amount")
+    private Double discountAmount;
+    
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_method_id", nullable = false)
     private PaymentMethod paymentMethod;
+    
     @Column(name = "payment_date")
     private LocalDateTime paymentDate;
+    
     @Column(columnDefinition = "TEXT")
     private String notes;
     
@@ -58,6 +66,8 @@ public class Sale {
     // Constructors
     public Sale() {
         this.totalAmount = 0.0;
+        this.subtotalAmount = 0.0;
+        this.discountAmount = 0.0;
     }
     
     public Sale(Customer customer, PaymentMethod paymentMethod) {
@@ -65,13 +75,24 @@ public class Sale {
         this.paymentMethod = paymentMethod;
         this.date = LocalDateTime.now();
         this.totalAmount = 0.0;
+        this.subtotalAmount = 0.0;
+        this.discountAmount = 0.0;
     }
     
     // Methods
-    public Double calculateTotal() {
-        this.totalAmount = items.stream()
+    public Double calculateSubtotal() {
+        this.subtotalAmount = items.stream()
                 .mapToDouble(SaleItem::calculateSubtotal)
                 .sum();
+        return this.subtotalAmount;
+    }
+    
+    public Double calculateTotal() {
+        // Calculate subtotal first
+        calculateSubtotal();
+        
+        // Apply discount if any
+        this.totalAmount = this.subtotalAmount - (this.discountAmount != null ? this.discountAmount : 0.0);
         return this.totalAmount;
     }
     
@@ -185,4 +206,23 @@ public class Sale {
         public void setUser(User user) {
             this.user = user;
         }
+    
+    // Add getters and setters for the new fields
+    public Double getSubtotalAmount() {
+        return subtotalAmount;
+    }
+
+    public void setSubtotalAmount(Double subtotalAmount) {
+        this.subtotalAmount = subtotalAmount;
+    }
+
+    public Double getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setDiscountAmount(Double discountAmount) {
+        this.discountAmount = discountAmount;
+        // Recalculate total when discount changes
+        calculateTotal();
+    }
 }

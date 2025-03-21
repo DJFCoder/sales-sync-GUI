@@ -82,6 +82,8 @@ CREATE TABLE sales (
     date DATETIME NOT NULL,
     payment_method ENUM('CASH', 'CREDIT_CARD', 'DEBIT_CARD', 'BANK_TRANSFER', 'PIX', 'BANK_SLIP', 'PAYCHECK'),
     payment_date DATETIME,
+    subtotal_amount DECIMAL(10,2) NOT NULL,
+    discount_amount DECIMAL(10,2) DEFAULT 0.00,
     total_amount DECIMAL(10,2) NOT NULL,
     canceled BOOLEAN DEFAULT FALSE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
