@@ -1,6 +1,7 @@
 package br.com.devjf.salessync.view.forms;
 
 import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.view.MainAppView;
 
 public class SalesForm extends javax.swing.JFrame {
     public SalesForm() {
@@ -39,6 +40,12 @@ public class SalesForm extends javax.swing.JFrame {
         newSaleButton.setText("Nova Venda");
         newSaleButton.setPreferredSize(new java.awt.Dimension(150, 40));
         ViewUtil.standardCornerRadius(newSaleButton);
+        newSaleButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newSaleButtonActionPerformed(evt);
+            }
+        });
 
         deleteSaleButton.setBackground(new java.awt.Color(175, 76, 78));
         deleteSaleButton.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
@@ -122,6 +129,7 @@ public class SalesForm extends javax.swing.JFrame {
                 java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class
             };
 
+            @Override
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
@@ -180,7 +188,11 @@ public class SalesForm extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
+
+    private void newSaleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newSaleButtonActionPerformed
+        // Get the MainAppView instance
+        MainAppView.redirectToPanel(MainAppView.NEW_SALE_PANEL);
+    }//GEN-LAST:event_newSaleButtonActionPerformed
     // new SalesForm().setVisible(true);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

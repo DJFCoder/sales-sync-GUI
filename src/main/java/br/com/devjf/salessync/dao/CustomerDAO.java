@@ -2,14 +2,13 @@ package br.com.devjf.salessync.dao;
 
 import br.com.devjf.salessync.model.Customer;
 import br.com.devjf.salessync.util.HibernateUtil;
+import static br.com.devjf.salessync.util.HibernateUtil.getEntityManager;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
-
 import java.util.List;
 
 public class CustomerDAO implements DAO<Customer> {
-
     @Override
     public boolean save(Customer customer) {
         EntityManager em = HibernateUtil.getEntityManager();
@@ -85,7 +84,9 @@ public class CustomerDAO implements DAO<Customer> {
     public List<Customer> findAll() {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
-            TypedQuery<Customer> query = em.createQuery("SELECT c FROM Customer c", Customer.class);
+            TypedQuery<Customer> query = em.createQuery(
+                    "SELECT c FROM Customer c",
+                    Customer.class);
             return query.getResultList();
         } finally {
             em.close();
@@ -96,13 +97,62 @@ public class CustomerDAO implements DAO<Customer> {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
             TypedQuery<Customer> query = em.createQuery(
-                    "SELECT c FROM Customer c WHERE c.taxId = :taxId", Customer.class);
+                    "SELECT c FROM Customer c WHERE c.taxId = :taxId",
+                    Customer.class);
             query.setParameter("taxId", taxId);
             return query.getSingleResult();
         } catch (NoResultException e) {
             return null;
         } finally {
             em.close();
+        }
+    }
+
+    /**
+     * Find customers with pagination
+     *
+     * @param page The page number (starting from 0)
+     * @param pageSize The number of records per page
+     * @return List of customers for the specified page
+     */
+    public List<Customer> findWithPagination(int page, int pageSize) {
+        EntityManager em = HibernateUtil.getEntityManager();
+        try {
+            TypedQuery<Customer> query = em.createQuery(
+                    "SELECT c FROM Customer c ORDER BY c.name",
+                    Customer.class);
+            query.setFirstResult(page * pageSize);
+            query.setMaxResults(pageSize);
+            return query.getResultList();
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Find customers by name pattern with pagination
+     *
+     * @param namePattern The pattern to search for in customer names
+     * @param page The page number (starting from 0)
+     * @param pageSize The number of records per page
+     * @return List of customers matching the pattern for the specified page
+     */
+    public List<Customer> findByNameWithPagination(String namePattern, int page, int pageSize) {
+        EntityManager em = HibernateUtil.getEntityManager();
+        try {
+            TypedQuery<Customer> query = em.createQuery(
+                    "SELECT c FROM Customer c WHERE LOWER(c.name) LIKE LOWER(:pattern) ORDER BY c.name",
+                    Customer.class);
+            query.setParameter("pattern", "%" + namePattern + "%");
+            query.setFirstResult(page * pageSize);
+            query.setMaxResults(pageSize);
+            return query.getResultList();
+        } finally {
+            if (em != null) {
+                em.close();
+            }
         }
     }
 }

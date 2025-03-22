@@ -1,50 +1,56 @@
 package br.com.devjf.salessync.view.forms.newobjectforms;
 
 import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.HeadlessException;
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
+import java.util.concurrent.ExecutionException;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-
 import br.com.devjf.salessync.model.Customer;
 import br.com.devjf.salessync.model.PaymentMethod;
 import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.model.SaleItem;
 import br.com.devjf.salessync.model.User;
-import br.com.devjf.salessync.util.UserSession;
-import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.util.CustomerSelectionUtil;
 import br.com.devjf.salessync.util.TableButtonEditor;
 import br.com.devjf.salessync.util.TableButtonRenderer;
-import java.awt.HeadlessException;
+import br.com.devjf.salessync.util.UserSession;
+import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.view.MainAppView;
 
 public class NewSaleForm extends javax.swing.JFrame {
-    
     private DefaultTableModel tableModel;
-    private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-    
+    private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(
+            new Locale("pt",
+                    "BR"));
     // Sale object attributes
     private Sale saleToCreate;
     private Customer selectedCustomer;
     private final List<SaleItem> saleItems = new ArrayList<>();
     private User currentUser;
-    
+
     public NewSaleForm() {
         initComponents();
         setupTable();
         initializeSale();
-        
+        setCurrentDateInPaymentField();
         // Adicionar listener para o campo de desconto
-        discountField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+        discountField.getDocument().addDocumentListener(
+                new javax.swing.event.DocumentListener() {
             @Override
             public void insertUpdate(javax.swing.event.DocumentEvent e) {
                 updateTotals();
@@ -60,8 +66,17 @@ public class NewSaleForm extends javax.swing.JFrame {
                 updateTotals();
             }
         });
-        
         updateTotals();
+    }
+
+    // This method set the current date at paymentDate field
+    private void setCurrentDateInPaymentField() {
+        // Format current date as dd/MM/yyyy
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        Date currentDate = new Date();
+        String formattedDate = dateFormat.format(currentDate);
+        // Set the formatted date in the payment date field
+        paymentMethodField.setText(formattedDate);
     }
 
     /**
@@ -70,13 +85,11 @@ public class NewSaleForm extends javax.swing.JFrame {
     private void initializeSale() {
         // Reset the sale object
         saleToCreate = new Sale();
-        
         // Set default values
         saleToCreate.setDate(LocalDateTime.now());
         saleToCreate.setSubtotalAmount(0.0);
         saleToCreate.setDiscountAmount(0.0);
         saleToCreate.setTotalAmount(0.0);
-        
         // Get current logged-in user
         try {
             currentUser = UserSession.getInstance().getLoggedUser();
@@ -85,9 +98,10 @@ public class NewSaleForm extends javax.swing.JFrame {
             System.err.println("Error getting current user: " + e.getMessage());
         }
     }
-    
+
     /**
      * Prepare the sale object from form data
+     *
      * @return Sale object ready to be sent to controller
      */
     private Sale prepareSaleObject() {
@@ -95,19 +109,17 @@ public class NewSaleForm extends javax.swing.JFrame {
         if (saleToCreate == null) {
             initializeSale();
         }
-        
         // Set customer
         if (selectedCustomer != null) {
             saleToCreate.setCustomer(selectedCustomer);
         } else {
             // Handle case where customer is not selected
-            throw new IllegalStateException("Cliente deve ser selecionado para criar uma venda");
+            throw new IllegalStateException(
+                    "Cliente deve ser selecionado para criar uma venda");
         }
-        
         // Set payment method
         String selectedPaymentMethodStr = paymentMethodCmb.getSelectedItem().toString();
-        PaymentMethod paymentMethod;
-        
+        PaymentMethod paymentMethod = null;
         // Map the combo box values to PaymentMethod enum values
         switch (selectedPaymentMethodStr) {
             case "DINHEIRO":
@@ -132,37 +144,43 @@ public class NewSaleForm extends javax.swing.JFrame {
                 paymentMethod = PaymentMethod.PAYCHECK;
                 break;
             default:
-                throw new IllegalStateException("Forma de pagamento inválida");
+                JOptionPane.showMessageDialog(null,
+                        "Forma de Pagamento inválida.",
+                        "Pagamento não selecionado",
+                        JOptionPane.WARNING_MESSAGE);
+                break;
         }
-        
         saleToCreate.setPaymentMethod(paymentMethod);
-        
         // Set payment date if available
-        if (paymentMethodField.getValue() != null) {
+        String paymentDateStr = paymentMethodField.getText();
+        if (paymentDateStr != null && !paymentDateStr.trim().isEmpty()) {
             try {
-                // Convert the date from the field to LocalDateTime
-                Date paymentDate = (Date) paymentMethodField.getValue();
+                // Parse the date string in format dd/MM/yyyy
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                Date paymentDate = dateFormat.parse(paymentDateStr);
+                // Convert to LocalDateTime
                 saleToCreate.setPaymentDate(paymentDate.toInstant()
                         .atZone(ZoneId.systemDefault())
                         .toLocalDateTime());
-            } catch (Exception e) {
-                System.err.println("Error converting payment date: " + e.getMessage());
+            } catch (ParseException e) {
+                System.err.println(
+                        "Error converting payment date: " + e.getMessage());
+                // You might want to show an error message to the user here
             }
         }
-        
         // Create sale items from table data
         saleItems.clear();
         for (int i = 0; i < tableModel.getRowCount(); i++) {
-            String description = (String) tableModel.getValueAt(i, 0);
-            
+            String description = (String) tableModel.getValueAt(i,
+                    0);
             // Skip empty rows
             if (description == null || description.trim().isEmpty()) {
                 continue;
             }
-            
             // Get quantity
             Integer quantity = 1;
-            Object quantityObj = tableModel.getValueAt(i, 1);
+            Object quantityObj = tableModel.getValueAt(i,
+                    1);
             if (quantityObj instanceof Integer) {
                 quantity = (Integer) quantityObj;
             } else if (quantityObj instanceof String) {
@@ -172,45 +190,41 @@ public class NewSaleForm extends javax.swing.JFrame {
                     // Use default quantity of 1
                 }
             }
-            
             // Get unit price
             Double unitPrice = 0.0;
-            Object priceObj = tableModel.getValueAt(i, 2);
+            Object priceObj = tableModel.getValueAt(i,
+                    2);
             if (priceObj instanceof Double) {
                 unitPrice = (Double) priceObj;
             } else if (priceObj instanceof String) {
                 try {
-                    String priceStr = priceObj.toString().replaceAll("[^\\d,.]", "").replace(",", ".");
+                    String priceStr = priceObj.toString().replaceAll("[^\\d,.]",
+                            "").replace(",",
+                                    ".");
                     unitPrice = Double.valueOf(priceStr);
                 } catch (NumberFormatException e) {
                     // Use default price of 0.0
                 }
             }
-            
             // Create and add the sale item
             SaleItem item = new SaleItem();
             item.setDescription(description.trim());
             item.setQuantity(quantity);
             item.setUnitPrice(unitPrice);
-            
             saleItems.add(item);
         }
-        
         // Add all items to the sale
         saleToCreate.getItems().clear();
         for (SaleItem item : saleItems) {
             saleToCreate.addItem(item);
         }
-        
         // Set subtotal, discount, and total amounts
         double subtotal = calculateSubtotal();
         double discount = getDiscount();
         double total = subtotal - discount;
-        
         saleToCreate.setSubtotalAmount(subtotal);
         saleToCreate.setDiscountAmount(discount);
         saleToCreate.setTotalAmount(total);
-        
         return saleToCreate;
     }
 
@@ -219,11 +233,9 @@ public class NewSaleForm extends javax.swing.JFrame {
         double subtotal = calculateSubtotal();
         double discount = getDiscount();
         double total = subtotal - discount;
-
         // Atualizar os labels
         subtotalLbl.setText("Subtotal: " + currencyFormat.format(subtotal));
         totalLbl.setText("Total: " + currencyFormat.format(total));
-        
         // Update sale object if it exists
         if (saleToCreate != null) {
             saleToCreate.setSubtotalAmount(subtotal);
@@ -231,19 +243,22 @@ public class NewSaleForm extends javax.swing.JFrame {
             saleToCreate.setTotalAmount(total);
         }
     }
-    
+
     // Método para calcular o subtotal de todas as linhas
     private double calculateSubtotal() {
         double sum = 0.0;
         for (int i = 0; i < tableModel.getRowCount(); i++) {
-            Object value = tableModel.getValueAt(i, 3); // Coluna do subtotal
+            Object value = tableModel.getValueAt(i,
+                    3); // Coluna do subtotal
             if (value != null) {
                 if (value instanceof Double) {
                     sum += (Double) value;
                 } else if (value instanceof String) {
                     try {
                         // Remover símbolos de moeda e converter para double
-                        String valueStr = value.toString().replaceAll("[^\\d,.]", "").replace(",", ".");
+                        String valueStr = value.toString().replaceAll("[^\\d,.]",
+                                "").replace(",",
+                                        ".");
                         sum += Double.parseDouble(valueStr);
                     } catch (NumberFormatException e) {
                         // Ignorar erros de formato
@@ -262,23 +277,25 @@ public class NewSaleForm extends javax.swing.JFrame {
                 return 0.0;
             }
             // Remover símbolos de moeda e converter para double
-            discountText = discountText.replaceAll("[^\\d,.]", "").replace(",", ".");
+            discountText = discountText.replaceAll("[^\\d,.]",
+                    "").replace(",",
+                            ".");
             return Double.parseDouble(discountText);
         } catch (NumberFormatException e) {
             return 0.0;
         }
     }
-    
+
     private void setupTable() {
         // Configurar o modelo da tabela
         tableModel = new DefaultTableModel(
-            new Object [][] {},
-            new String [] {"Descrição", "Quantidade", "Preço Unitário", "Subtotal", "Ações"}
+                new Object[][]{},
+                new String[]{"Descrição", "Quantidade", "Preço Unitário", "Subtotal", "Ações"}
         ) {
-            Class[] types = new Class [] {
+            Class[] types = new Class[]{
                 String.class, Integer.class, Double.class, Double.class, Object.class
             };
-            boolean[] canEdit = new boolean [] {
+            boolean[] canEdit = new boolean[]{
                 true, true, true, false, true
             };
 
@@ -292,21 +309,20 @@ public class NewSaleForm extends javax.swing.JFrame {
                 return canEdit[columnIndex];
             }
         };
-        
         newSaleTable.setModel(tableModel);
-        
         // Configurar o renderizador e editor para a coluna de ações (botão remover)
         TableColumn actionColumn = newSaleTable.getColumnModel().getColumn(4);
         actionColumn.setCellRenderer(new TableButtonRenderer("Remover"));
-        actionColumn.setCellEditor(new TableButtonEditor("Remover", tableModel, 
-                                   () -> updateTotals(), // ação após remover (se tabela não estiver vazia)
-                                   () -> addNewRow()     // ação se tabela ficar vazia
-                                  ));
-        
+        actionColumn.setCellEditor(new TableButtonEditor("Remover",
+                tableModel,
+                () -> updateTotals(), // ação após remover (se tabela não estiver vazia)
+                () -> addNewRow() // ação se tabela ficar vazia
+        ));
         // Configurar o renderizador para a coluna de preço unitário e subtotal
-        newSaleTable.getColumnModel().getColumn(2).setCellRenderer(new CurrencyRenderer());
-        newSaleTable.getColumnModel().getColumn(3).setCellRenderer(new CurrencyRenderer());
-        
+        newSaleTable.getColumnModel().getColumn(2).setCellRenderer(
+                new CurrencyRenderer());
+        newSaleTable.getColumnModel().getColumn(3).setCellRenderer(
+                new CurrencyRenderer());
         // Adicionar listener para atualizar o subtotal quando quantidade ou preço mudar
         tableModel.addTableModelListener(e -> {
             // Verificar se a linha ainda existe antes de tentar atualizar
@@ -315,49 +331,48 @@ public class NewSaleForm extends javax.swing.JFrame {
                 updateSubtotal(row);
             }
         });
-        
         // Ajustar larguras das colunas
         newSaleTable.getColumnModel().getColumn(0).setPreferredWidth(300); // Descrição
         newSaleTable.getColumnModel().getColumn(1).setPreferredWidth(100); // Quantidade
         newSaleTable.getColumnModel().getColumn(2).setPreferredWidth(150); // Preço Unitário
         newSaleTable.getColumnModel().getColumn(3).setPreferredWidth(150); // Subtotal
         newSaleTable.getColumnModel().getColumn(4).setPreferredWidth(100); // Ações
-        
         // Adicionar uma linha inicial à tabela
         addNewRow();
-        
         // Inicializar os valores
         updateTotals();
     }
-    
+
     private void updateSubtotal(int row) {
-        if (row < 0 || row >= tableModel.getRowCount()) return;
-        
+        if (row < 0 || row >= tableModel.getRowCount()) {
+            return;
+        }
         try {
-            Object quantityObj = tableModel.getValueAt(row, 1);
-            Object priceObj = tableModel.getValueAt(row, 2);
-            
+            Object quantityObj = tableModel.getValueAt(row,
+                    1);
+            Object priceObj = tableModel.getValueAt(row,
+                    2);
             if (quantityObj != null && priceObj != null) {
                 int quantity = 0;
                 double price = 0.0;
-                
                 if (quantityObj instanceof Integer) {
                     quantity = (Integer) quantityObj;
                 } else if (quantityObj instanceof String) {
                     quantity = Integer.parseInt(quantityObj.toString());
                 }
-                
                 if (priceObj instanceof Double) {
                     price = (Double) priceObj;
                 } else if (priceObj instanceof String) {
                     // Remover símbolos de moeda e converter para double
-                    String priceStr = priceObj.toString().replaceAll("[^\\d,.]", "").replace(",", ".");
+                    String priceStr = priceObj.toString().replaceAll("[^\\d,.]",
+                            "").replace(",",
+                                    ".");
                     price = Double.parseDouble(priceStr);
                 }
-                
                 double subtotal = quantity * price;
-                tableModel.setValueAt(subtotal, row, 3);
-                
+                tableModel.setValueAt(subtotal,
+                        row,
+                        3);
                 // Atualizar os totais após modificar o subtotal de uma linha
                 updateTotals();
             }
@@ -365,25 +380,30 @@ public class NewSaleForm extends javax.swing.JFrame {
             // Ignorar erros de formato
         }
     }
-    
+
     private void addNewRow() {
         tableModel.addRow(new Object[]{"", 1, 0.0, 0.0, null});
         updateTotals();
     }
-    
+
     // Renderizador para valores monetários
     class CurrencyRenderer extends DefaultTableCellRenderer {
         public CurrencyRenderer() {
             setHorizontalAlignment(SwingConstants.RIGHT);
         }
-        
+
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
             if (value instanceof Double) {
                 value = currencyFormat.format(value);
             }
-            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return super.getTableCellRendererComponent(table,
+                    value,
+                    isSelected,
+                    hasFocus,
+                    row,
+                    column);
         }
     }
 
@@ -440,21 +460,29 @@ public class NewSaleForm extends javax.swing.JFrame {
         paymentDateLbl.setText("Data de Pagamento:");
 
         nameLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        nameLbl.setText("Nome:");
+        nameLbl.setText("Cliente:");
 
+        nameField.setEditable(false);
         nameField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         nameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        nameField.setPreferredSize(new java.awt.Dimension(121, 30));
+        nameField.setFocusable(false);
+        nameField.setPreferredSize(new java.awt.Dimension(181, 30));
         ViewUtil.standardCornerRadius(nameField);
 
         findCustomerBtn.setBackground(new java.awt.Color(96, 125, 139));
         findCustomerBtn.setForeground(new java.awt.Color(255, 255, 255));
         findCustomerBtn.setText("Buscar");
-        findCustomerBtn.setPreferredSize(new java.awt.Dimension(75, 30));
+        findCustomerBtn.setPreferredSize(new java.awt.Dimension(85, 30));
         ViewUtil.standardCornerRadius(findCustomerBtn);
+        findCustomerBtn.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                findCustomerBtnActionPerformed(evt);
+            }
+        });
 
         paymentMethodCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecione", "DINHEIRO", "CRÉDITO", "DÉBITO", "TRANSFERÊNCIA", "PIX", "BOLETO", "CHEQUE" }));
-        paymentMethodCmb.setPreferredSize(new java.awt.Dimension(140, 30));
+        paymentMethodCmb.setPreferredSize(new java.awt.Dimension(164, 30));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel1.setText("Informações da Venda");
@@ -465,7 +493,7 @@ public class NewSaleForm extends javax.swing.JFrame {
             ex.printStackTrace();
         }
         paymentMethodField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        paymentMethodField.setPreferredSize(new java.awt.Dimension(120, 30));
+        paymentMethodField.setPreferredSize(new java.awt.Dimension(114, 30));
         ViewUtil.standardCornerRadius(paymentMethodField);
 
         javax.swing.GroupLayout sellInformationPnlLayout = new javax.swing.GroupLayout(sellInformationPnl);
@@ -474,23 +502,23 @@ public class NewSaleForm extends javax.swing.JFrame {
             sellInformationPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(sellInformationPnlLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(sellInformationPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.CENTER, sellInformationPnlLayout.createSequentialGroup()
+                .addGroup(sellInformationPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addGroup(sellInformationPnlLayout.createSequentialGroup()
                         .addComponent(nameLbl)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(findCustomerBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(paymentMethodLbl)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(paymentMethodCmb, 0, 186, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(paymentMethodCmb, 0, 156, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(paymentDateLbl)
-                        .addGap(1, 1, 1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(paymentMethodField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.CENTER))
-                .addContainerGap())
+                    .addComponent(jLabel1))
+                .addGap(7, 7, 7))
         );
         sellInformationPnlLayout.setVerticalGroup(
             sellInformationPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -651,58 +679,100 @@ public class NewSaleForm extends javax.swing.JFrame {
         try {
             // Validate form data
             if (selectedCustomer == null) {
-                JOptionPane.showMessageDialog(this, 
-                    "Por favor, selecione um cliente para a venda.", 
-                    "Cliente não selecionado", 
-                    JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "Por favor, selecione um cliente para a venda.",
+                        "Cliente não selecionado",
+                        JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            
+            // Validate payment method
+            String selectedPaymentMethodStr = paymentMethodCmb.getSelectedItem().toString();
+            if ("Selecione".equals(selectedPaymentMethodStr)) {
+                JOptionPane.showMessageDialog(this,
+                        "Por favor, selecione uma forma de pagamento.",
+                        "Forma de pagamento não selecionada",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             // Check if there are valid items in the table
             boolean hasValidItems = false;
             for (int i = 0; i < tableModel.getRowCount(); i++) {
-                String description = (String) tableModel.getValueAt(i, 0);
+                String description = (String) tableModel.getValueAt(i,
+                        0);
                 if (description != null && !description.trim().isEmpty()) {
                     hasValidItems = true;
                     break;
                 }
             }
-            
             if (!hasValidItems) {
-                JOptionPane.showMessageDialog(this, 
-                    "Por favor, adicione pelo menos um item à venda.", 
-                    "Itens não adicionados", 
-                    JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "Por favor, adicione pelo menos um item à venda.",
+                        "Itens não adicionados",
+                        JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            
             // Prepare the sale object
             Sale sale = prepareSaleObject();
-            
             // SaleController controller = new SaleController();
             // controller.createSale(sale);
-            
             // Show success message
-            JOptionPane.showMessageDialog(this, 
-                "Venda registrada com sucesso!", 
-                "Sucesso", 
-                JOptionPane.INFORMATION_MESSAGE);
-            
-            // Close the form or reset it for a new sale
-            dispose();
-            
+            JOptionPane.showMessageDialog(this,
+                    "Venda registrada com sucesso!",
+                    "Sucesso",
+                    JOptionPane.INFORMATION_MESSAGE);
+            // Return to the SalesForm panel in MainAppView
+                MainAppView.redirectToPanel(MainAppView.SALES_PANEL);
         } catch (HeadlessException e) {
-            JOptionPane.showMessageDialog(this, 
-                "Erro ao registrar a venda:\n" + e.getMessage(), 
-                "Erro", 
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Erro ao registrar a venda:\n" + e.getMessage(),
+                    "Erro",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_newSaleBtnActionPerformed
 
     private void cancelSaleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelSaleButtonActionPerformed
-        
+        // Return to the SalesForm panel in MainAppView
+        MainAppView.redirectToPanel(MainAppView.SALES_PANEL);
     }//GEN-LAST:event_cancelSaleButtonActionPerformed
-    
+
+    private void findCustomerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findCustomerBtnActionPerformed
+        // Disable the button and show wait cursor to indicate processing
+        findCustomerBtn.setEnabled(false);
+        setCursor(Cursor.getPredefinedCursor(
+                Cursor.WAIT_CURSOR));
+        // Use SwingWorker to perform database operation in background
+        SwingWorker<Customer, Void> worker = new SwingWorker<Customer, Void>() {
+            @Override
+            protected Customer doInBackground() throws Exception {
+                // Use the utility class to select a customer
+                return CustomerSelectionUtil.selectCustomer(NewSaleForm.this);
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    // Get the selected customer from the background task
+                    Customer customer = get();
+                    // Update the form if a customer was selected
+                    if (customer != null) {
+                        selectedCustomer = customer;
+                        nameField.setText(selectedCustomer.getName());
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    JOptionPane.showMessageDialog(NewSaleForm.this,
+                            "Erro ao buscar cliente: " + e.getMessage(),
+                            "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                } finally {
+                    // Restore cursor and enable button regardless of outcome
+                    setCursor(java.awt.Cursor.getDefaultCursor());
+                    findCustomerBtn.setEnabled(true);
+                }
+            }
+        };
+        // Start the background task
+        worker.execute();
+    }//GEN-LAST:event_findCustomerBtnActionPerformed
     // new NewSaleForm().setVisible(true);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -1,3 +1,6 @@
+-- Drop existing database if it exists
+DROP DATABASE IF EXISTS sales_sync;
+
 -- Create SalesSync Database
 CREATE DATABASE IF NOT EXISTS sales_sync;
 USE sales_sync;
@@ -18,12 +21,6 @@ CREATE TABLE user_types (
     id INT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE
 );
-
--- Insert user types
-INSERT INTO user_types (id, name) VALUES
-(0, 'ADMIN'),
-(1, 'OWNER'),
-(2, 'EMPLOYEE');
 
 -- Create users table
 CREATE TABLE users (
@@ -46,7 +43,6 @@ CREATE TABLE customers (
     email VARCHAR(100),
     phone VARCHAR(20),
     address VARCHAR(255),
-    registration_date DATE NOT NULL,
     notes TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -128,19 +124,8 @@ CREATE TABLE system_logs (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
--- Create default admin user (password: @devjf123admin)
-INSERT INTO users (name, login, password, user_type_id) VALUES
-('Dev_JF', 'admin', '$2a$12$hVYhdhpdB0QYdu/TJJia/e4yboPMav1s9YFLNoRfBVwYtO6oPex1.', 0);
-
--- Insert default expense categories
-INSERT INTO expense_categories (name, description) VALUES 
-('Utilidades', 'Eletricidade, água, internet, etc.'),
-('Aluguel', 'Aluguel de escritório ou loja'),
-('Salários', 'Salários dos funcionários'),
-('Suprimentos', 'Material de escritório e suprimentos'),
-('Marketing', 'Despesas com publicidade e marketing');
-
 -- Create indexes for better performance
+CREATE INDEX idx_customers_name ON customers(name);
 CREATE INDEX idx_sales_customer ON sales(customer_id);
 CREATE INDEX idx_sales_user ON sales(user_id);
 CREATE INDEX idx_sales_date ON sales(date);
@@ -166,7 +151,7 @@ CREATE INDEX idx_service_orders_creation_date ON service_orders(creation_date);
 
 -- Create views for common queries
 
--- View for customer purchase history (RF03 - visualização do histórico de compras e serviços do cliente)
+-- View for customer purchase history
 CREATE OR REPLACE VIEW vw_customer_history AS
 SELECT 
     c.id AS customer_id,
@@ -175,6 +160,8 @@ SELECT
     'SALE' AS record_type,
     s.id AS record_id,
     s.date AS record_date,
+    s.subtotal_amount,
+    s.discount_amount,
     s.total_amount,
     s.payment_method,
     NULL AS status
@@ -192,6 +179,8 @@ SELECT
     'SERVICE' AS record_type,
     so.id AS record_id,
     so.creation_date AS record_date,
+    NULL AS subtotal_amount,
+    NULL AS discount_amount,
     NULL AS total_amount,
     NULL AS payment_method,
     so.status
@@ -200,7 +189,7 @@ FROM
 JOIN 
     service_orders so ON c.id = so.customer_id;
 
--- View for daily sales report (RF07 - relatório balancete diário)
+-- View for daily sales report
 CREATE OR REPLACE VIEW vw_daily_sales_report AS
 SELECT 
     DATE(s.date) AS sale_date,
@@ -215,7 +204,7 @@ WHERE
 GROUP BY 
     DATE(s.date), s.payment_method;
 
--- View for daily expenses report (RF07 - relatório balancete diário)
+-- View for daily expenses report
 CREATE OR REPLACE VIEW vw_daily_expenses_report AS
 SELECT 
     e.date AS expense_date,
@@ -229,7 +218,7 @@ JOIN
 GROUP BY 
     e.date, ec.name;
 
--- View for daily balance (RF07 - relatório balancete diário)
+-- View for daily balance
 CREATE OR REPLACE VIEW vw_daily_balance AS
 SELECT 
     COALESCE(s.sale_date, e.expense_date) AS report_date,
@@ -255,7 +244,7 @@ FULL OUTER JOIN
      GROUP BY 
         date) e ON s.sale_date = e.expense_date;
 
--- View for service orders by status (RF06 - consulta de ordens de serviço por status)
+-- View for service orders by status
 CREATE OR REPLACE VIEW vw_service_orders_by_status AS
 SELECT 
     so.status,
@@ -268,7 +257,7 @@ FROM
 GROUP BY 
     so.status;
 
--- View for monthly sales summary (RF07 - relatório balancete mensal)
+-- View for monthly sales summary
 CREATE OR REPLACE VIEW vw_monthly_sales_summary AS
 SELECT 
     YEAR(s.date) AS year,
@@ -286,7 +275,7 @@ WHERE
 GROUP BY 
     YEAR(s.date), MONTH(s.date);
 
--- View for monthly expenses summary (RF07 - relatório balancete mensal)
+-- View for monthly expenses summary
 CREATE OR REPLACE VIEW vw_monthly_expenses_summary AS
 SELECT 
     YEAR(e.date) AS year,
@@ -302,7 +291,7 @@ JOIN
 GROUP BY 
     YEAR(e.date), MONTH(e.date), ec.name;
 
--- View for annual financial summary (RF07 - relatório balancete anual)
+-- View for annual financial summary
 CREATE OR REPLACE VIEW vw_annual_financial_summary AS
 SELECT 
     COALESCE(s.year, e.year) AS report_year,
@@ -333,13 +322,13 @@ FULL OUTER JOIN
      GROUP BY 
         YEAR(date)) e ON s.year = e.year;
 
--- View for user activity log (RF02 - registro de logs de acesso e ações)
+-- View for user activity log
 CREATE OR REPLACE VIEW vw_user_activity_log AS
 SELECT 
     u.id AS user_id,
     u.name AS user_name,
     u.login,
-    u.type AS user_type,
+    ut.name AS user_type,
     sl.date_time,
     sl.action,
     sl.details
@@ -347,10 +336,12 @@ FROM
     system_logs sl
 JOIN 
     users u ON sl.user_id = u.id
+JOIN
+    user_types ut ON u.user_type_id = ut.id
 ORDER BY 
     sl.date_time DESC;
 
--- View for pending service orders (RF06 - consulta de ordens de serviço por status)
+-- View for pending service orders
 CREATE OR REPLACE VIEW vw_pending_service_orders AS
 SELECT 
     so.id,
@@ -359,7 +350,7 @@ SELECT
     so.description,
     so.creation_date,
     so.completion_date,
-    DATEDIFF(so.completion_date, CURRENT_DATE) AS days_remaining,
+    DATEDIFF(COALESCE(so.completion_date, CURRENT_DATE), CURRENT_DATE) AS days_remaining,
     so.status
 FROM 
     service_orders so

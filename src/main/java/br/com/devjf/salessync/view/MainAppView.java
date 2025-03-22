@@ -1,6 +1,11 @@
 package br.com.devjf.salessync.view;
 
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -17,117 +22,152 @@ import br.com.devjf.salessync.view.forms.ReportsForm;
 import br.com.devjf.salessync.view.forms.SalesForm;
 import br.com.devjf.salessync.view.forms.ServiceOrdersForm;
 import br.com.devjf.salessync.view.forms.UsersForm;
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.util.HashMap;
-import java.util.Map;
+import br.com.devjf.salessync.view.forms.newobjectforms.NewCustomerForm;
+import br.com.devjf.salessync.view.forms.newobjectforms.NewExpenseForm;
+import br.com.devjf.salessync.view.forms.newobjectforms.NewSaleForm;
+import br.com.devjf.salessync.view.forms.newobjectforms.NewServiceOrderForm;
+import br.com.devjf.salessync.view.forms.newobjectforms.NewUserForm;
 
 public class MainAppView extends javax.swing.JFrame {
+    // Singleton instance
+    private static MainAppView instance;
     private static final String DASHBOARD_PANEL = "Dashboard";
-    private static final String SALES_PANEL = "Vendas";
-    private static final String CUSTOMERS_PANEL = "Clientes";
-    private static final String SERVICE_ORDERS_PANEL = "Ordens de Serviço";
+    public static final String SALES_PANEL = "Vendas";
+    public static final String CUSTOMERS_PANEL = "Clientes";
+    public static final String SERVICE_ORDERS_PANEL = "Ordens de Serviço";
     private static final String EXPENSES_PANEL = "Despesas";
     private static final String REPORTS_PANEL = "Relatórios";
     private static final String USERS_PANEL = "Usuários";
     private static final String SYSTEM_LOGS_PANEL = "Logs do Sistema";
-    
+    public static final String NEW_SALE_PANEL = "Cadastrar Venda";
+    public static final String NEW_CUSTOMER_PANEL = "Cadastrar Cliente";
+    public static final String NEW_SO_PANEL = "Cadastrar Ordem";
+    public static final String NEW_EXPENSE_PANEL = "Cadastrar Despesa";
+    public static final String NEW_USER_PANEL = "Cadastrar Usuário";
+
     public MainAppView() {
         initComponents();
+        // Set this instance as the singleton instance
+        instance = this;
         initPanels();
         setupListeners();
     }
-    
+
+    /**
+     * Updates the title label to match the current panel
+     *
+     * @param panelKey The key of the current panel
+     */
+    public void updateTitle(String panelKey) {
+        titleLbl.setText(panelKey);
+    }
+
+    /**
+     * Get the singleton instance of MainAppView
+     *
+     * @return The MainAppView instance
+     */
+    public static MainAppView getInstance() {
+        return instance;
+    }
     // Adicione esta variável de instância para implementar lazy loading
     private final Map<String, JPanel> loadedPanels = new HashMap<>();
-    
+
     private void initPanels() {
         CardLayout cardLayout = (CardLayout) selectedPanel.getLayout();
-        
         // Inicializa apenas o painel inicial (Dashboard) para melhorar o tempo de inicialização
         try {
             // Carrega apenas o Dashboard inicialmente
             JPanel dashboardPanel = createPanelFromForm(new DashboardForm());
-            selectedPanel.add(dashboardPanel, DASHBOARD_PANEL);
-            loadedPanels.put(DASHBOARD_PANEL, dashboardPanel);
-            
+            selectedPanel.add(dashboardPanel,
+                    DASHBOARD_PANEL);
+            loadedPanels.put(DASHBOARD_PANEL,
+                    dashboardPanel);
             // Mostra o painel inicial
-            cardLayout.show(selectedPanel, DASHBOARD_PANEL);
+            cardLayout.show(selectedPanel,
+                    DASHBOARD_PANEL);
         } catch (Exception e) {
-            System.err.println("Erro ao inicializar painel inicial: " + e.getMessage());
+            System.err.println(
+                    "Erro ao inicializar painel inicial: " + e.getMessage());
         }
     }
-    
+
     private void navigateToPanel(String panelName) {
         CardLayout cardLayout = (CardLayout) selectedPanel.getLayout();
         String panelKey = getPanelKeyFromName(panelName);
-        
         // Verifica se o painel já foi carregado
         if (!loadedPanels.containsKey(panelKey)) {
             try {
                 // Carrega o painel sob demanda
                 JPanel newPanel = createPanelForKey(panelKey);
                 if (newPanel != null) {
-                    selectedPanel.add(newPanel, panelKey);
-                    loadedPanels.put(panelKey, newPanel);
-                    
+                    selectedPanel.add(newPanel,
+                            panelKey);
+                    loadedPanels.put(panelKey,
+                            newPanel);
                     // Força o layout a ser calculado imediatamente
                     selectedPanel.validate();
                 }
             } catch (Exception e) {
-                System.err.println("Erro ao carregar painel " + panelName + ": " + e.getMessage());
+                System.err.println(
+                        "Erro ao carregar painel " + panelName + ": " + e.getMessage());
                 return;
             }
         }
-        
         // Exibe o painel
-        cardLayout.show(selectedPanel, panelKey);
-        
+        cardLayout.show(selectedPanel,
+                panelKey);
         // Força a revalidação do layout após a exibição
         SwingUtilities.invokeLater(() -> {
             selectedPanel.revalidate();
             selectedPanel.repaint();
         });
     }
-    
+
     private String getPanelKeyFromName(String panelName) {
         switch (panelName) {
-            case "Dashboard": return DASHBOARD_PANEL;
-            case "Vendas": return SALES_PANEL;
-            case "Clientes": return CUSTOMERS_PANEL;
-            case "Ordens de Serviço": return SERVICE_ORDERS_PANEL;
-            case "Despesas": return EXPENSES_PANEL;
-            case "Relatórios": return REPORTS_PANEL;
-            case "Usuários": return USERS_PANEL;
-            case "Logs do Sistema": return SYSTEM_LOGS_PANEL;
-            default: return DASHBOARD_PANEL;
+            case "Dashboard":
+                return DASHBOARD_PANEL;
+            case "Vendas":
+                return SALES_PANEL;
+            case "Clientes":
+                return CUSTOMERS_PANEL;
+            case "Ordens de Serviço":
+                return SERVICE_ORDERS_PANEL;
+            case "Despesas":
+                return EXPENSES_PANEL;
+            case "Relatórios":
+                return REPORTS_PANEL;
+            case "Usuários":
+                return USERS_PANEL;
+            case "Logs do Sistema":
+                return SYSTEM_LOGS_PANEL;
+            default:
+                return DASHBOARD_PANEL;
         }
     }
-    
+
     private JPanel createPanelFromForm(javax.swing.JFrame form) {
         // Configura o formulário para não fechar a aplicação quando fechado
-        form.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        
+        form.setDefaultCloseOperation(
+                javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         // Força o layout a ser calculado antes de adicionar ao painel
         form.pack();
-        
         // Obtém o contentPane do formulário
         Container contentPane = form.getContentPane();
-        
         // Remove o contentPane do formulário para poder adicioná-lo ao nosso painel
         form.setContentPane(new javax.swing.JPanel());
-        
         // Cria um novo painel com as dimensões corretas
         JPanel panel = new JPanel();
         panel.setLayout(new java.awt.BorderLayout());
-        panel.setPreferredSize(new java.awt.Dimension(995, 728));
-        
+        panel.setPreferredSize(new java.awt.Dimension(995,
+                728));
         // Adiciona o conteúdo do formulário ao painel
-        panel.add(contentPane, BorderLayout.CENTER);
-        
+        panel.add(contentPane,
+                BorderLayout.CENTER);
         return panel;
     }
-    
+
     private JPanel createPanelForKey(String panelKey) {
         try {
             switch (panelKey) {
@@ -147,11 +187,23 @@ public class MainAppView extends javax.swing.JFrame {
                     return createPanelFromForm(new UsersForm());
                 case SYSTEM_LOGS_PANEL:
                     return createPanelFromForm(new LogsForm());
+                // New object forms
+                case NEW_SALE_PANEL:
+                    return createPanelFromForm(new NewSaleForm());
+                case NEW_CUSTOMER_PANEL:
+                    return createPanelFromForm(new NewCustomerForm());
+                case NEW_SO_PANEL:
+                    return createPanelFromForm(new NewServiceOrderForm());
+                case NEW_EXPENSE_PANEL:
+                    return createPanelFromForm(new NewExpenseForm());
+                case NEW_USER_PANEL:
+                    return createPanelFromForm(new NewUserForm());
                 default:
                     return null;
             }
         } catch (Exception e) {
-            System.err.println("Erro ao criar painel " + panelKey + ": " + e.getMessage());
+            System.err.println(
+                    "Erro ao criar painel " + panelKey + ": " + e.getMessage());
             return null;
         }
     }
@@ -162,16 +214,10 @@ public class MainAppView extends javax.swing.JFrame {
             if (!e.getValueIsAdjusting()) {
                 String selectedItem = selectionList.getSelectedValue();
                 titleLbl.setText(selectedItem);
-                
                 // Navega para o painel correspondente
                 navigateToPanel(selectedItem);
             }
         });
-    }
-    
-    protected void panelCornerRadius(JPanel panel) {
-        panel.putClientProperty("FlatLaf.style",
-                "arc: 10");
     }
 
     @SuppressWarnings("unchecked")
@@ -299,6 +345,108 @@ public class MainAppView extends javax.swing.JFrame {
                 return "EMPL";
             default:
                 return "???";
+        }
+    }
+
+    /**
+     * Método unificado para navegar entre painéis no CardLayout
+     *
+     * @param panelKey Chave do painel para o qual navegar
+     */
+    public static void redirectToPanel(String panelKey) {
+        MainAppView instance = MainAppView.getInstance();
+        if (instance == null) {
+            System.err.println("Erro: Instância do MainAppView não encontrada");
+            return;
+        }
+        CardLayout cardLayout = (CardLayout) instance.selectedPanel.getLayout();
+        // Verifica se o painel já está carregado
+        if (instance.loadedPanels.containsKey(panelKey)) {
+            // Se estiver, apenas mostra o painel
+            cardLayout.show(instance.selectedPanel,
+                    panelKey);
+        } else {
+            // Se não estiver, tenta criar o painel
+            try {
+                JPanel panel = instance.createPanelForKey(panelKey);
+                if (panel != null) {
+                    instance.selectedPanel.add(panel,
+                            panelKey);
+                    instance.loadedPanels.put(panelKey,
+                            panel);
+                    cardLayout.show(instance.selectedPanel,
+                            panelKey);
+                }
+            } catch (Exception e) {
+                System.err.println(
+                        "Erro ao navegar para o painel: " + e.getMessage());
+            }
+        }
+        // Atualiza a interface
+        instance.selectedPanel.revalidate();
+        instance.selectedPanel.repaint();
+        // Atualiza o título
+        instance.updateTitle(panelKey);
+    }
+
+    /**
+     * Add a panel to the CardLayout
+     *
+     * @param panel The panel to add
+     * @param name The name to identify the panel
+     */
+    public void addPanelToCardLayout(java.awt.Container panel, String name) {
+        // Convert Container to JPanel if needed
+        javax.swing.JPanel jpanel;
+        if (panel instanceof javax.swing.JPanel) {
+            jpanel = (JPanel) panel;
+        } else {
+            // Create a new JPanel and add the container's components
+            jpanel = new javax.swing.JPanel();
+            jpanel.setLayout(new java.awt.BorderLayout());
+            // Add all components from the container
+            Component[] components = panel.getComponents();
+            for (Component component : components) {
+                jpanel.add(component);
+            }
+        }
+        // Add the panel to the CardLayout
+        selectedPanel.add(jpanel,
+                name);
+        // Store the panel in the loadedPanels map
+        loadedPanels.put(name,
+                jpanel);
+    }
+
+    /**
+     * Show a panel in the CardLayout
+     *
+     * @param name The name of the panel to show
+     */
+    public void showPanel(String name) {
+        java.awt.CardLayout cardLayout = (java.awt.CardLayout) selectedPanel.getLayout();
+        cardLayout.show(selectedPanel,
+                name);
+        // Update the UI
+        selectedPanel.revalidate();
+        selectedPanel.repaint();
+    }
+
+    /**
+     * Updates the selection in the side menu list
+     * 
+     * @param itemName The name of the item to select
+     */
+    public static void updateSelectionList(String itemName) {
+        MainAppView instance = getInstance();
+        if (instance == null) return;
+        
+        // Find the index of the item in the list model
+        for (int i = 0; i < instance.selectionList.getModel().getSize(); i++) {
+            if (itemName.equals(instance.selectionList.getModel().getElementAt(i))) {
+                instance.selectionList.setSelectedIndex(i);
+                break;
+            }
         }
     }
 

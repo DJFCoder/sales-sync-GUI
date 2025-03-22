@@ -1,6 +1,7 @@
 package br.com.devjf.salessync.view.forms;
 
 import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.view.MainAppView;
 
 public class DashboardForm extends javax.swing.JFrame {
     public DashboardForm() {
@@ -39,6 +40,7 @@ public class DashboardForm extends javax.swing.JFrame {
         scdTimeActivitieLbl = new javax.swing.JLabel();
         trdActivitieLbl = new javax.swing.JLabel();
         trdTimeActivitieLbl = new javax.swing.JLabel();
+        logoffBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -62,12 +64,22 @@ public class DashboardForm extends javax.swing.JFrame {
         newSaleLink.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         newSaleLink.setText("Registrar nova venda");
         newSaleLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        newSaleLink.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                newSaleLinkMouseClicked(evt);
+            }
+        });
 
         salesLink.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         salesLink.setForeground(new java.awt.Color(134, 157, 249));
         salesLink.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         salesLink.setText("Ver histórico");
         salesLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        salesLink.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                salesLinkMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout sellPnlLayout = new javax.swing.GroupLayout(sellPnl);
         sellPnl.setLayout(sellPnlLayout);
@@ -108,12 +120,22 @@ public class DashboardForm extends javax.swing.JFrame {
         newCustormerLink.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         newCustormerLink.setText("Novo Cliente");
         newCustormerLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        newCustormerLink.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                newCustormerLinkMouseClicked(evt);
+            }
+        });
 
         customersLink.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         customersLink.setForeground(new java.awt.Color(134, 157, 249));
         customersLink.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         customersLink.setText("Buscar Cliente");
         customersLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        customersLink.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                customersLinkMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout customerPnlLayout = new javax.swing.GroupLayout(customerPnl);
         customerPnl.setLayout(customerPnlLayout);
@@ -151,12 +173,22 @@ public class DashboardForm extends javax.swing.JFrame {
         newServiceOrderLink.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         newServiceOrderLink.setText("Nova O.S.");
         newServiceOrderLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        newServiceOrderLink.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                newServiceOrderLinkMouseClicked(evt);
+            }
+        });
 
         serviceOrdersLink.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         serviceOrdersLink.setForeground(new java.awt.Color(134, 157, 249));
         serviceOrdersLink.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         serviceOrdersLink.setText("Ver Pendentes");
         serviceOrdersLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        serviceOrdersLink.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                serviceOrdersLinkMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout serviceOrderPnlLayout = new javax.swing.GroupLayout(serviceOrderPnl);
         serviceOrderPnl.setLayout(serviceOrderPnlLayout);
@@ -292,26 +324,43 @@ public class DashboardForm extends javax.swing.JFrame {
                 .addGap(22, 22, 22))
         );
 
+        logoffBtn.setBackground(new java.awt.Color(175, 76, 78));
+        logoffBtn.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        logoffBtn.setForeground(new java.awt.Color(255, 255, 255));
+        logoffBtn.setText("Sair");
+        logoffBtn.setPreferredSize(new java.awt.Dimension(85, 40));
+        ViewUtil.standardCornerRadius(logoffBtn);
+        logoffBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                logoffBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(mainPanelLayout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(welcomeLbl)
-                    .addComponent(lastAccessLbl)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(mainPanelLayout.createSequentialGroup()
-                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(logoffBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addGap(30, 30, 30)
+                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(welcomeLbl)
+                            .addComponent(lastAccessLbl)
                             .addGroup(mainPanelLayout.createSequentialGroup()
-                                .addComponent(sellPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(30, 30, 30)
-                                .addComponent(customerPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(30, 30, 30)
-                                .addComponent(serviceOrderPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(activitiesPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
-                        .addComponent(userPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(mainPanelLayout.createSequentialGroup()
+                                        .addComponent(sellPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(30, 30, 30)
+                                        .addComponent(customerPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(30, 30, 30)
+                                        .addComponent(serviceOrderPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(activitiesPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
+                                .addComponent(userPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addGap(30, 30, 30))
         );
         mainPanelLayout.setVerticalGroup(
@@ -331,7 +380,9 @@ public class DashboardForm extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(activitiesPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(userPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(150, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
+                .addComponent(logoffBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(31, 31, 31))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -354,6 +405,39 @@ public class DashboardForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void logoffBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoffBtnActionPerformed
+
+    }//GEN-LAST:event_logoffBtnActionPerformed
+
+    private void newSaleLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_newSaleLinkMouseClicked
+        MainAppView.redirectToPanel(MainAppView.NEW_SALE_PANEL);
+        MainAppView.updateSelectionList("Vendas");
+    }//GEN-LAST:event_newSaleLinkMouseClicked
+
+    private void salesLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_salesLinkMouseClicked
+        MainAppView.redirectToPanel(MainAppView.SALES_PANEL);
+        MainAppView.updateSelectionList("Vendas");
+    }//GEN-LAST:event_salesLinkMouseClicked
+
+    private void newCustormerLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_newCustormerLinkMouseClicked
+        MainAppView.redirectToPanel(MainAppView.NEW_CUSTOMER_PANEL);
+        MainAppView.updateSelectionList("Clientes");
+    }//GEN-LAST:event_newCustormerLinkMouseClicked
+
+    private void customersLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_customersLinkMouseClicked
+        MainAppView.redirectToPanel(MainAppView.CUSTOMERS_PANEL);
+        MainAppView.updateSelectionList("Clientes");
+    }//GEN-LAST:event_customersLinkMouseClicked
+
+    private void newServiceOrderLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_newServiceOrderLinkMouseClicked
+        MainAppView.redirectToPanel(MainAppView.NEW_SO_PANEL);
+        MainAppView.updateSelectionList("Ordens de Serviço");
+    }//GEN-LAST:event_newServiceOrderLinkMouseClicked
+
+    private void serviceOrdersLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_serviceOrdersLinkMouseClicked
+        MainAppView.redirectToPanel(MainAppView.SERVICE_ORDERS_PANEL);
+        MainAppView.updateSelectionList("Ordens de Serviço");
+    }//GEN-LAST:event_serviceOrdersLinkMouseClicked
     // new DashboardForm().setVisible(true);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -365,6 +449,7 @@ public class DashboardForm extends javax.swing.JFrame {
     private javax.swing.JLabel fstActivitieLbl;
     private javax.swing.JLabel fstTimeActivitieLbl;
     private javax.swing.JLabel lastAccessLbl;
+    private javax.swing.JButton logoffBtn;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JLabel nameLbl;
     private javax.swing.JLabel newCustormerLink;

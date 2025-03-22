@@ -1,10 +1,19 @@
 package br.com.devjf.salessync.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "customers")
@@ -29,9 +38,6 @@ public class Customer {
     @Column(length = 100)
     private String email;
     
-    @Column(name = "registration_date", nullable = false)
-    private LocalDate registrationDate;
-    
     @Column(columnDefinition = "TEXT")
     private String notes;
     
@@ -51,9 +57,6 @@ public class Customer {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        if (this.registrationDate == null) {
-            this.registrationDate = LocalDate.now();
-        }
     }
     
     @PreUpdate
@@ -68,7 +71,6 @@ public class Customer {
     public Customer(String name, String taxId) {
         this.name = name;
         this.taxId = taxId;
-        this.registrationDate = LocalDate.now();
     }
     
     // Methods
@@ -129,13 +131,7 @@ public class Customer {
         this.email = email;
     }
 
-    public LocalDate getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public void setRegistrationDate(LocalDate registrationDate) {
-        this.registrationDate = registrationDate;
-    }
+    // Removed getRegistrationDate() and setRegistrationDate() methods
 
     public String getNotes() {
         return notes;
@@ -159,5 +155,10 @@ public class Customer {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+    
+    // Add a method to get registration date from createdAt for backward compatibility
+    public LocalDate getRegistrationDate() {
+        return createdAt != null ? createdAt.toLocalDate() : null;
     }
 }
