@@ -64,7 +64,7 @@
                       <Group type="102" alignment="1" attributes="0">
                           <Component id="addItemBtn" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
-                          <Component id="cancelSaleButton" min="-2" max="-2" attributes="0"/>
+                          <Component id="cancelSaleBtn" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="newSaleBtn" min="-2" max="-2" attributes="0"/>
                       </Group>
@@ -89,7 +89,7 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="newSaleBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="addItemBtn" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="cancelSaleButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="cancelSaleBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace pref="55" max="32767" attributes="0"/>
               </Group>
@@ -327,7 +327,7 @@
             <AuxValue name="JavaCodeGenerator_ListenersCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(addItemBtn);"/>
           </AuxValues>
         </Component>
-        <Component class="javax.swing.JButton" name="cancelSaleButton">
+        <Component class="javax.swing.JButton" name="cancelSaleBtn">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="4e" green="4c" red="af" type="rgb"/>
@@ -344,10 +344,10 @@
             </Property>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cancelSaleButtonActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cancelSaleBtnActionPerformed"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(cancelSaleButton);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(cancelSaleBtn);"/>
           </AuxValues>
         </Component>
         <Container class="javax.swing.JPanel" name="valuesPnl">

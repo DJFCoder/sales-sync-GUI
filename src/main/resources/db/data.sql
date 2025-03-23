@@ -7,7 +7,7 @@ INSERT INTO user_types (id, name) VALUES
 (2, 'EMPLOYEE');
 
 -- Create default admin user (password: @devjf123admin)
-INSERT INTO users (name, login, password, user_type_id) VALUES(
+INSERT INTO users (name, login, password, user_type_id) VALUES (
     'Dev_JF', 'admin', '$2a$12$hVYhdhpdB0QYdu/TJJia/e4yboPMav1s9YFLNoRfBVwYtO6oPex1.', 0
     );
 

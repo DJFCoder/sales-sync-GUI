@@ -1,6 +1,7 @@
 package br.com.devjf.salessync.view.forms;
 
 import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.view.MainAppView;
 
 public class UsersForm extends javax.swing.JFrame {
     public UsersForm() {
@@ -38,6 +39,11 @@ public class UsersForm extends javax.swing.JFrame {
         newUserButton.setText("Novo Usuário");
         newUserButton.setPreferredSize(new java.awt.Dimension(150, 40));
         ViewUtil.standardCornerRadius(newUserButton);
+        newUserButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newUserButtonActionPerformed(evt);
+            }
+        });
 
         filterPanel.setPreferredSize(new java.awt.Dimension(917, 50));
         ViewUtil.standardCornerRadius(filterPanel);
@@ -167,6 +173,10 @@ public class UsersForm extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void newUserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newUserButtonActionPerformed
+        MainAppView.redirectToPanel(MainAppView.NEW_USER_PANEL);
+    }//GEN-LAST:event_newUserButtonActionPerformed
     
     // new UsersForm().setVisible(true);
 

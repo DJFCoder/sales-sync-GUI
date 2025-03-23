@@ -14,12 +14,12 @@ public class LogsForm extends javax.swing.JFrame {
         mainPanel = new javax.swing.JPanel();
         filterLbl = new javax.swing.JLabel();
         filterPanel = new javax.swing.JPanel();
-        statusField = new javax.swing.JTextField();
-        statusLbl = new javax.swing.JLabel();
-        userTypeLbl = new javax.swing.JLabel();
-        userTypeField = new javax.swing.JTextField();
-        nameLbl = new javax.swing.JLabel();
-        nameField = new javax.swing.JTextField();
+        dateTimeField = new javax.swing.JTextField();
+        dateTimeLbl = new javax.swing.JLabel();
+        actionLbl = new javax.swing.JLabel();
+        actionField = new javax.swing.JTextField();
+        userLbl = new javax.swing.JLabel();
+        userField = new javax.swing.JTextField();
         tableScrollPanel = new javax.swing.JScrollPane();
         logTable = new javax.swing.JTable();
 
@@ -34,29 +34,29 @@ public class LogsForm extends javax.swing.JFrame {
         filterPanel.setPreferredSize(new java.awt.Dimension(917, 50));
         ViewUtil.standardCornerRadius(filterPanel);
 
-        statusField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        statusField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        statusField.setPreferredSize(new java.awt.Dimension(121, 30));
-        ViewUtil.standardCornerRadius(statusField);
+        dateTimeField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        dateTimeField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        dateTimeField.setPreferredSize(new java.awt.Dimension(121, 30));
+        ViewUtil.standardCornerRadius(dateTimeField);
 
-        statusLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        statusLbl.setText("Data/Hora:");
+        dateTimeLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        dateTimeLbl.setText("Data/Hora:");
 
-        userTypeLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        userTypeLbl.setText("Ação:");
+        actionLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        actionLbl.setText("Ação:");
 
-        userTypeField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        userTypeField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        userTypeField.setPreferredSize(new java.awt.Dimension(121, 30));
-        ViewUtil.standardCornerRadius(userTypeField);
+        actionField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        actionField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        actionField.setPreferredSize(new java.awt.Dimension(121, 30));
+        ViewUtil.standardCornerRadius(actionField);
 
-        nameLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        nameLbl.setText("Usuário:");
+        userLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        userLbl.setText("Usuário:");
 
-        nameField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        nameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        nameField.setPreferredSize(new java.awt.Dimension(121, 30));
-        ViewUtil.standardCornerRadius(nameField);
+        userField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        userField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        userField.setPreferredSize(new java.awt.Dimension(121, 30));
+        ViewUtil.standardCornerRadius(userField);
 
         javax.swing.GroupLayout filterPanelLayout = new javax.swing.GroupLayout(filterPanel);
         filterPanel.setLayout(filterPanelLayout);
@@ -64,17 +64,17 @@ public class LogsForm extends javax.swing.JFrame {
             filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(filterPanelLayout.createSequentialGroup()
                 .addGap(120, 120, 120)
-                .addComponent(nameLbl)
+                .addComponent(userLbl)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(userField, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
-                .addComponent(statusLbl)
+                .addComponent(dateTimeLbl)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(statusField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(dateTimeField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
-                .addComponent(userTypeLbl)
+                .addComponent(actionLbl)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(userTypeField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(actionField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(121, Short.MAX_VALUE))
         );
         filterPanelLayout.setVerticalGroup(
@@ -83,14 +83,14 @@ public class LogsForm extends javax.swing.JFrame {
                 .addGap(10, 10, 10)
                 .addGroup(filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(statusLbl)
-                        .addComponent(statusField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(dateTimeLbl)
+                        .addComponent(dateTimeField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(userTypeLbl)
-                        .addComponent(userTypeField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(actionLbl)
+                        .addComponent(actionField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(nameLbl)
-                        .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(userLbl)
+                        .addComponent(userField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(10, 10, 10))
         );
 
@@ -151,16 +151,16 @@ public class LogsForm extends javax.swing.JFrame {
     // new LogsForm().setVisible(true);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField actionField;
+    private javax.swing.JLabel actionLbl;
+    private javax.swing.JTextField dateTimeField;
+    private javax.swing.JLabel dateTimeLbl;
     private javax.swing.JLabel filterLbl;
     private javax.swing.JPanel filterPanel;
     private javax.swing.JTable logTable;
     private javax.swing.JPanel mainPanel;
-    private javax.swing.JTextField nameField;
-    private javax.swing.JLabel nameLbl;
-    private javax.swing.JTextField statusField;
-    private javax.swing.JLabel statusLbl;
     private javax.swing.JScrollPane tableScrollPanel;
-    private javax.swing.JTextField userTypeField;
-    private javax.swing.JLabel userTypeLbl;
+    private javax.swing.JTextField userField;
+    private javax.swing.JLabel userLbl;
     // End of variables declaration//GEN-END:variables
 }

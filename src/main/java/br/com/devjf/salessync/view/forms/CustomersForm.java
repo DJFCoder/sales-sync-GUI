@@ -1,6 +1,7 @@
 package br.com.devjf.salessync.view.forms;
 
 import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.view.MainAppView;
 
 public class CustomersForm extends javax.swing.JFrame {
     public CustomersForm() {
@@ -13,8 +14,8 @@ public class CustomersForm extends javax.swing.JFrame {
 
         mainPanel = new javax.swing.JPanel();
         filterLbl = new javax.swing.JLabel();
-        newCustomerButton = new javax.swing.JButton();
-        deleteCustomerButton = new javax.swing.JButton();
+        newCustomerBtn = new javax.swing.JButton();
+        deleteCustomerBtn = new javax.swing.JButton();
         filterPanel = new javax.swing.JPanel();
         idField = new javax.swing.JTextField();
         idLbl = new javax.swing.JLabel();
@@ -33,19 +34,24 @@ public class CustomersForm extends javax.swing.JFrame {
         filterLbl.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         filterLbl.setText("Filtar");
 
-        newCustomerButton.setBackground(new java.awt.Color(76, 175, 80));
-        newCustomerButton.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        newCustomerButton.setForeground(new java.awt.Color(255, 255, 255));
-        newCustomerButton.setText("Novo Cliente");
-        newCustomerButton.setPreferredSize(new java.awt.Dimension(150, 40));
-        ViewUtil.standardCornerRadius(newCustomerButton);
+        newCustomerBtn.setBackground(new java.awt.Color(76, 175, 80));
+        newCustomerBtn.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        newCustomerBtn.setForeground(new java.awt.Color(255, 255, 255));
+        newCustomerBtn.setText("Novo Cliente");
+        newCustomerBtn.setPreferredSize(new java.awt.Dimension(150, 40));
+        ViewUtil.standardCornerRadius(newCustomerBtn);
+        newCustomerBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newCustomerBtnActionPerformed(evt);
+            }
+        });
 
-        deleteCustomerButton.setBackground(new java.awt.Color(175, 76, 78));
-        deleteCustomerButton.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        deleteCustomerButton.setForeground(new java.awt.Color(255, 255, 255));
-        deleteCustomerButton.setText("Excluir Cliente");
-        deleteCustomerButton.setPreferredSize(new java.awt.Dimension(150, 40));
-        ViewUtil.standardCornerRadius(deleteCustomerButton);
+        deleteCustomerBtn.setBackground(new java.awt.Color(175, 76, 78));
+        deleteCustomerBtn.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        deleteCustomerBtn.setForeground(new java.awt.Color(255, 255, 255));
+        deleteCustomerBtn.setText("Excluir Cliente");
+        deleteCustomerBtn.setPreferredSize(new java.awt.Dimension(150, 40));
+        ViewUtil.standardCornerRadius(deleteCustomerBtn);
 
         filterPanel.setPreferredSize(new java.awt.Dimension(917, 50));
         ViewUtil.standardCornerRadius(filterPanel);
@@ -138,9 +144,9 @@ public class CustomersForm extends javax.swing.JFrame {
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-                            .addComponent(deleteCustomerButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(deleteCustomerBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(18, 18, 18)
-                            .addComponent(newCustomerButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(newCustomerBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addComponent(tableScrollPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 917, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(filterPanel, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.PREFERRED_SIZE, 916, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(filterLbl, javax.swing.GroupLayout.Alignment.CENTER))
@@ -157,8 +163,8 @@ public class CustomersForm extends javax.swing.JFrame {
                 .addComponent(tableScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 441, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(newCustomerButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(deleteCustomerButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(newCustomerBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(deleteCustomerBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(69, Short.MAX_VALUE))
         );
 
@@ -181,6 +187,10 @@ public class CustomersForm extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void newCustomerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newCustomerBtnActionPerformed
+        MainAppView.redirectToPanel(MainAppView.NEW_CUSTOMER_PANEL);
+    }//GEN-LAST:event_newCustomerBtnActionPerformed
     
     // new CustomersForm().setVisible(true);
 
@@ -188,13 +198,13 @@ public class CustomersForm extends javax.swing.JFrame {
     private javax.swing.JTextField customerField;
     private javax.swing.JLabel customerLbl;
     private javax.swing.JTable customerTable;
-    private javax.swing.JButton deleteCustomerButton;
+    private javax.swing.JButton deleteCustomerBtn;
     private javax.swing.JLabel filterLbl;
     private javax.swing.JPanel filterPanel;
     private javax.swing.JTextField idField;
     private javax.swing.JLabel idLbl;
     private javax.swing.JPanel mainPanel;
-    private javax.swing.JButton newCustomerButton;
+    private javax.swing.JButton newCustomerBtn;
     private javax.swing.JScrollPane tableScrollPanel;
     private javax.swing.JTextField taxIdField;
     private javax.swing.JLabel taxIdLbl;

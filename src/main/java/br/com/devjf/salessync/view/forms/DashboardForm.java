@@ -1,6 +1,7 @@
 package br.com.devjf.salessync.view.forms;
 
 import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.view.Login;
 import br.com.devjf.salessync.view.MainAppView;
 
 public class DashboardForm extends javax.swing.JFrame {
@@ -406,37 +407,38 @@ public class DashboardForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void logoffBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoffBtnActionPerformed
-
+        MainAppView.getInstance().dispose();
+        new Login().setVisible(true);
     }//GEN-LAST:event_logoffBtnActionPerformed
 
     private void newSaleLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_newSaleLinkMouseClicked
-        MainAppView.redirectToPanel(MainAppView.NEW_SALE_PANEL);
         MainAppView.updateSelectionList("Vendas");
+        MainAppView.redirectToPanel(MainAppView.NEW_SALE_PANEL);
     }//GEN-LAST:event_newSaleLinkMouseClicked
 
     private void salesLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_salesLinkMouseClicked
-        MainAppView.redirectToPanel(MainAppView.SALES_PANEL);
         MainAppView.updateSelectionList("Vendas");
+        MainAppView.redirectToPanel(MainAppView.SALES_PANEL);
     }//GEN-LAST:event_salesLinkMouseClicked
 
     private void newCustormerLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_newCustormerLinkMouseClicked
-        MainAppView.redirectToPanel(MainAppView.NEW_CUSTOMER_PANEL);
         MainAppView.updateSelectionList("Clientes");
+        MainAppView.redirectToPanel(MainAppView.NEW_CUSTOMER_PANEL);
     }//GEN-LAST:event_newCustormerLinkMouseClicked
 
     private void customersLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_customersLinkMouseClicked
-        MainAppView.redirectToPanel(MainAppView.CUSTOMERS_PANEL);
         MainAppView.updateSelectionList("Clientes");
+        MainAppView.redirectToPanel(MainAppView.CUSTOMERS_PANEL);
     }//GEN-LAST:event_customersLinkMouseClicked
 
     private void newServiceOrderLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_newServiceOrderLinkMouseClicked
-        MainAppView.redirectToPanel(MainAppView.NEW_SO_PANEL);
         MainAppView.updateSelectionList("Ordens de Serviço");
+        MainAppView.redirectToPanel(MainAppView.NEW_SO_PANEL);
     }//GEN-LAST:event_newServiceOrderLinkMouseClicked
 
     private void serviceOrdersLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_serviceOrdersLinkMouseClicked
-        MainAppView.redirectToPanel(MainAppView.SERVICE_ORDERS_PANEL);
         MainAppView.updateSelectionList("Ordens de Serviço");
+        MainAppView.redirectToPanel(MainAppView.SERVICE_ORDERS_PANEL);
     }//GEN-LAST:event_serviceOrdersLinkMouseClicked
     // new DashboardForm().setVisible(true);
 

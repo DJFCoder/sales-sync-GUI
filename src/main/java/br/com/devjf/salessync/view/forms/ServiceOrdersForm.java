@@ -1,6 +1,7 @@
 package br.com.devjf.salessync.view.forms;
 
 import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.view.MainAppView;
 
 public class ServiceOrdersForm extends javax.swing.JFrame {
     public ServiceOrdersForm() {
@@ -39,6 +40,11 @@ public class ServiceOrdersForm extends javax.swing.JFrame {
         newServiceOrderButton.setText("Nova Ordem");
         newServiceOrderButton.setPreferredSize(new java.awt.Dimension(150, 40));
         ViewUtil.standardCornerRadius(newServiceOrderButton);
+        newServiceOrderButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newServiceOrderButtonActionPerformed(evt);
+            }
+        });
 
         cancelServiceOrderButton.setBackground(new java.awt.Color(175, 76, 78));
         cancelServiceOrderButton.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
@@ -180,6 +186,10 @@ public class ServiceOrdersForm extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void newServiceOrderButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newServiceOrderButtonActionPerformed
+        MainAppView.redirectToPanel(MainAppView.NEW_SO_PANEL);
+    }//GEN-LAST:event_newServiceOrderButtonActionPerformed
     
     // new ServiceOrdersForm().setVisible(true);
 

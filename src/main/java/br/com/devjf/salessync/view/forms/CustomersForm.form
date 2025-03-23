@@ -63,9 +63,9 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="103" alignment="0" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="deleteCustomerButton" min="-2" max="-2" attributes="0"/>
+                              <Component id="deleteCustomerBtn" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="newCustomerButton" min="-2" max="-2" attributes="0"/>
+                              <Component id="newCustomerBtn" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="tableScrollPanel" alignment="1" min="-2" pref="917" max="-2" attributes="0"/>
                       </Group>
@@ -87,8 +87,8 @@
                   <Component id="tableScrollPanel" min="-2" pref="441" max="-2" attributes="0"/>
                   <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="newCustomerButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="deleteCustomerButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="newCustomerBtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="deleteCustomerBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace pref="69" max="32767" attributes="0"/>
               </Group>
@@ -104,7 +104,7 @@
             <Property name="text" type="java.lang.String" value="Filtar"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="newCustomerButton">
+        <Component class="javax.swing.JButton" name="newCustomerBtn">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="50" green="af" red="4c" type="rgb"/>
@@ -120,11 +120,14 @@
               <Dimension value="[150, 40]"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newCustomerBtnActionPerformed"/>
+          </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(newCustomerButton);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(newCustomerBtn);"/>
           </AuxValues>
         </Component>
-        <Component class="javax.swing.JButton" name="deleteCustomerButton">
+        <Component class="javax.swing.JButton" name="deleteCustomerBtn">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="4e" green="4c" red="af" type="rgb"/>
@@ -141,7 +144,7 @@
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(deleteCustomerButton);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(deleteCustomerBtn);"/>
           </AuxValues>
         </Component>
         <Container class="javax.swing.JPanel" name="filterPanel">

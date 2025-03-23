@@ -425,7 +425,7 @@ public class NewSaleForm extends javax.swing.JFrame {
         tableScrollPanel = new javax.swing.JScrollPane();
         newSaleTable = new javax.swing.JTable();
         addItemBtn = new javax.swing.JButton();
-        cancelSaleButton = new javax.swing.JButton();
+        cancelSaleBtn = new javax.swing.JButton();
         valuesPnl = new javax.swing.JPanel();
         subtotalLbl = new javax.swing.JLabel();
         discountLbl = new javax.swing.JLabel();
@@ -444,7 +444,6 @@ public class NewSaleForm extends javax.swing.JFrame {
         newSaleBtn.setPreferredSize(new java.awt.Dimension(150, 40));
         ViewUtil.standardCornerRadius(newSaleBtn);
         newSaleBtn.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newSaleBtnActionPerformed(evt);
             }
@@ -475,7 +474,6 @@ public class NewSaleForm extends javax.swing.JFrame {
         findCustomerBtn.setPreferredSize(new java.awt.Dimension(85, 30));
         ViewUtil.standardCornerRadius(findCustomerBtn);
         findCustomerBtn.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 findCustomerBtnActionPerformed(evt);
             }
@@ -554,23 +552,21 @@ public class NewSaleForm extends javax.swing.JFrame {
         addItemBtn.setToolTipText("");
         addItemBtn.setPreferredSize(new java.awt.Dimension(170, 40));
         addItemBtn.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addItemBtnActionPerformed(evt);
             }
         });
         ViewUtil.standardCornerRadius(addItemBtn);
 
-        cancelSaleButton.setBackground(new java.awt.Color(175, 76, 78));
-        cancelSaleButton.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        cancelSaleButton.setForeground(new java.awt.Color(255, 255, 255));
-        cancelSaleButton.setText("Cancelar Venda");
-        cancelSaleButton.setPreferredSize(new java.awt.Dimension(150, 40));
-        ViewUtil.standardCornerRadius(cancelSaleButton);
-        cancelSaleButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
+        cancelSaleBtn.setBackground(new java.awt.Color(175, 76, 78));
+        cancelSaleBtn.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        cancelSaleBtn.setForeground(new java.awt.Color(255, 255, 255));
+        cancelSaleBtn.setText("Cancelar Venda");
+        cancelSaleBtn.setPreferredSize(new java.awt.Dimension(150, 40));
+        ViewUtil.standardCornerRadius(cancelSaleBtn);
+        cancelSaleBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cancelSaleButtonActionPerformed(evt);
+                cancelSaleBtnActionPerformed(evt);
             }
         });
 
@@ -626,7 +622,7 @@ public class NewSaleForm extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
                         .addComponent(addItemBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(cancelSaleButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cancelSaleBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(newSaleBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(tableScrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 917, Short.MAX_VALUE)
@@ -647,7 +643,7 @@ public class NewSaleForm extends javax.swing.JFrame {
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(newSaleBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(addItemBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cancelSaleButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cancelSaleBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(55, Short.MAX_VALUE))
         );
 
@@ -730,10 +726,10 @@ public class NewSaleForm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_newSaleBtnActionPerformed
 
-    private void cancelSaleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelSaleButtonActionPerformed
+    private void cancelSaleBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelSaleBtnActionPerformed
         // Return to the SalesForm panel in MainAppView
         MainAppView.redirectToPanel(MainAppView.SALES_PANEL);
-    }//GEN-LAST:event_cancelSaleButtonActionPerformed
+    }//GEN-LAST:event_cancelSaleBtnActionPerformed
 
     private void findCustomerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findCustomerBtnActionPerformed
         // Disable the button and show wait cursor to indicate processing
@@ -777,7 +773,7 @@ public class NewSaleForm extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addItemBtn;
-    private javax.swing.JButton cancelSaleButton;
+    private javax.swing.JButton cancelSaleBtn;
     private javax.swing.JTextField discountField;
     private javax.swing.JLabel discountLbl;
     private javax.swing.JButton findCustomerBtn;

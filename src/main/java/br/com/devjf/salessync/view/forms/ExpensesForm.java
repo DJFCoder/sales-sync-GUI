@@ -1,6 +1,7 @@
 package br.com.devjf.salessync.view.forms;
 
 import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.view.MainAppView;
 
 public class ExpensesForm extends javax.swing.JFrame {
     public ExpensesForm() {
@@ -13,8 +14,8 @@ public class ExpensesForm extends javax.swing.JFrame {
 
         mainPanel = new javax.swing.JPanel();
         filterLbl = new javax.swing.JLabel();
-        newExpenseButton = new javax.swing.JButton();
-        manageCategorysButton = new javax.swing.JButton();
+        newExpenseBtn = new javax.swing.JButton();
+        manageCategorysBtn = new javax.swing.JButton();
         filterPanel = new javax.swing.JPanel();
         descriptionField = new javax.swing.JTextField();
         descriptionLbl = new javax.swing.JLabel();
@@ -33,24 +34,29 @@ public class ExpensesForm extends javax.swing.JFrame {
         filterLbl.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         filterLbl.setText("Filtar");
 
-        newExpenseButton.setBackground(new java.awt.Color(76, 175, 80));
-        newExpenseButton.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        newExpenseButton.setForeground(new java.awt.Color(255, 255, 255));
-        newExpenseButton.setText("Nova Despesa");
-        newExpenseButton.setPreferredSize(new java.awt.Dimension(150, 40));
-        ViewUtil.standardCornerRadius(newExpenseButton);
-
-        manageCategorysButton.setBackground(new java.awt.Color(255, 178, 0));
-        manageCategorysButton.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
-        manageCategorysButton.setForeground(new java.awt.Color(255, 255, 255));
-        manageCategorysButton.setText("Gerenciar Categorias");
-        manageCategorysButton.setPreferredSize(new java.awt.Dimension(170, 40));
-        manageCategorysButton.addActionListener(new java.awt.event.ActionListener() {
+        newExpenseBtn.setBackground(new java.awt.Color(76, 175, 80));
+        newExpenseBtn.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        newExpenseBtn.setForeground(new java.awt.Color(255, 255, 255));
+        newExpenseBtn.setText("Nova Despesa");
+        newExpenseBtn.setPreferredSize(new java.awt.Dimension(150, 40));
+        ViewUtil.standardCornerRadius(newExpenseBtn);
+        newExpenseBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                manageCategorysButtonActionPerformed(evt);
+                newExpenseBtnActionPerformed(evt);
             }
         });
-        ViewUtil.standardCornerRadius(manageCategorysButton);
+
+        manageCategorysBtn.setBackground(new java.awt.Color(255, 178, 0));
+        manageCategorysBtn.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        manageCategorysBtn.setForeground(new java.awt.Color(255, 255, 255));
+        manageCategorysBtn.setText("Gerenciar Categorias");
+        manageCategorysBtn.setPreferredSize(new java.awt.Dimension(170, 40));
+        manageCategorysBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                manageCategorysBtnActionPerformed(evt);
+            }
+        });
+        ViewUtil.standardCornerRadius(manageCategorysBtn);
 
         filterPanel.setPreferredSize(new java.awt.Dimension(917, 50));
         ViewUtil.standardCornerRadius(filterPanel);
@@ -142,9 +148,9 @@ public class ExpensesForm extends javax.swing.JFrame {
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-                            .addComponent(manageCategorysButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(manageCategorysBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(18, 18, 18)
-                            .addComponent(newExpenseButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(newExpenseBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addComponent(tableScrollPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 917, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(filterPanel, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.PREFERRED_SIZE, 916, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(filterLbl, javax.swing.GroupLayout.Alignment.CENTER))
@@ -161,8 +167,8 @@ public class ExpensesForm extends javax.swing.JFrame {
                 .addComponent(tableScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 441, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(newExpenseButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(manageCategorysButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(newExpenseBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(manageCategorysBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(69, Short.MAX_VALUE))
         );
 
@@ -186,9 +192,13 @@ public class ExpensesForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void manageCategorysButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manageCategorysButtonActionPerformed
+    private void manageCategorysBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manageCategorysBtnActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_manageCategorysButtonActionPerformed
+    }//GEN-LAST:event_manageCategorysBtnActionPerformed
+
+    private void newExpenseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newExpenseBtnActionPerformed
+        MainAppView.redirectToPanel(MainAppView.NEW_EXPENSE_PANEL);
+    }//GEN-LAST:event_newExpenseBtnActionPerformed
     
     // new ExpensesForm().setVisible(true);
 
@@ -201,8 +211,8 @@ public class ExpensesForm extends javax.swing.JFrame {
     private javax.swing.JLabel filterLbl;
     private javax.swing.JPanel filterPanel;
     private javax.swing.JPanel mainPanel;
-    private javax.swing.JButton manageCategorysButton;
-    private javax.swing.JButton newExpenseButton;
+    private javax.swing.JButton manageCategorysBtn;
+    private javax.swing.JButton newExpenseBtn;
     private javax.swing.JScrollPane tableScrollPanel;
     private javax.swing.JTextField valueField;
     private javax.swing.JLabel valueLbl;

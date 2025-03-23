@@ -107,17 +107,17 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="120" max="-2" attributes="0"/>
-                      <Component id="nameLbl" min="-2" max="-2" attributes="0"/>
+                      <Component id="userLbl" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="nameField" min="-2" pref="181" max="-2" attributes="0"/>
+                      <Component id="userField" min="-2" pref="181" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
-                      <Component id="statusLbl" min="-2" max="-2" attributes="0"/>
+                      <Component id="dateTimeLbl" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="statusField" min="-2" max="-2" attributes="0"/>
+                      <Component id="dateTimeField" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
-                      <Component id="userTypeLbl" min="-2" max="-2" attributes="0"/>
+                      <Component id="actionLbl" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="userTypeField" min="-2" max="-2" attributes="0"/>
+                      <Component id="actionField" min="-2" max="-2" attributes="0"/>
                       <EmptySpace pref="121" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -128,16 +128,16 @@
                       <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                              <Component id="statusLbl" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="statusField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="dateTimeLbl" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="dateTimeField" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                              <Component id="userTypeLbl" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="userTypeField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="actionLbl" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="actionField" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                              <Component id="nameLbl" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="nameField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="userLbl" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="userField" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
@@ -146,7 +146,7 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JTextField" name="statusField">
+            <Component class="javax.swing.JTextField" name="dateTimeField">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Liberation Sans" size="14" style="0"/>
@@ -157,10 +157,10 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(statusField);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(dateTimeField);"/>
               </AuxValues>
             </Component>
-            <Component class="javax.swing.JLabel" name="statusLbl">
+            <Component class="javax.swing.JLabel" name="dateTimeLbl">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Liberation Sans" size="14" style="0"/>
@@ -168,7 +168,7 @@
                 <Property name="text" type="java.lang.String" value="Data/Hora:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="userTypeLbl">
+            <Component class="javax.swing.JLabel" name="actionLbl">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Liberation Sans" size="14" style="0"/>
@@ -176,7 +176,7 @@
                 <Property name="text" type="java.lang.String" value="A&#xe7;&#xe3;o:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="userTypeField">
+            <Component class="javax.swing.JTextField" name="actionField">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Liberation Sans" size="14" style="0"/>
@@ -187,10 +187,10 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(userTypeField);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(actionField);"/>
               </AuxValues>
             </Component>
-            <Component class="javax.swing.JLabel" name="nameLbl">
+            <Component class="javax.swing.JLabel" name="userLbl">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Liberation Sans" size="14" style="0"/>
@@ -198,7 +198,7 @@
                 <Property name="text" type="java.lang.String" value="Usu&#xe1;rio:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="nameField">
+            <Component class="javax.swing.JTextField" name="userField">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Liberation Sans" size="14" style="0"/>
@@ -209,7 +209,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(nameField);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(userField);"/>
               </AuxValues>
             </Component>
           </SubComponents>

@@ -63,9 +63,9 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="103" alignment="0" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="filterReportButton" min="-2" max="-2" attributes="0"/>
+                              <Component id="filterReportBtn" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="newReportButton" min="-2" max="-2" attributes="0"/>
+                              <Component id="newReportBtn" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="tableScrollPanel" alignment="1" min="-2" pref="917" max="-2" attributes="0"/>
                       </Group>
@@ -93,8 +93,8 @@
                   <Component id="tableScrollPanel" min="-2" pref="180" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="newReportButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="filterReportButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="newReportBtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="filterReportBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
               </Group>
@@ -110,7 +110,7 @@
             <Property name="text" type="java.lang.String" value="Filtar"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="newReportButton">
+        <Component class="javax.swing.JButton" name="newReportBtn">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="50" green="af" red="4c" type="rgb"/>
@@ -127,10 +127,10 @@
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(newReportButton);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(newReportBtn);"/>
           </AuxValues>
         </Component>
-        <Component class="javax.swing.JButton" name="filterReportButton">
+        <Component class="javax.swing.JButton" name="filterReportBtn">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="0" green="b2" red="ff" type="rgb"/>
@@ -148,10 +148,10 @@
             </Property>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filterReportButtonActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filterReportBtnActionPerformed"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_ListenersCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(filterReportButton);"/>
+            <AuxValue name="JavaCodeGenerator_ListenersCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(filterReportBtn);"/>
           </AuxValues>
         </Component>
         <Container class="javax.swing.JPanel" name="filterPanel">
@@ -253,7 +253,7 @@
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                   <StringArray count="5">
                     <StringItem index="0" value="Selecione"/>
-                    <StringItem index="1" value="DI&#xc1;RIO"/>
+                    <StringItem index="1" value="DI&#xc1;RIA"/>
                     <StringItem index="2" value="SEMANAL"/>
                     <StringItem index="3" value="MENSAL"/>
                     <StringItem index="4" value="ANUAL"/>

@@ -63,9 +63,9 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="103" alignment="0" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="manageCategorysButton" min="-2" max="-2" attributes="0"/>
+                              <Component id="manageCategorysBtn" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="newExpenseButton" min="-2" max="-2" attributes="0"/>
+                              <Component id="newExpenseBtn" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="tableScrollPanel" alignment="1" min="-2" pref="917" max="-2" attributes="0"/>
                       </Group>
@@ -87,8 +87,8 @@
                   <Component id="tableScrollPanel" min="-2" pref="441" max="-2" attributes="0"/>
                   <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="newExpenseButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="manageCategorysButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="newExpenseBtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="manageCategorysBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace pref="69" max="32767" attributes="0"/>
               </Group>
@@ -104,7 +104,7 @@
             <Property name="text" type="java.lang.String" value="Filtar"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="newExpenseButton">
+        <Component class="javax.swing.JButton" name="newExpenseBtn">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="50" green="af" red="4c" type="rgb"/>
@@ -120,11 +120,14 @@
               <Dimension value="[150, 40]"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newExpenseBtnActionPerformed"/>
+          </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(newExpenseButton);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(newExpenseBtn);"/>
           </AuxValues>
         </Component>
-        <Component class="javax.swing.JButton" name="manageCategorysButton">
+        <Component class="javax.swing.JButton" name="manageCategorysBtn">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="0" green="b2" red="ff" type="rgb"/>
@@ -141,10 +144,10 @@
             </Property>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="manageCategorysButtonActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="manageCategorysBtnActionPerformed"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_ListenersCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(manageCategorysButton);"/>
+            <AuxValue name="JavaCodeGenerator_ListenersCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(manageCategorysBtn);"/>
           </AuxValues>
         </Component>
         <Container class="javax.swing.JPanel" name="filterPanel">

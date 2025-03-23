@@ -27,6 +27,8 @@ import br.com.devjf.salessync.view.forms.newobjectforms.NewExpenseForm;
 import br.com.devjf.salessync.view.forms.newobjectforms.NewSaleForm;
 import br.com.devjf.salessync.view.forms.newobjectforms.NewServiceOrderForm;
 import br.com.devjf.salessync.view.forms.newobjectforms.NewUserForm;
+import java.awt.Dimension;
+import javax.swing.JFrame;
 
 public class MainAppView extends javax.swing.JFrame {
     // Singleton instance
@@ -35,9 +37,9 @@ public class MainAppView extends javax.swing.JFrame {
     public static final String SALES_PANEL = "Vendas";
     public static final String CUSTOMERS_PANEL = "Clientes";
     public static final String SERVICE_ORDERS_PANEL = "Ordens de Serviço";
-    private static final String EXPENSES_PANEL = "Despesas";
+    public static final String EXPENSES_PANEL = "Despesas";
     private static final String REPORTS_PANEL = "Relatórios";
-    private static final String USERS_PANEL = "Usuários";
+    public static final String USERS_PANEL = "Usuários";
     private static final String SYSTEM_LOGS_PANEL = "Logs do Sistema";
     public static final String NEW_SALE_PANEL = "Cadastrar Venda";
     public static final String NEW_CUSTOMER_PANEL = "Cadastrar Cliente";
@@ -147,7 +149,7 @@ public class MainAppView extends javax.swing.JFrame {
         }
     }
 
-    private JPanel createPanelFromForm(javax.swing.JFrame form) {
+    private JPanel createPanelFromForm(JFrame form) {
         // Configura o formulário para não fechar a aplicação quando fechado
         form.setDefaultCloseOperation(
                 javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -159,8 +161,8 @@ public class MainAppView extends javax.swing.JFrame {
         form.setContentPane(new javax.swing.JPanel());
         // Cria um novo painel com as dimensões corretas
         JPanel panel = new JPanel();
-        panel.setLayout(new java.awt.BorderLayout());
-        panel.setPreferredSize(new java.awt.Dimension(995,
+        panel.setLayout(new BorderLayout());
+        panel.setPreferredSize(new Dimension(995,
                 728));
         // Adiciona o conteúdo do formulário ao painel
         panel.add(contentPane,
@@ -395,15 +397,15 @@ public class MainAppView extends javax.swing.JFrame {
      * @param panel The panel to add
      * @param name The name to identify the panel
      */
-    public void addPanelToCardLayout(java.awt.Container panel, String name) {
+    public void addPanelToCardLayout(Container panel, String name) {
         // Convert Container to JPanel if needed
-        javax.swing.JPanel jpanel;
+        JPanel jpanel;
         if (panel instanceof javax.swing.JPanel) {
             jpanel = (JPanel) panel;
         } else {
             // Create a new JPanel and add the container's components
             jpanel = new javax.swing.JPanel();
-            jpanel.setLayout(new java.awt.BorderLayout());
+            jpanel.setLayout(new BorderLayout());
             // Add all components from the container
             Component[] components = panel.getComponents();
             for (Component component : components) {
@@ -424,7 +426,7 @@ public class MainAppView extends javax.swing.JFrame {
      * @param name The name of the panel to show
      */
     public void showPanel(String name) {
-        java.awt.CardLayout cardLayout = (java.awt.CardLayout) selectedPanel.getLayout();
+        CardLayout cardLayout = (CardLayout) selectedPanel.getLayout();
         cardLayout.show(selectedPanel,
                 name);
         // Update the UI

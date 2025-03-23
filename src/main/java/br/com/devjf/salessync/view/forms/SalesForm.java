@@ -190,7 +190,6 @@ public class SalesForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void newSaleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newSaleButtonActionPerformed
-        // Get the MainAppView instance
         MainAppView.redirectToPanel(MainAppView.NEW_SALE_PANEL);
     }//GEN-LAST:event_newSaleButtonActionPerformed
     // new SalesForm().setVisible(true);
