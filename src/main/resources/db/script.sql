@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS service_orders;
 DROP TABLE IF EXISTS expenses;
 DROP TABLE IF EXISTS expense_categories;
 DROP TABLE IF EXISTS system_logs;
+DROP TABLE IF EXISTS user_activities;
 DROP TABLE IF EXISTS customers;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS user_types;
@@ -124,6 +125,15 @@ CREATE TABLE system_logs (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+-- Create user_activities table
+CREATE TABLE user_activities (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    activity_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 -- Create indexes for better performance
 CREATE INDEX idx_customers_name ON customers(name);
 CREATE INDEX idx_sales_customer ON sales(customer_id);
@@ -136,6 +146,8 @@ CREATE INDEX idx_expenses_category ON expenses(category_id);
 CREATE INDEX idx_expenses_date ON expenses(date);
 CREATE INDEX idx_system_logs_user ON system_logs(user_id);
 CREATE INDEX idx_system_logs_datetime ON system_logs(date_time);
+CREATE INDEX idx_user_activities_user ON user_activities(user_id);
+CREATE INDEX idx_user_activities_time ON user_activities(activity_time);
 
 -- Additional indexes for better query performance
 CREATE INDEX idx_customers_tax_id ON customers(tax_id);
@@ -340,6 +352,23 @@ JOIN
     user_types ut ON u.user_type_id = ut.id
 ORDER BY 
     sl.date_time DESC;
+
+-- View for recent user activities
+CREATE OR REPLACE VIEW vw_recent_user_activities AS
+SELECT 
+    ua.id,
+    u.id AS user_id,
+    u.name AS user_name,
+    ua.description,
+    ua.activity_time,
+    DATE_FORMAT(ua.activity_time, '%d/%m/%Y %H:%i') AS formatted_time,
+    DATE_FORMAT(ua.activity_time, '%H:%i') AS formatted_time_short
+FROM 
+    user_activities ua
+JOIN 
+    users u ON ua.user_id = u.id
+ORDER BY 
+    ua.activity_time DESC;
 
 -- View for pending service orders
 CREATE OR REPLACE VIEW vw_pending_service_orders AS

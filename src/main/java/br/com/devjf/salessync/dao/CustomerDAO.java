@@ -2,7 +2,6 @@ package br.com.devjf.salessync.dao;
 
 import br.com.devjf.salessync.model.Customer;
 import br.com.devjf.salessync.util.HibernateUtil;
-import static br.com.devjf.salessync.util.HibernateUtil.getEntityManager;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;

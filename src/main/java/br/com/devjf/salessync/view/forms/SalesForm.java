@@ -1,11 +1,32 @@
 package br.com.devjf.salessync.view.forms;
 
+import br.com.devjf.salessync.controller.SaleController;
+import br.com.devjf.salessync.model.Sale;
+import br.com.devjf.salessync.util.TableEditButtonEditor;
+import br.com.devjf.salessync.util.TableEditButtonRenderer;
+import br.com.devjf.salessync.util.TableFormHelper;
 import br.com.devjf.salessync.util.ViewUtil;
 import br.com.devjf.salessync.view.MainAppView;
+import br.com.devjf.salessync.view.forms.newobjectforms.NewSaleForm;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 public class SalesForm extends javax.swing.JFrame {
+    private final SaleController saleController;
+
     public SalesForm() {
         initComponents();
+        this.saleController = new SaleController();
+        // Configurar a tabela
+        setupTableColumns();
+        // Configurar filtros
+        setupFilters();
+        // Carregar dados iniciais
+        loadTableData();
     }
 
     @SuppressWarnings("unchecked")
@@ -190,9 +211,152 @@ public class SalesForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void newSaleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newSaleButtonActionPerformed
+        // Abrir o formulário de nova venda
         MainAppView.redirectToPanel(MainAppView.NEW_SALE_PANEL);
+        // Atualizar a tabela após o fechamento do formulário
+        refreshTable();
     }//GEN-LAST:event_newSaleButtonActionPerformed
     // new SalesForm().setVisible(true);
+
+    /**
+     * Configura os filtros da tabela de vendas.
+     */
+    private void setupFilters() {
+        // Configurar os campos de texto para filtragem
+        JTextField[] filterFields = new JTextField[]{
+            customerField,
+            dateField,
+            paymentMethodField
+        };
+        // Índices das colunas correspondentes aos campos de filtro
+        int[] columnIndexes = new int[]{
+            1, // Cliente
+            2, // Data Venda
+            3 // Forma de Pagamento
+        };
+        // Configurar o filtro da tabela
+        TableFormHelper.setupTableFilter(salesTable,
+                (DefaultTableModel) salesTable.getModel(),
+                filterFields,
+                columnIndexes);
+    }
+
+    /**
+     * Carrega os dados na tabela de vendas.
+     */
+    private void loadTableData() {
+        // Limpar a tabela
+        TableFormHelper.clearTable((DefaultTableModel) salesTable.getModel());
+        // Obter todas as vendas
+        Map<String, Object> filters = new HashMap<>();
+        List<Sale> sales = saleController.listSales(filters);
+        // Adicionar as vendas à tabela
+        for (Sale sale : sales) {
+            addSaleToTable(sale);
+        }
+        // Ajustar largura das colunas
+        TableFormHelper.adjustColumnWidths(salesTable,
+                10);
+    }
+
+    /**
+     * Adiciona uma venda à tabela.
+     *
+     * @param sale A venda a ser adicionada
+     */
+    private void addSaleToTable(Sale sale) {
+        Object[] rowData = {
+            sale.getId(),
+            sale.getCustomer().getName(),
+            TableFormHelper.formatDate(sale.getDate()),
+            sale.getPaymentMethod() != null ? sale.getPaymentMethod().toString() : "",
+            sale.getPaymentDate() != null ? TableFormHelper.formatDate(
+            sale.getPaymentDate()) : "",
+            TableFormHelper.formatCurrency(sale.getTotalAmount()),
+            "Editar" // Texto para o botão de edição
+        };
+        TableFormHelper.addRow((DefaultTableModel) salesTable.getModel(),
+                rowData);
+    }
+
+    /**
+     * Configura as colunas da tabela de vendas.
+     */
+    private void setupTableColumns() {
+        // Definir nomes das colunas
+        String[] columnNames = {
+            "Código", "Cliente", "Data Venda", "Forma de Pagamento", "Data Pagamento", "Valor Total", "Ações"
+        };
+        // Definir classes das colunas
+        Class<?>[] columnClasses = {
+            Integer.class, String.class, String.class, String.class, String.class, String.class, String.class
+        };
+        // Definir quais colunas são editáveis
+        boolean[] editableColumns = {
+            false, false, false, false, false, false, true
+        };
+        // Configurar o modelo da tabela
+        TableFormHelper.setupTable(salesTable,
+                columnNames,
+                columnClasses,
+                editableColumns);
+        
+        // Configurar o botão de edição na coluna de ações
+        setupEditButton();
+        
+        // Adicionar listener de clique duplo para editar a venda
+        TableFormHelper.addDoubleClickListener(salesTable,
+                this::handleRowSelection);
+    }
+    
+    /**
+     * Configura o botão de edição na coluna de ações da tabela.
+     */
+    private void setupEditButton() {
+        // Obter a coluna de ações (última coluna)
+        TableColumn actionColumn = salesTable.getColumnModel().getColumn(6);
+        
+        // Configurar o renderizador e o editor para a coluna de ações
+        actionColumn.setCellRenderer(new TableEditButtonRenderer("Editar"));
+        actionColumn.setCellEditor(new TableEditButtonEditor("Editar", this::editSale));
+    }
+
+    /**
+     * Manipula a seleção de uma linha na tabela.
+     *
+     * @param selectedRow O índice da linha selecionada
+     */
+    private void handleRowSelection(int selectedRow) {
+        if (selectedRow >= 0) {
+            editSale(selectedRow);
+        }
+    }
+    
+    /**
+     * Abre o formulário de edição para a venda selecionada.
+     * 
+     * @param selectedRow O índice da linha selecionada na tabela
+     */
+    private void editSale(int selectedRow) {
+        // Obter o ID da venda selecionada
+        Integer saleId = (Integer) salesTable.getValueAt(selectedRow, 0);
+        
+        // Obter a venda pelo ID
+        Sale sale = saleController.findSaleById(saleId);
+        if (sale != null) {
+            // Abrir o formulário de edição de venda com os dados da venda selecionada
+            NewSaleForm saleForm = new NewSaleForm(sale);
+            saleForm.setVisible(true);
+        }
+    }
+
+    /**
+     * Método público para atualizar a tabela de vendas. Pode ser chamado de
+     * outras classes para atualizar a exibição após alterações.
+     */
+    public void refreshTable() {
+        loadTableData();
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField customerField;

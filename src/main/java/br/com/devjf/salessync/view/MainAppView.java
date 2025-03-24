@@ -6,11 +6,10 @@ import java.awt.Component;
 import java.awt.Container;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
-
+import br.com.devjf.salessync.controller.UserController;
 import br.com.devjf.salessync.model.User;
 import br.com.devjf.salessync.model.UserType;
 import br.com.devjf.salessync.util.UserSession;
@@ -33,6 +32,7 @@ import javax.swing.JFrame;
 public class MainAppView extends javax.swing.JFrame {
     // Singleton instance
     private static MainAppView instance;
+    private final UserController userController;
     private static final String DASHBOARD_PANEL = "Dashboard";
     public static final String SALES_PANEL = "Vendas";
     public static final String CUSTOMERS_PANEL = "Clientes";
@@ -51,6 +51,7 @@ public class MainAppView extends javax.swing.JFrame {
         initComponents();
         // Set this instance as the singleton instance
         instance = this;
+        userController = new UserController();
         initPanels();
         setupListeners();
     }
@@ -97,6 +98,9 @@ public class MainAppView extends javax.swing.JFrame {
     private void navigateToPanel(String panelName) {
         CardLayout cardLayout = (CardLayout) selectedPanel.getLayout();
         String panelKey = getPanelKeyFromName(panelName);
+        
+        // Registrar atividade do usuário ao navegar para um novo painel
+        registerUserActivity("Acessou " + panelName);
         // Verifica se o painel já foi carregado
         if (!loadedPanels.containsKey(panelKey)) {
             try {
@@ -123,6 +127,15 @@ public class MainAppView extends javax.swing.JFrame {
         SwingUtilities.invokeLater(() -> {
             selectedPanel.revalidate();
             selectedPanel.repaint();
+            
+            // Atualiza o dashboard se estiver sendo exibido
+            if (panelKey.equals(DASHBOARD_PANEL) && loadedPanels.containsKey(DASHBOARD_PANEL)) {
+                Component dashboardPanel = loadedPanels.get(DASHBOARD_PANEL);
+                if (dashboardPanel instanceof DashboardForm) {
+                    DashboardForm dashboard = (DashboardForm) dashboardPanel;
+                    dashboard.updateUserInfo();
+                }
+            }
         });
     }
 
@@ -222,7 +235,6 @@ public class MainAppView extends javax.swing.JFrame {
         });
     }
 
-    @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -258,14 +270,12 @@ public class MainAppView extends javax.swing.JFrame {
         selectionList.setForeground(new java.awt.Color(160, 174, 192));
         selectionList.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Dashboard", "Vendas", "Clientes", "Ordens de Serviço", "Despesas", "Relatórios", "Usuários", "Logs do Sistema" };
-            @Override
             public int getSize() { return strings.length; }
-            @Override
             public String getElementAt(int i) { return strings[i]; }
         });
         selectionList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         selectionList.setAutoscrolls(false);
-        selectionList.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        selectionList.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         selectionList.setSelectionBackground(new java.awt.Color(58, 63, 85));
         selectionList.setSelectionForeground(new java.awt.Color(255, 255, 255));
         selectionList.setBorder(javax.swing.BorderFactory.createEmptyBorder());
@@ -286,9 +296,12 @@ public class MainAppView extends javax.swing.JFrame {
         titlePanel.setPreferredSize(new java.awt.Dimension(1007, 60));
         titlePanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        permitionLabel.setBackground(new java.awt.Color(51, 51, 51));
+        permitionLabel.setFont(new java.awt.Font("Liberation Sans", 0, 10)); // NOI18N
+        permitionLabel.setForeground(new java.awt.Color(51, 51, 51));
         permitionLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         permitionLabel.setText(getPermitionLabel());
-        titlePanel.add(permitionLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(950, 20, 30, -1));
+        titlePanel.add(permitionLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(950, 20, 30, 20));
 
         permitionIcon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         permitionIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/EllipsePermission.png"))); // NOI18N
@@ -300,8 +313,7 @@ public class MainAppView extends javax.swing.JFrame {
         titleLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         titleLbl.setText(selectionList.getSelectedValue());
         titleLbl.setToolTipText("");
-        // Definir uma largura fixa para o label e centralizá-lo
-        titlePanel.add(titleLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 1007, 45));
+        titlePanel.add(titleLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 10, -1, 45));
 
         selectedPanel.setLayout(new java.awt.CardLayout());
 
@@ -344,9 +356,29 @@ public class MainAppView extends javax.swing.JFrame {
             case OWNER:
                 return "OWN";
             case EMPLOYEE:
-                return "EMPL";
+                return "EMP";
             default:
                 return "???";
+        }
+    }
+
+    /**
+     * Atualiza o label de permissão com base no usuário logado
+     */
+    public void updatePermissionLabel() {
+        if (permitionLabel != null) {
+            permitionLabel.setText(getPermitionLabel());
+        }
+    }
+    
+    /**
+     * Registra uma atividade do usuário logado
+     * @param description Descrição da atividade
+     */
+    private void registerUserActivity(String description) {
+        User loggedUser = UserSession.getInstance().getLoggedUser();
+        if (loggedUser != null) {
+            userController.registerActivity(loggedUser, description);
         }
     }
 
@@ -361,6 +393,10 @@ public class MainAppView extends javax.swing.JFrame {
             System.err.println("Erro: Instância do MainAppView não encontrada");
             return;
         }
+        
+        // Registrar atividade do usuário ao redirecionar para um novo painel
+        instance.registerUserActivity("Redirecionado para " + panelKey);
+        
         CardLayout cardLayout = (CardLayout) instance.selectedPanel.getLayout();
         // Verifica se o painel já está carregado
         if (instance.loadedPanels.containsKey(panelKey)) {
@@ -389,6 +425,15 @@ public class MainAppView extends javax.swing.JFrame {
         instance.selectedPanel.repaint();
         // Atualiza o título
         instance.updateTitle(panelKey);
+        
+        // Atualiza o dashboard se estiver sendo exibido
+        if (panelKey.equals(DASHBOARD_PANEL) && instance.loadedPanels.containsKey(DASHBOARD_PANEL)) {
+            Component dashboardPanel = instance.loadedPanels.get(DASHBOARD_PANEL);
+            if (dashboardPanel instanceof DashboardForm) {
+                DashboardForm dashboard = (DashboardForm) dashboardPanel;
+                dashboard.updateUserInfo();
+            }
+        }
     }
 
     /**
@@ -436,20 +481,31 @@ public class MainAppView extends javax.swing.JFrame {
 
     /**
      * Updates the selection in the side menu list
-     * 
+     *
      * @param itemName The name of the item to select
      */
     public static void updateSelectionList(String itemName) {
         MainAppView instance = getInstance();
-        if (instance == null) return;
-        
+        if (instance == null) {
+            return;
+        }
         // Find the index of the item in the list model
         for (int i = 0; i < instance.selectionList.getModel().getSize(); i++) {
-            if (itemName.equals(instance.selectionList.getModel().getElementAt(i))) {
+            if (itemName.equals(
+                    instance.selectionList.getModel().getElementAt(i))) {
                 instance.selectionList.setSelectedIndex(i);
                 break;
             }
         }
+    }
+
+    /**
+     * Retorna a lista de seleção do menu lateral
+     *
+     * @return Lista de seleção do menu lateral
+     */
+    public javax.swing.JList<String> getSelectionList() {
+        return this.selectionList;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

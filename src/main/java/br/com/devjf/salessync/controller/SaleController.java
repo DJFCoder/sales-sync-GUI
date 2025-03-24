@@ -2,42 +2,50 @@ package br.com.devjf.salessync.controller;
 
 import java.util.List;
 import java.util.Map;
-
 import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.model.SaleItem;
 import br.com.devjf.salessync.service.SaleService;
 
 public class SaleController {
     private final SaleService saleService;
-    
+
     public SaleController() {
         this.saleService = new SaleService();
     }
-    
+
+    public boolean createSale(Sale sale) {
+        // Validar a venda antes de registrar
+        if (saleService.validateSale(sale)) {
+            // Registrar a venda com seus itens em uma única transação
+            return saleService.registerSale(sale);
+        }
+        return false;
+    }
+
     public boolean registerSale(Sale sale) {
         return saleService.registerSale(sale);
     }
-    
+
     public boolean updateSale(Sale sale) {
         return saleService.updateSale(sale);
     }
-    
+
     public boolean deleteSale(Integer id) {
         // Instead of using setDeleted, we should use the cancelSale method from the service
         // which internally sets the canceled flag to true
         return saleService.cancelSale(id);
     }
-    
+
     public Sale findSaleById(Integer id) {
         // Using the correct method from SaleService
         return saleService.findSaleById(id);
     }
-    
+
     public List<Sale> listSales(Map<String, Object> filters) {
         // Using the correct method from SaleService
         return saleService.listSales(filters);
     }
-    
+
     public List<SaleItem> getSaleItems(Integer saleId) {
         Sale sale = findSaleById(saleId);
         if (sale == null) {
@@ -45,7 +53,7 @@ public class SaleController {
         }
         return sale.getItems();
     }
-    
+
     public boolean addItemToSale(Integer saleId, SaleItem item) {
         Sale sale = findSaleById(saleId);
         if (sale == null) {
@@ -54,7 +62,7 @@ public class SaleController {
         sale.addItem(item);
         return saleService.updateSale(sale);
     }
-    
+
     public boolean removeItemFromSale(Integer saleId, Integer itemId) {
         Sale sale = findSaleById(saleId);
         if (sale == null) {
@@ -68,23 +76,21 @@ public class SaleController {
                 break;
             }
         }
-        
         if (itemToRemove != null) {
             sale.getItems().remove(itemToRemove);
             return saleService.updateSale(sale);
         }
         return false;
     }
-    
+
     public boolean applySaleDiscount(Integer saleId, double discountAmount) {
         Sale sale = findSaleById(saleId);
         if (sale == null) {
             return false;
         }
-        
         // Use the applyDiscounts method from SaleService instead
-        Sale updatedSale = saleService.applyDiscounts(sale, discountAmount);
-        
+        Sale updatedSale = saleService.applyDiscounts(sale,
+                discountAmount);
         // Update the sale if discount was applied
         if (updatedSale != null) {
             return saleService.updateSale(updatedSale);

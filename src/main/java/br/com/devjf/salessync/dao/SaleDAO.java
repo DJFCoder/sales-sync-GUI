@@ -85,7 +85,9 @@ public class SaleDAO implements DAO<Sale> {
     public List<Sale> findAll() {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
-            TypedQuery<Sale> query = em.createQuery("SELECT s FROM Sale s", Sale.class);
+            TypedQuery<Sale> query = em.createQuery(
+                    "SELECT s FROM Sale s ORDER BY s.canceled ASC, s.id DESC", 
+                    Sale.class);
             return query.getResultList();
         } finally {
             em.close();

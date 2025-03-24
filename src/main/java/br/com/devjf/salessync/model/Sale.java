@@ -30,14 +30,11 @@ public class Sale {
     private Double discountAmount;
     
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_method_id", nullable = false)
+    @Column(name = "payment_method", nullable = false)
     private PaymentMethod paymentMethod;
     
     @Column(name = "payment_date")
     private LocalDateTime paymentDate;
-    
-    @Column(columnDefinition = "TEXT")
-    private String notes;
     
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SaleItem> items = new ArrayList<>();
@@ -147,14 +144,6 @@ public class Sale {
 
     public void setPaymentMethod(PaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
     }
 
     public List<SaleItem> getItems() {

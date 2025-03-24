@@ -1,5 +1,6 @@
 package br.com.devjf.salessync.view.forms.newobjectforms;
 
+import br.com.devjf.salessync.controller.SaleController;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.HeadlessException;
@@ -31,6 +32,7 @@ import br.com.devjf.salessync.util.TableButtonRenderer;
 import br.com.devjf.salessync.util.UserSession;
 import br.com.devjf.salessync.util.ViewUtil;
 import br.com.devjf.salessync.view.MainAppView;
+import br.com.devjf.salessync.view.forms.SalesForm;
 
 public class NewSaleForm extends javax.swing.JFrame {
     private DefaultTableModel tableModel;
@@ -43,6 +45,9 @@ public class NewSaleForm extends javax.swing.JFrame {
     private final List<SaleItem> saleItems = new ArrayList<>();
     private User currentUser;
 
+    /**
+     * Construtor padrão para criar uma nova venda.
+     */
     public NewSaleForm() {
         initComponents();
         setupTable();
@@ -300,6 +305,7 @@ public class NewSaleForm extends javax.swing.JFrame {
             };
 
             @Override
+            @SuppressWarnings("unchecked")
             public Class getColumnClass(int columnIndex) {
                 return types[columnIndex];
             }
@@ -671,6 +677,104 @@ public class NewSaleForm extends javax.swing.JFrame {
         addNewRow();
     }//GEN-LAST:event_addItemBtnActionPerformed
 
+    /**
+     * Atualiza a tabela de vendas no SalesForm.
+     */
+    private void refreshSalesTable() {
+        // Obter a instância do SalesForm através do MainAppView
+        SalesForm salesForm = MainAppView.getInstance();
+        if (salesForm != null) {
+            // Chamar o método refreshTable do SalesForm
+            salesForm.refreshTable();
+        }
+    }
+
+    /**
+     * Construtor para editar uma venda existente.
+     *
+     * @param sale A venda a ser editada
+     */
+    public NewSaleForm(Sale sale) {
+        initComponents();
+        setupTable();
+        // Configurar o formulário para edição
+        this.saleToCreate = sale;
+        this.selectedCustomer = sale.getCustomer();
+        this.currentUser = UserSession.getInstance().getLoggedUser();
+        // Preencher os campos do formulário com os dados da venda
+        loadSaleData(sale);
+        // Adicionar listener para o campo de desconto
+        discountField.getDocument().addDocumentListener(
+                new javax.swing.event.DocumentListener() {
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                updateTotals();
+            }
+
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                updateTotals();
+            }
+
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                updateTotals();
+            }
+        });
+        // Alterar o texto do botão para "Atualizar Venda"
+        newSaleBtn.setText("Atualizar Venda");
+    }
+
+    /**
+     * Carrega os dados da venda no formulário para edição.
+     *
+     * @param sale A venda a ser editada
+     */
+    private void loadSaleData(Sale sale) {
+        // Preencher os campos com os dados da venda
+        nameField.setText(sale.getCustomer().getName());
+        // Selecionar o método de pagamento
+        if (sale.getPaymentMethod() != null) {
+            paymentMethodCmb.setSelectedItem(sale.getPaymentMethod().toString());
+        }
+        // Definir a data de pagamento
+        if (sale.getPaymentDate() != null) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            paymentMethodField.setText(dateFormat.format(sale.getPaymentDate()));
+        }
+        // Carregar os itens da venda na tabela
+        loadSaleItems(sale);
+        // Atualizar o desconto
+        if (sale.getDiscountAmount() != null) {
+            discountField.setText(sale.getDiscountAmount().toString());
+        }
+        // Atualizar os totais
+        updateTotals();
+    }
+
+    /**
+     * Carrega os itens da venda na tabela.
+     *
+     * @param sale A venda com os itens a serem carregados
+     */
+    private void loadSaleItems(Sale sale) {
+        // Limpar a tabela
+        while (tableModel.getRowCount() > 0) {
+            tableModel.removeRow(0);
+        }
+        // Adicionar os itens da venda à tabela
+        for (SaleItem item : sale.getItems()) {
+            Object[] rowData = {
+                item.getDescription(),
+                item.getQuantity(),
+                currencyFormat.format(item.getUnitPrice()),
+                currencyFormat.format(item.getQuantity() * item.getUnitPrice())
+            };
+            tableModel.addRow(rowData);
+            saleItems.add(item);
+        }
+    }
+
     private void newSaleBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newSaleBtnActionPerformed
         try {
             // Validate form data
@@ -709,18 +813,32 @@ public class NewSaleForm extends javax.swing.JFrame {
             }
             // Prepare the sale object
             Sale sale = prepareSaleObject();
-            // SaleController controller = new SaleController();
-            // controller.createSale(sale);
-            // Show success message
-            JOptionPane.showMessageDialog(this,
-                    "Venda registrada com sucesso!",
-                    "Sucesso",
-                    JOptionPane.INFORMATION_MESSAGE);
-            // Return to the SalesForm panel in MainAppView
-                MainAppView.redirectToPanel(MainAppView.SALES_PANEL);
+            SaleController controller = new SaleController();
+            // Verificar se é uma edição ou uma nova venda
+            boolean success;
+            if (saleToCreate.getId() != null) {
+                // É uma edição, então atualizar a venda existente
+                sale.setId(saleToCreate.getId()); // Garantir que o ID seja mantido
+                success = controller.updateSale(sale);
+                JOptionPane.showMessageDialog(this,
+                        "Venda atualizada com sucesso!",
+                        "Sucesso",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                // É uma nova venda, então criar uma nova
+                success = controller.createSale(sale);
+                JOptionPane.showMessageDialog(this,
+                        "Venda registrada com sucesso!",
+                        "Sucesso",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+            // Return to the SalesForm panel in MainAppView and refresh the table
+            MainAppView.redirectToPanel(MainAppView.SALES_PANEL);
+            // Atualizar a tabela de vendas no SalesForm
+            refreshSalesTable();
         } catch (HeadlessException e) {
             JOptionPane.showMessageDialog(this,
-                    "Erro ao registrar a venda:\n" + e.getMessage(),
+                    "Erro ao processar a venda:\n" + e.getMessage(),
                     "Erro",
                     JOptionPane.ERROR_MESSAGE);
         }

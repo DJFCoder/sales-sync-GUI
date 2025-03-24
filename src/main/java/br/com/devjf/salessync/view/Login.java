@@ -1,12 +1,43 @@
 package br.com.devjf.salessync.view;
 
+import br.com.devjf.salessync.controller.UserController;
+import br.com.devjf.salessync.model.User;
+import br.com.devjf.salessync.model.UserType;
+import br.com.devjf.salessync.util.UserSession;
 import br.com.devjf.salessync.util.ViewUtil;
 import com.formdev.flatlaf.FlatClientProperties;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.HeadlessException;
+import java.util.concurrent.ExecutionException;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
+import javax.swing.SwingWorker;
 
 public class Login extends javax.swing.JFrame {
+    private JProgressBar loadingBar;
+
     public Login() {
         initComponents();
+        setupLoadingBar();
+    }
+
+    private void setupLoadingBar() {
+        // Inicializar a barra de progresso
+        loadingBar = new JProgressBar();
+        loadingBar.setIndeterminate(true);
+        loadingBar.setForeground(new Color(33,
+                150,
+                243));
+        loadingBar.setVisible(false);
+        // Adicionar a barra de progresso ao painel principal
+        mainPanel.add(loadingBar);
+        // Posicionar a barra abaixo do botão de login
+        loadingBar.setBounds(38,
+                320,
+                310,
+                5);
     }
 
     @SuppressWarnings("unchecked")
@@ -167,7 +198,7 @@ public class Login extends javax.swing.JFrame {
                 .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(25, 25, 25)
                 .addComponent(loginBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(10, 10, 10)
                 .addComponent(forgotPasswordLbl)
                 .addGap(90, 90, 90))
         );
@@ -181,9 +212,97 @@ public class Login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
-        new MainAppView().setVisible(true);
-        dispose();
+        final String login = loginField.getText().trim();
+        final String password = new String(passwordField.getPassword()).trim();
+        // Validação de campos vazios
+        if (login.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Por favor, preencha todos os campos.",
+                    "Erro de Login",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        // Mostrar indicadores de carregamento
+        loginBtn.setEnabled(false);
+        loadingBar.setVisible(true);
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        // Usar SwingWorker para executar a autenticação em segundo plano
+        SwingWorker<User, Void> worker = new SwingWorker<User, Void>() {
+            @Override
+            protected User doInBackground() throws Exception {
+                // Simular um pequeno atraso para mostrar o loading (pode ser removido em produção)
+                Thread.sleep(800);
+                // Autenticação do usuário
+                UserController userController = new UserController();
+                return userController.authenticateUser(login,
+                        password);
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    User authenticatedUser = get();
+                    // Esconder indicadores de carregamento
+                    loadingBar.setVisible(false);
+                    setCursor(Cursor.getDefaultCursor());
+                    loginBtn.setEnabled(true);
+                    if (authenticatedUser != null) {
+                        // Configurar a sessão do usuário
+                        UserSession.getInstance().setLoggedUser(
+                                authenticatedUser);
+                        // Abrir a tela principal
+                        MainAppView mainView = new MainAppView();
+                        mainView.setVisible(true);
+                        // Configurar acesso baseado no tipo de usuário
+                        configureAccessByUserType(authenticatedUser.getType(),
+                                mainView);
+                        // Fechar a tela de login
+                        dispose();
+                    } else {
+                        JOptionPane.showMessageDialog(Login.this,
+                                "Usuário ou senha inválidos.",
+                                "Erro de Login",
+                                JOptionPane.ERROR_MESSAGE);
+                        passwordField.setText("");
+                    }
+                } catch (HeadlessException | InterruptedException | ExecutionException e) {
+                    // Esconder indicadores de carregamento
+                    loadingBar.setVisible(false);
+                    setCursor(Cursor.getDefaultCursor());
+                    loginBtn.setEnabled(true);
+                    JOptionPane.showMessageDialog(Login.this,
+                            "Erro ao tentar autenticar: " + e.getMessage(),
+                            "Erro de Sistema",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
+        // Iniciar o worker
+        worker.execute();
     }//GEN-LAST:event_loginBtnActionPerformed
+
+    /**
+     * Configura o acesso às funcionalidades com base no tipo de usuário
+     *
+     * @param userType Tipo do usuário autenticado
+     * @param mainView Referência à tela principal
+     */
+    private void configureAccessByUserType(UserType userType, MainAppView mainView) {
+        try {
+            // Não modificamos o modelo da lista, apenas configuramos a visibilidade dos itens
+            // com base no tipo de usuário
+            JList<String> selectionList = mainView.getSelectionList();
+            // Garantir que o Dashboard seja selecionado por padrão
+            selectionList.setSelectedIndex(0);
+            // Forçar a atualização da UI
+            mainView.updateTitle("Dashboard");
+            mainView.showPanel("Dashboard");
+            // Atualizar o label de permissão
+            mainView.updatePermissionLabel();
+        } catch (Exception e) {
+            System.err.println("Erro ao configurar acesso: " + e.getMessage());
+        }
+    }
 
     private void forgotPasswordLblMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_forgotPasswordLblMouseClicked
         JOptionPane.showMessageDialog(null,

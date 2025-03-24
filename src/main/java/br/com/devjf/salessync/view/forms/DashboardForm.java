@@ -1,12 +1,98 @@
 package br.com.devjf.salessync.view.forms;
 
+import br.com.devjf.salessync.controller.UserController;
+import br.com.devjf.salessync.model.User;
+import br.com.devjf.salessync.model.UserActivity;
+import br.com.devjf.salessync.util.UserSession;
 import br.com.devjf.salessync.util.ViewUtil;
 import br.com.devjf.salessync.view.Login;
 import br.com.devjf.salessync.view.MainAppView;
 
+import java.util.List;
+
 public class DashboardForm extends javax.swing.JFrame {
+    private final UserController userController;
+    private User loggedUser;
+    
     public DashboardForm() {
         initComponents();
+        userController = new UserController();
+        loggedUser = UserSession.getInstance().getLoggedUser();
+        initUserData();
+    }
+    
+    /**
+     * Inicializa os dados do usuário no dashboard
+     * Preenche as informações do usuário logado e suas atividades recentes
+     */
+    private void initUserData() {
+        if (loggedUser == null) {
+            return;
+        }
+        updateUserInfo();
+        
+    }
+    
+    /**
+     * Atualiza as informações do usuário e suas atividades no dashboard
+     * Este método pode ser chamado a qualquer momento para atualizar os dados exibidos
+     */
+    public void updateUserInfo() {
+        if (loggedUser == null) {
+            return;
+        }
+        
+        // Atualiza o nome de boas-vindas
+        welcomeLbl.setText("Bem vindo(a), " + loggedUser.getName());
+        
+        // Atualiza o último acesso
+        lastAccessLbl.setText("Último acesso: " + userController.getLastAccessFormatted(loggedUser));
+        
+        // Atualiza as informações do perfil do usuário
+        nameLbl.setText("Nome: " + loggedUser.getName());
+        permitionLbl.setText("Permissão: " + userController.getUserTypeInPortuguese(loggedUser.getType()));
+        statusLbl.setText("Status: " + (loggedUser.isActive() ? "Ativo" : "Inativo"));
+        
+        // Busca as atividades recentes do usuário (últimas 3)
+        List<UserActivity> recentActivities = userController.getRecentActivities(loggedUser, 3);
+        
+        // Atualiza as labels de atividades
+        if (!recentActivities.isEmpty()) {
+            // Primeira atividade (mais recente)
+            if (recentActivities.size() >= 1) {
+                UserActivity firstActivity = recentActivities.get(0);
+                fstActivitieLbl.setText(firstActivity.getDescription());
+                fstTimeActivitieLbl.setText(firstActivity.getFormattedTimeShort());
+            }
+            
+            // Segunda atividade
+            if (recentActivities.size() >= 2) {
+                UserActivity secondActivity = recentActivities.get(1);
+                scdActivitieLbl.setText(secondActivity.getDescription());
+                scdTimeActivitieLbl.setText(secondActivity.getFormattedTimeShort());
+            } else {
+                scdActivitieLbl.setText("Nenhuma atividade");
+                scdTimeActivitieLbl.setText("");
+            }
+            
+            // Terceira atividade
+            if (recentActivities.size() >= 3) {
+                UserActivity thirdActivity = recentActivities.get(2);
+                trdActivitieLbl.setText(thirdActivity.getDescription());
+                trdTimeActivitieLbl.setText(thirdActivity.getFormattedTimeShort());
+            } else {
+                trdActivitieLbl.setText("Nenhuma atividade");
+                trdTimeActivitieLbl.setText("");
+            }
+        } else {
+            // Caso não haja atividades
+            fstActivitieLbl.setText("Nenhuma atividade registrada");
+            fstTimeActivitieLbl.setText("");
+            scdActivitieLbl.setText("");
+            scdTimeActivitieLbl.setText("");
+            trdActivitieLbl.setText("");
+            trdTimeActivitieLbl.setText("");
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -64,7 +150,7 @@ public class DashboardForm extends javax.swing.JFrame {
         newSaleLink.setForeground(new java.awt.Color(134, 157, 249));
         newSaleLink.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         newSaleLink.setText("Registrar nova venda");
-        newSaleLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        newSaleLink.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         newSaleLink.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 newSaleLinkMouseClicked(evt);
@@ -75,7 +161,7 @@ public class DashboardForm extends javax.swing.JFrame {
         salesLink.setForeground(new java.awt.Color(134, 157, 249));
         salesLink.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         salesLink.setText("Ver histórico");
-        salesLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        salesLink.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         salesLink.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 salesLinkMouseClicked(evt);
@@ -106,7 +192,7 @@ public class DashboardForm extends javax.swing.JFrame {
                 .addComponent(newSaleLink)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(salesLink)
-                .addContainerGap(31, Short.MAX_VALUE))
+                .addContainerGap(29, Short.MAX_VALUE))
         );
 
         customerPnl.setPreferredSize(new java.awt.Dimension(170, 125));
@@ -120,7 +206,7 @@ public class DashboardForm extends javax.swing.JFrame {
         newCustormerLink.setForeground(new java.awt.Color(134, 157, 249));
         newCustormerLink.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         newCustormerLink.setText("Novo Cliente");
-        newCustormerLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        newCustormerLink.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         newCustormerLink.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 newCustormerLinkMouseClicked(evt);
@@ -131,7 +217,7 @@ public class DashboardForm extends javax.swing.JFrame {
         customersLink.setForeground(new java.awt.Color(134, 157, 249));
         customersLink.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         customersLink.setText("Buscar Cliente");
-        customersLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        customersLink.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         customersLink.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 customersLinkMouseClicked(evt);
@@ -143,7 +229,7 @@ public class DashboardForm extends javax.swing.JFrame {
         customerPnlLayout.setHorizontalGroup(
             customerPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, customerPnlLayout.createSequentialGroup()
-                .addContainerGap(46, Short.MAX_VALUE)
+                .addContainerGap(39, Short.MAX_VALUE)
                 .addGroup(customerPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(customersLink)
                     .addComponent(newCustormerLink)
@@ -159,7 +245,7 @@ public class DashboardForm extends javax.swing.JFrame {
                 .addComponent(newCustormerLink)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(customersLink)
-                .addContainerGap(31, Short.MAX_VALUE))
+                .addContainerGap(29, Short.MAX_VALUE))
         );
 
         serviceOrderPnl.setPreferredSize(new java.awt.Dimension(170, 125));
@@ -173,7 +259,7 @@ public class DashboardForm extends javax.swing.JFrame {
         newServiceOrderLink.setForeground(new java.awt.Color(134, 157, 249));
         newServiceOrderLink.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         newServiceOrderLink.setText("Nova O.S.");
-        newServiceOrderLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        newServiceOrderLink.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         newServiceOrderLink.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 newServiceOrderLinkMouseClicked(evt);
@@ -184,7 +270,7 @@ public class DashboardForm extends javax.swing.JFrame {
         serviceOrdersLink.setForeground(new java.awt.Color(134, 157, 249));
         serviceOrdersLink.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         serviceOrdersLink.setText("Ver Pendentes");
-        serviceOrdersLink.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        serviceOrdersLink.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         serviceOrdersLink.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 serviceOrdersLinkMouseClicked(evt);
@@ -201,7 +287,7 @@ public class DashboardForm extends javax.swing.JFrame {
                     .addComponent(serviceOrdersLbl)
                     .addComponent(newServiceOrderLink)
                     .addComponent(serviceOrdersLink))
-                .addContainerGap(23, Short.MAX_VALUE))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
         serviceOrderPnlLayout.setVerticalGroup(
             serviceOrderPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -212,7 +298,7 @@ public class DashboardForm extends javax.swing.JFrame {
                 .addComponent(newServiceOrderLink)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(serviceOrdersLink)
-                .addContainerGap(31, Short.MAX_VALUE))
+                .addContainerGap(29, Short.MAX_VALUE))
         );
 
         userPnl.setPreferredSize(new java.awt.Dimension(291, 373));
@@ -235,8 +321,8 @@ public class DashboardForm extends javax.swing.JFrame {
         userPnl.setLayout(userPnlLayout);
         userPnlLayout.setHorizontalGroup(
             userPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(userPnlLayout.createSequentialGroup()
-                .addGap(115, 115, 115)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, userPnlLayout.createSequentialGroup()
+                .addContainerGap(107, Short.MAX_VALUE)
                 .addGroup(userPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(nameLbl)
                     .addComponent(profileLbl)
@@ -247,7 +333,7 @@ public class DashboardForm extends javax.swing.JFrame {
         userPnlLayout.setVerticalGroup(
             userPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(userPnlLayout.createSequentialGroup()
-                .addGap(35, 35, 35)
+                .addGap(60, 60, 60)
                 .addComponent(profileLbl)
                 .addGap(60, 60, 60)
                 .addComponent(nameLbl)
@@ -255,7 +341,7 @@ public class DashboardForm extends javax.swing.JFrame {
                 .addComponent(permitionLbl)
                 .addGap(20, 20, 20)
                 .addComponent(statusLbl)
-                .addContainerGap(146, Short.MAX_VALUE))
+                .addContainerGap(120, Short.MAX_VALUE))
         );
 
         activitiesPnl.setPreferredSize(new java.awt.Dimension(570, 219));
@@ -294,7 +380,7 @@ public class DashboardForm extends javax.swing.JFrame {
         activitiesPnlLayout.setHorizontalGroup(
             activitiesPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(activitiesPnlLayout.createSequentialGroup()
-                .addContainerGap(134, Short.MAX_VALUE)
+                .addContainerGap(127, Short.MAX_VALUE)
                 .addGroup(activitiesPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(fstActivitieLbl)
                     .addComponent(activitiesLbl)
@@ -303,12 +389,12 @@ public class DashboardForm extends javax.swing.JFrame {
                     .addComponent(scdTimeActivitieLbl)
                     .addComponent(trdActivitieLbl)
                     .addComponent(trdTimeActivitieLbl))
-                .addGap(0, 148, Short.MAX_VALUE))
+                .addGap(0, 141, Short.MAX_VALUE))
         );
         activitiesPnlLayout.setVerticalGroup(
             activitiesPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, activitiesPnlLayout.createSequentialGroup()
-                .addContainerGap(21, Short.MAX_VALUE)
+                .addContainerGap(29, Short.MAX_VALUE)
                 .addComponent(activitiesLbl)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(fstActivitieLbl)
@@ -406,9 +492,27 @@ public class DashboardForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+
     private void logoffBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoffBtnActionPerformed
+        // Obter o usuário logado
+        User loggedUser = UserSession.getInstance().getLoggedUser();
+        
+        // Registrar a atividade de logout
+        if (loggedUser != null) {
+            UserController userController = new UserController();
+            userController.registerActivity(loggedUser, "Logout do sistema");
+        }
+        
+        // Limpar a sessão do usuário
+        UserSession.getInstance().clearSession();
+        
+        // Fechar a janela principal
         MainAppView.getInstance().dispose();
-        new Login().setVisible(true);
+        
+        // Abrir a tela de login
+        java.awt.EventQueue.invokeLater(() -> {
+            new Login().setVisible(true);
+        });
     }//GEN-LAST:event_logoffBtnActionPerformed
 
     private void newSaleLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_newSaleLinkMouseClicked
