@@ -78,6 +78,16 @@ public class SaleService {
         return saleDAO.findById(id);
     }
 
+    /**
+     * Busca uma venda pelo ID com todas as suas relações carregadas.
+     * 
+     * @param id O ID da venda a ser buscada
+     * @return A venda encontrada com seus itens, cliente e usuário ou null se não existir
+     */
+    public Sale findSaleByIdWithRelationships(Integer id) {
+        return saleDAO.findByIdWithRelationships(id);
+    }
+
     public List<Sale> listSales(Map<String, Object> filters) {
         if (filters == null || filters.isEmpty()) {
             return saleDAO.findAll();

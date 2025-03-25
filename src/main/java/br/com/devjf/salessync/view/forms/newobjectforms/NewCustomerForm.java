@@ -1,11 +1,76 @@
 package br.com.devjf.salessync.view.forms.newobjectforms;
 
+import br.com.devjf.salessync.controller.CustomerController;
+import br.com.devjf.salessync.model.Customer;
 import br.com.devjf.salessync.util.ViewUtil;
 import br.com.devjf.salessync.view.MainAppView;
 
 public class NewCustomerForm extends javax.swing.JFrame {
+    private Customer customer;
+    private boolean isEditMode = false;
+    private final CustomerController customerController;
+
     public NewCustomerForm() {
         initComponents();
+        this.customerController = new CustomerController();
+        this.isEditMode = false;
+        this.titleField.setText("Cadastrar Cliente");
+    }
+
+    /**
+     * Construtor para edição de cliente existente
+     *
+     * @param customer O cliente a ser editado
+     */
+    public NewCustomerForm(Customer customer) {
+        initComponents();
+        this.customerController = new CustomerController();
+        // Se o cliente for fornecido diretamente, usá-lo
+        if (customer != null) {
+            this.customer = customer;
+        } else {
+            this.customer = null;
+        }
+        this.isEditMode = (this.customer != null);
+        this.titleField.setText(
+                isEditMode ? "Editar Cliente" : "Cadastrar Cliente");
+        // Preencher os campos com os dados do cliente
+        if (this.customer != null) {
+            nameField.setText(this.customer.getName());
+            taxIdField.setText(this.customer.getTaxId());
+            emailField.setText(this.customer.getEmail());
+            phoneField.setText(this.customer.getPhone());
+            adressField.setText(this.customer.getAddress());
+            observationField.setText(this.customer.getNotes());
+        }
+    }
+
+    /**
+     * Construtor para edição de cliente existente usando o ID
+     *
+     * @param customerId O ID do cliente a ser editado
+     */
+    public NewCustomerForm(Integer customerId) {
+        initComponents();
+        this.customerController = new CustomerController();
+        // Carregar o cliente do banco de dados usando o controller
+        if (customerId != null) {
+            this.customer = customerController.findCustomerById(customerId);
+        } else {
+            this.customer = null;
+        }
+        this.isEditMode = (this.customer != null);
+        this.titleField.setText(
+                isEditMode ? "Editar Cliente" : "Cadastrar Cliente");
+        // Preencher os campos com os dados do cliente
+        if (this.customer != null) {
+            nameField.setText(this.customer.getName());
+            taxIdField.setText(this.customer.getTaxId());
+            emailField.setText(this.customer.getEmail());
+            phoneField.setText(this.customer.getPhone());
+            adressField.setText(this.customer.getAddress());
+            observationField.setText(this.customer.getNotes());
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -215,13 +280,12 @@ public class NewCustomerForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
-        
+
     }//GEN-LAST:event_saveBtnActionPerformed
 
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
         MainAppView.redirectToPanel(MainAppView.CUSTOMERS_PANEL);
     }//GEN-LAST:event_cancelBtnActionPerformed
-    
     // new NewCustomerForm().setVisible(true);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

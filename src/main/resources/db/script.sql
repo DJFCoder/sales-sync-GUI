@@ -72,12 +72,13 @@ CREATE TABLE expenses (
 );
 
 -- Create sales table
+-- Create sales table
 CREATE TABLE sales (
     id INT AUTO_INCREMENT PRIMARY KEY,
     customer_id INT NOT NULL,
     user_id INT NOT NULL,
     date DATETIME NOT NULL,
-    payment_method ENUM('CASH', 'CREDIT_CARD', 'DEBIT_CARD', 'BANK_TRANSFER', 'PIX', 'BANK_SLIP', 'PAYCHECK'),
+    payment_method ENUM('DINHEIRO', 'CRÉDITO', 'DÉBITO', 'TRANSFERÊNCIA', 'PIX', 'BOLETO', 'CHEQUE'),
     payment_date DATETIME,
     subtotal_amount DECIMAL(10,2) NOT NULL,
     discount_amount DECIMAL(10,2) DEFAULT 0.00,
@@ -102,16 +103,19 @@ CREATE TABLE sale_items (
 );
 
 -- Create service_orders table
+-- Modificar a tabela service_orders para usar valores em português no ENUM
 CREATE TABLE service_orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     customer_id INT NOT NULL,
+    sale_id INT,  -- Opcional
     description TEXT NOT NULL,
     creation_date DATE NOT NULL,
     completion_date DATE,
-    status ENUM('PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELED') DEFAULT 'PENDING',
+    status ENUM('PENDENTE', 'EM ANDAMENTO', 'CANCELADA', 'FINALIZADA') DEFAULT 'PENDENTE',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (customer_id) REFERENCES customers(id)
+    FOREIGN KEY (customer_id) REFERENCES customers(id),
+    FOREIGN KEY (sale_id) REFERENCES sales(id)
 );
 
 -- Create system_logs table

@@ -1,6 +1,7 @@
 package br.com.devjf.salessync.dao;
 
 import br.com.devjf.salessync.model.Customer;
+import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.model.ServiceOrder;
 import br.com.devjf.salessync.model.ServiceStatus;
 import br.com.devjf.salessync.util.HibernateUtil;
@@ -131,6 +132,36 @@ public class ServiceOrderDAO implements DAO<ServiceOrder> {
             );
             query.setParameter("start", start);
             query.setParameter("end", end);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    // Add a method to find service orders by sale
+    public List<ServiceOrder> findBySale(Sale sale) {
+        EntityManager em = HibernateUtil.getEntityManager();
+        try {
+            TypedQuery<ServiceOrder> query = em.createQuery(
+                "SELECT s FROM ServiceOrder s WHERE s.sale = :sale ORDER BY s.requestDate DESC", 
+                ServiceOrder.class
+            );
+            query.setParameter("sale", sale);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+    
+    // Add a method to find service orders by customer and include sale information
+    public List<ServiceOrder> findByCustomerWithSales(Customer customer) {
+        EntityManager em = HibernateUtil.getEntityManager();
+        try {
+            TypedQuery<ServiceOrder> query = em.createQuery(
+                "SELECT s FROM ServiceOrder s LEFT JOIN FETCH s.sale WHERE s.customer = :customer ORDER BY s.requestDate DESC", 
+                ServiceOrder.class
+            );
+            query.setParameter("customer", customer);
             return query.getResultList();
         } finally {
             em.close();

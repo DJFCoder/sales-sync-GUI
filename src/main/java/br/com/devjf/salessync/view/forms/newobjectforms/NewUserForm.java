@@ -1,11 +1,125 @@
 package br.com.devjf.salessync.view.forms.newobjectforms;
 
+import br.com.devjf.salessync.controller.UserController;
+import br.com.devjf.salessync.model.User;
+import br.com.devjf.salessync.model.UserType;
 import br.com.devjf.salessync.util.ViewUtil;
 import br.com.devjf.salessync.view.MainAppView;
 
 public class NewUserForm extends javax.swing.JFrame {
+    
+    private User userToEdit;
+    private UserController userController;
+    private boolean isEditMode = false;
+    
     public NewUserForm() {
         initComponents();
+        this.userController = new UserController();
+        setupUserTypeComboBox();
+        // Set default status to active
+        statusCheckBox.setSelected(true);
+    }
+    
+    /**
+     * Constructor for editing an existing user
+     * 
+     * @param user The user to edit
+     */
+    public NewUserForm(User user) {
+        initComponents();
+        this.userToEdit = user;
+        this.userController = new UserController();
+        this.isEditMode = true;
+        
+        // Setup the form for editing
+        setupUserTypeComboBox();
+        loadUserData();
+        
+        // Change the title and button text
+        titleField.setText("Editar Usuário");
+        saveBtn.setText("Atualizar");
+        
+        // Password fields should be empty when editing
+        passwordField.setText("");
+        confirmPasswordField.setText("");
+        
+        // Add a note about password
+        passwordLbl.setText("Senha (deixe em branco para manter a atual)");
+    }
+    
+    /**
+     * Setup the user type combo box with available user types
+     */
+    private void setupUserTypeComboBox() {
+        userTypeCmb.removeAllItems();
+        userTypeCmb.addItem("Selecione");
+        
+        // Add all user types
+        for (UserType type : UserType.values()) {
+            userTypeCmb.addItem(getUserTypeDisplayName(type));
+        }
+    }
+    
+    /**
+     * Load user data into the form fields
+     */
+    private void loadUserData() {
+        if (userToEdit != null) {
+            // Set name and login
+            nameField.setText(userToEdit.getName());
+            loginField.setText(userToEdit.getLogin());
+            
+            // Set user type
+            UserType userType = userToEdit.getType();
+            for (int i = 0; i < userTypeCmb.getItemCount(); i++) {
+                String item = userTypeCmb.getItemAt(i);
+                if (item.equals(getUserTypeDisplayName(userType))) {
+                    userTypeCmb.setSelectedIndex(i);
+                    break;
+                }
+            }
+            
+            // Set active status
+            statusCheckBox.setSelected(userToEdit.isActive());
+        }
+    }
+    
+    /**
+     * Get display name for user type
+     * 
+     * @param type The user type
+     * @return The display name
+     */
+    private String getUserTypeDisplayName(UserType type) {
+        switch (type) {
+            case ADMIN:
+                return "Administrador";
+            case OWNER:
+                return "Proprietário";
+            case EMPLOYEE:
+                return "Funcionário";
+            default:
+                return "";
+        }
+    }
+    
+    /**
+     * Convert display name to UserType enum
+     * 
+     * @param displayName The display name
+     * @return The UserType enum
+     */
+    private UserType getUserTypeFromDisplayName(String displayName) {
+        switch (displayName) {
+            case "Administrador":
+                return UserType.ADMIN;
+            case "Proprietário":
+                return UserType.OWNER;
+            case "Funcionário":
+                return UserType.EMPLOYEE;
+            default:
+                return null;
+        }
     }
 
     @SuppressWarnings("unchecked")

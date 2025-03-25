@@ -20,8 +20,10 @@ public class TableEditButtonRenderer extends JButton implements TableCellRendere
     public TableEditButtonRenderer(String text) {
         setText(text);
         setOpaque(true);
-        setBackground(new java.awt.Color(76, 175, 80)); // Verde para edição
-        setForeground(new java.awt.Color(255, 255, 255));
+        // Change the background color to purple (RGB: 156,39,176)
+        setBackground(new java.awt.Color(156, 39, 176));
+        setForeground(java.awt.Color.WHITE);
+        // Apply standard corner radius if using ViewUtil
         ViewUtil.standardCornerRadius(this);
     }
     

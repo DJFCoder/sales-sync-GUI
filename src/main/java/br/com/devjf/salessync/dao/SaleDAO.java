@@ -4,6 +4,7 @@ import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.model.Customer;
 import br.com.devjf.salessync.util.HibernateUtil;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,7 +23,6 @@ public class SaleDAO implements DAO<Sale> {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            e.printStackTrace();
             return false;
         } finally {
             em.close();
@@ -41,7 +41,6 @@ public class SaleDAO implements DAO<Sale> {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            e.printStackTrace();
             return false;
         } finally {
             em.close();
@@ -64,7 +63,6 @@ public class SaleDAO implements DAO<Sale> {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            e.printStackTrace();
             return false;
         } finally {
             em.close();
@@ -130,6 +128,39 @@ public class SaleDAO implements DAO<Sale> {
             query.setParameter("start", start);
             query.setParameter("end", end);
             return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * Busca uma venda pelo ID com carregamento eager de itens, cliente e usuário.
+     *
+     * @param id O ID da venda a ser buscada
+     * @return A venda encontrada com suas relações ou null se não existir
+     */
+    public Sale findByIdWithRelationships(Integer id) {
+        EntityManager em = HibernateUtil.getEntityManager();
+        try {
+            try {
+                // Buscar a venda com join fetch para carregar os itens
+                Sale sale = em.createQuery(
+                        "SELECT s FROM Sale s "
+                        + "LEFT JOIN FETCH s.items "
+                        + "LEFT JOIN FETCH s.customer "
+                        + "LEFT JOIN FETCH s.user "
+                        + "WHERE s.id = :id",
+                        Sale.class)
+                        .setParameter("id", id)
+                        .getSingleResult();
+                return sale;
+            } catch (NoResultException e) {
+                System.err.println("Venda não encontrada com ID: " + id);
+                return null;
+            } catch (Exception e) {
+                System.err.println("Erro ao buscar venda por ID: " + e.getMessage());
+                return null;
+            }
         } finally {
             em.close();
         }

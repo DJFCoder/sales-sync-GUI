@@ -1,6 +1,5 @@
 package br.com.devjf.salessync.view.forms.newobjectforms;
 
-import br.com.devjf.salessync.controller.SaleController;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.HeadlessException;
@@ -14,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
+
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -21,6 +21,8 @@ import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+
+import br.com.devjf.salessync.controller.SaleController;
 import br.com.devjf.salessync.model.Customer;
 import br.com.devjf.salessync.model.PaymentMethod;
 import br.com.devjf.salessync.model.Sale;
@@ -124,38 +126,15 @@ public class NewSaleForm extends javax.swing.JFrame {
         }
         // Set payment method
         String selectedPaymentMethodStr = paymentMethodCmb.getSelectedItem().toString();
-        PaymentMethod paymentMethod = null;
-        // Map the combo box values to PaymentMethod enum values
-        switch (selectedPaymentMethodStr) {
-            case "DINHEIRO":
-                paymentMethod = PaymentMethod.CASH;
-                break;
-            case "CRÉDITO":
-                paymentMethod = PaymentMethod.CREDIT_CARD;
-                break;
-            case "DÉBITO":
-                paymentMethod = PaymentMethod.DEBIT_CARD;
-                break;
-            case "TRANSFERÊNCIA":
-                paymentMethod = PaymentMethod.BANK_TRANSFER;
-                break;
-            case "PIX":
-                paymentMethod = PaymentMethod.PIX;
-                break;
-            case "BOLETO":
-                paymentMethod = PaymentMethod.BANK_SLIP;
-                break;
-            case "CHEQUE":
-                paymentMethod = PaymentMethod.PAYCHECK;
-                break;
-            default:
-                JOptionPane.showMessageDialog(null,
-                        "Forma de Pagamento inválida.",
-                        "Pagamento não selecionado",
-                        JOptionPane.WARNING_MESSAGE);
-                break;
+        if (!"Selecione".equals(selectedPaymentMethodStr)) {
+            PaymentMethod paymentMethod = PaymentMethod.valueOf(selectedPaymentMethodStr);
+            saleToCreate.setPaymentMethod(paymentMethod);
+        } else {
+            JOptionPane.showMessageDialog(null,
+                    "Forma de Pagamento inválida.",
+                    "Pagamento não selecionado",
+                    JOptionPane.WARNING_MESSAGE);
         }
-        saleToCreate.setPaymentMethod(paymentMethod);
         // Set payment date if available
         String paymentDateStr = paymentMethodField.getText();
         if (paymentDateStr != null && !paymentDateStr.trim().isEmpty()) {
@@ -446,7 +425,7 @@ public class NewSaleForm extends javax.swing.JFrame {
         newSaleBtn.setBackground(new java.awt.Color(76, 175, 80));
         newSaleBtn.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         newSaleBtn.setForeground(new java.awt.Color(255, 255, 255));
-        newSaleBtn.setText("Nova Venda");
+        newSaleBtn.setText("Salvar");
         newSaleBtn.setPreferredSize(new java.awt.Dimension(150, 40));
         ViewUtil.standardCornerRadius(newSaleBtn);
         newSaleBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -567,7 +546,7 @@ public class NewSaleForm extends javax.swing.JFrame {
         cancelSaleBtn.setBackground(new java.awt.Color(175, 76, 78));
         cancelSaleBtn.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         cancelSaleBtn.setForeground(new java.awt.Color(255, 255, 255));
-        cancelSaleBtn.setText("Cancelar Venda");
+        cancelSaleBtn.setText("Cancelar");
         cancelSaleBtn.setPreferredSize(new java.awt.Dimension(150, 40));
         ViewUtil.standardCornerRadius(cancelSaleBtn);
         cancelSaleBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -681,8 +660,8 @@ public class NewSaleForm extends javax.swing.JFrame {
      * Atualiza a tabela de vendas no SalesForm.
      */
     private void refreshSalesTable() {
-        // Obter a instância do SalesForm através do MainAppView
-        SalesForm salesForm = MainAppView.getInstance();
+        // Obter a instância do SalesForm
+        SalesForm salesForm = SalesForm.getInstance();
         if (salesForm != null) {
             // Chamar o método refreshTable do SalesForm
             salesForm.refreshTable();
@@ -731,32 +710,58 @@ public class NewSaleForm extends javax.swing.JFrame {
      * @param sale A venda a ser editada
      */
     private void loadSaleData(Sale sale) {
-        // Preencher os campos com os dados da venda
-        nameField.setText(sale.getCustomer().getName());
-        // Selecionar o método de pagamento
-        if (sale.getPaymentMethod() != null) {
-            paymentMethodCmb.setSelectedItem(sale.getPaymentMethod().toString());
+        try {
+            // Preencher os campos com os dados da venda
+            if (sale.getCustomer() != null) {
+                nameField.setText(sale.getCustomer().getName());
+                selectedCustomer = sale.getCustomer();
+            }
+            
+            // Selecionar o método de pagamento
+            if (sale.getPaymentMethod() != null) {
+                paymentMethodCmb.setSelectedItem(mapPaymentMethodToDisplay(sale.getPaymentMethod()));
+            }
+            
+            // Definir a data de pagamento
+            if (sale.getPaymentDate() != null) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                // Convert LocalDateTime to Date
+                Date paymentDate = Date.from(sale.getPaymentDate().atZone(ZoneId.systemDefault()).toInstant());
+                paymentMethodField.setText(dateFormat.format(paymentDate));
+            } else {
+                // Set current date if payment date is null
+                setCurrentDateInPaymentField();
+            }
+            
+            // Carregar os itens da venda na tabela
+            loadSaleItems(sale);
+            
+            // Atualizar o desconto
+            if (sale.getDiscountAmount() != null) {
+                discountField.setText(sale.getDiscountAmount().toString());
+            }
+            
+            // Atualizar os totais
+            updateTotals();
+        } catch (Exception e) {
+            System.err.println("Erro ao carregar dados da venda: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, 
+                "Erro ao carregar dados da venda: " + e.getMessage(),
+                "Erro", JOptionPane.ERROR_MESSAGE);
         }
-        // Definir a data de pagamento
-        if (sale.getPaymentDate() != null) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            paymentMethodField.setText(dateFormat.format(sale.getPaymentDate()));
-        }
-        // Carregar os itens da venda na tabela
-        loadSaleItems(sale);
-        // Atualizar o desconto
-        if (sale.getDiscountAmount() != null) {
-            discountField.setText(sale.getDiscountAmount().toString());
-        }
-        // Atualizar os totais
-        updateTotals();
+    }
+    
+    /**
+     * Mapeia o enum PaymentMethod para o texto exibido no ComboBox
+     * 
+     * @param method O método de pagamento
+     * @return O texto a ser exibido no ComboBox
+     */
+    private String mapPaymentMethodToDisplay(PaymentMethod method) {
+        // Reurn enum name
+        return method.name();
     }
 
-    /**
-     * Carrega os itens da venda na tabela.
-     *
-     * @param sale A venda com os itens a serem carregados
-     */
     private void loadSaleItems(Sale sale) {
         // Limpar a tabela
         while (tableModel.getRowCount() > 0) {
@@ -787,12 +792,14 @@ public class NewSaleForm extends javax.swing.JFrame {
             }
             // Validate payment method
             String selectedPaymentMethodStr = paymentMethodCmb.getSelectedItem().toString();
-            if ("Selecione".equals(selectedPaymentMethodStr)) {
-                JOptionPane.showMessageDialog(this,
-                        "Por favor, selecione uma forma de pagamento.",
-                        "Forma de pagamento não selecionada",
+            if (!"Selecione".equals(selectedPaymentMethodStr)) {
+                PaymentMethod paymentMethod = PaymentMethod.valueOf(selectedPaymentMethodStr);
+                saleToCreate.setPaymentMethod(paymentMethod);
+            } else {
+                JOptionPane.showMessageDialog(null,
+                        "Forma de Pagamento inválida.",
+                        "Pagamento não selecionado",
                         JOptionPane.WARNING_MESSAGE);
-                return;
             }
             // Check if there are valid items in the table
             boolean hasValidItems = false;
@@ -820,6 +827,7 @@ public class NewSaleForm extends javax.swing.JFrame {
                 // É uma edição, então atualizar a venda existente
                 sale.setId(saleToCreate.getId()); // Garantir que o ID seja mantido
                 success = controller.updateSale(sale);
+                MainAppView.getInstance().registerUserActivity("Editou a venda ID: " + sale.getId());
                 JOptionPane.showMessageDialog(this,
                         "Venda atualizada com sucesso!",
                         "Sucesso",
@@ -827,6 +835,7 @@ public class NewSaleForm extends javax.swing.JFrame {
             } else {
                 // É uma nova venda, então criar uma nova
                 success = controller.createSale(sale);
+                MainAppView.getInstance().registerUserActivity("Registrou uma venda ID: " + sale.getId());
                 JOptionPane.showMessageDialog(this,
                         "Venda registrada com sucesso!",
                         "Sucesso",

@@ -4,18 +4,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import br.com.devjf.salessync.model.Customer;
+import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.model.ServiceOrder;
 import br.com.devjf.salessync.model.ServiceStatus;
 import br.com.devjf.salessync.service.CustomerService;
+import br.com.devjf.salessync.service.SaleService;
 import br.com.devjf.salessync.service.ServiceOrderService;
 
 public class ServiceOrderController {
     private final ServiceOrderService serviceOrderService;
     private final CustomerService customerService;
+    private final SaleService saleService;
     
     public ServiceOrderController() {
         this.serviceOrderService = new ServiceOrderService();
         this.customerService = new CustomerService();
+        this.saleService = new SaleService();
     }
     
     public boolean createServiceOrder(ServiceOrder order) {
@@ -84,5 +88,22 @@ public class ServiceOrderController {
     
     public double calculateExecutionTime(ServiceOrder order) {
         return serviceOrderService.calculateExecutionTime(order);
+    }
+    
+    // Add a method to find service orders by sale
+    public List<ServiceOrder> findServiceOrdersBySale(Integer saleId) {
+        Sale sale = saleService.findSaleById(saleId);
+        if (sale == null) {
+            return List.of();
+        }
+        
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("sale", sale);
+        return serviceOrderService.listServiceOrders(filters);
+    }
+    
+    // Add a method to find sales by customer
+    public List<Sale> findSalesByCustomerId(Integer customerId) {
+        return (List<Sale>) saleService.findSaleByIdWithRelationships(customerId);
     }
 }

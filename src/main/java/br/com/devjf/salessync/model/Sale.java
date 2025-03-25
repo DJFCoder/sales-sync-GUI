@@ -214,4 +214,18 @@ public class Sale {
         // Recalculate total when discount changes
         calculateTotal();
     }
+    
+    /**
+     * Obtém a forma de pagamento como string de forma segura
+     * 
+     * @return A forma de pagamento como string ou string vazia se for null
+     */
+    public String getPaymentMethodSafe() {
+        try {
+            return paymentMethod != null ? paymentMethod.toString() : "";
+        } catch (Exception e) {
+            System.err.println("Erro ao obter forma de pagamento: " + e.getMessage());
+            return ""; // Return empty string if there's an error
+        }
+    }
 }

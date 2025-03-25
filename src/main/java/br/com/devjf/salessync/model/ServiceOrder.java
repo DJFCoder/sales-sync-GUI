@@ -17,6 +17,11 @@ public class ServiceOrder {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
     
+    // Adicionar relação com Sale
+    @ManyToOne
+    @JoinColumn(name = "sale_id")
+    private Sale sale;
+    
     @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
     
@@ -157,5 +162,13 @@ public class ServiceOrder {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+    
+    public Sale getSale() {
+        return sale;
+    }
+    
+    public void setSale(Sale sale) {
+        this.sale = sale;
     }
 }

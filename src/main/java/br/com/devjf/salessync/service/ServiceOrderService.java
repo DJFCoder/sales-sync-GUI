@@ -8,6 +8,7 @@ import java.util.Map;
 
 import br.com.devjf.salessync.dao.ServiceOrderDAO;
 import br.com.devjf.salessync.model.Customer;
+import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.model.ServiceOrder;
 import br.com.devjf.salessync.model.ServiceStatus;
 
@@ -49,22 +50,46 @@ public class ServiceOrderService {
         return ChronoUnit.DAYS.between(requestDate, completionDate);
     }
     
+    // Add a method to find service orders by sale
+    public List<ServiceOrder> findServiceOrdersBySale(Sale sale) {
+        if (sale == null) {
+            return new ArrayList<>();
+        }
+        return serviceOrderDAO.findBySale(sale);
+    }
+    
+    // Add a method to find service orders by customer with sales
+    public List<ServiceOrder> findServiceOrdersByCustomerWithSales(Customer customer) {
+        if (customer == null) {
+            return new ArrayList<>();
+        }
+        return serviceOrderDAO.findByCustomerWithSales(customer);
+    }
+    
+    // Modify the existing listServiceOrders method to handle sale filters
     public List<ServiceOrder> listServiceOrders(Map<String, Object> filters) {
         if (filters == null || filters.isEmpty()) {
             return serviceOrderDAO.findAll();
         }
         
         // Handle different filter types
-        if (filters.containsKey("customerId")) {
+        if (filters.containsKey("customer")) {
             Customer customer = (Customer) filters.get("customer");
             return serviceOrderDAO.findByCustomer(customer);
         } else if (filters.containsKey("status")) {
             ServiceStatus status = (ServiceStatus) filters.get("status");
             return serviceOrderDAO.findByStatus(status);
+        } else if (filters.containsKey("sale")) {
+            Sale sale = (Sale) filters.get("sale");
+            return serviceOrderDAO.findBySale(sale);
         } else if (filters.containsKey("startDate") && filters.containsKey("endDate")) {
             LocalDate startDate = (LocalDate) filters.get("startDate");
             LocalDate endDate = (LocalDate) filters.get("endDate");
             return serviceOrderDAO.findByDateRange(startDate, endDate);
+        } else if (filters.containsKey("id")) {
+            Integer id = (Integer) filters.get("id");
+            ServiceOrder order = serviceOrderDAO.findById(id);
+            return order != null ? List.of(order) : List.of();
         }
         
         return serviceOrderDAO.findAll();
