@@ -41,7 +41,6 @@ public class UserService {
             return null;
         } catch (Exception e) {
             System.err.println("Erro na autenticação: " + e.getMessage());
-            e.printStackTrace();
             return null;
         }
     }

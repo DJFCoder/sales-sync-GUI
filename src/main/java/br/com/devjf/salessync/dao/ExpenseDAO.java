@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class ExpenseDAO implements DAO<Expense> {
-
     @Override
     public boolean save(Expense expense) {
         EntityManager em = HibernateUtil.getEntityManager();
@@ -22,7 +21,6 @@ public class ExpenseDAO implements DAO<Expense> {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            e.printStackTrace();
             return false;
         } finally {
             em.close();
@@ -41,7 +39,6 @@ public class ExpenseDAO implements DAO<Expense> {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            e.printStackTrace();
             return false;
         } finally {
             em.close();
@@ -52,7 +49,8 @@ public class ExpenseDAO implements DAO<Expense> {
     public boolean delete(Integer id) {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
-            Expense expense = em.find(Expense.class, id);
+            Expense expense = em.find(Expense.class,
+                    id);
             if (expense != null) {
                 em.getTransaction().begin();
                 em.remove(expense);
@@ -64,7 +62,6 @@ public class ExpenseDAO implements DAO<Expense> {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            e.printStackTrace();
             return false;
         } finally {
             em.close();
@@ -75,7 +72,8 @@ public class ExpenseDAO implements DAO<Expense> {
     public Expense findById(Integer id) {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
-            return em.find(Expense.class, id);
+            return em.find(Expense.class,
+                    id);
         } finally {
             em.close();
         }
@@ -85,7 +83,8 @@ public class ExpenseDAO implements DAO<Expense> {
     public List<Expense> findAll() {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
-            TypedQuery<Expense> query = em.createQuery("SELECT e FROM Expense e", Expense.class);
+            TypedQuery<Expense> query = em.createQuery("SELECT e FROM Expense e",
+                    Expense.class);
             return query.getResultList();
         } finally {
             em.close();
@@ -96,10 +95,11 @@ public class ExpenseDAO implements DAO<Expense> {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
             TypedQuery<Expense> query = em.createQuery(
-                "SELECT e FROM Expense e WHERE e.category = :category ORDER BY e.date DESC", 
-                Expense.class
+                    "SELECT e FROM Expense e WHERE e.category = :category ORDER BY e.date DESC",
+                    Expense.class
             );
-            query.setParameter("category", category);
+            query.setParameter("category",
+                    category);
             return query.getResultList();
         } finally {
             em.close();
@@ -110,11 +110,39 @@ public class ExpenseDAO implements DAO<Expense> {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
             TypedQuery<Expense> query = em.createQuery(
-                "SELECT e FROM Expense e WHERE e.date BETWEEN :start AND :end ORDER BY e.date DESC", 
-                Expense.class
+                    "SELECT e FROM Expense e WHERE e.date BETWEEN :start AND :end ORDER BY e.date DESC",
+                    Expense.class
             );
+            query.setParameter("start",
+                    start);
+            query.setParameter("end",
+                    end);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+    
+    public List<Expense> findByDateRange(Integer categoryId, LocalDate start, LocalDate end) {
+        EntityManager em = HibernateUtil.getEntityManager();
+        try {
+            String queryString = "SELECT e FROM Expense e WHERE e.date BETWEEN :start AND :end";
+            
+            // Adiciona filtro de categoria se categoryId não for nulo
+            if (categoryId != null) {
+                queryString += " AND e.category.id = :categoryId";
+            }
+            
+            queryString += " ORDER BY e.date DESC";
+            
+            TypedQuery<Expense> query = em.createQuery(queryString, Expense.class);
             query.setParameter("start", start);
             query.setParameter("end", end);
+            
+            if (categoryId != null) {
+                query.setParameter("categoryId", categoryId);
+            }
+            
             return query.getResultList();
         } finally {
             em.close();

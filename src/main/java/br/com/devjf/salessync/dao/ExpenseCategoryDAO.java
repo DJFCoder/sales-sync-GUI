@@ -5,11 +5,9 @@ import br.com.devjf.salessync.util.HibernateUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
-
 import java.util.List;
 
 public class ExpenseCategoryDAO implements DAO<ExpenseCategory> {
-
     @Override
     public boolean save(ExpenseCategory category) {
         EntityManager em = HibernateUtil.getEntityManager();
@@ -22,7 +20,6 @@ public class ExpenseCategoryDAO implements DAO<ExpenseCategory> {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            e.printStackTrace();
             return false;
         } finally {
             em.close();
@@ -41,7 +38,6 @@ public class ExpenseCategoryDAO implements DAO<ExpenseCategory> {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            e.printStackTrace();
             return false;
         } finally {
             em.close();
@@ -52,7 +48,8 @@ public class ExpenseCategoryDAO implements DAO<ExpenseCategory> {
     public boolean delete(Integer id) {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
-            ExpenseCategory category = em.find(ExpenseCategory.class, id);
+            ExpenseCategory category = em.find(ExpenseCategory.class,
+                    id);
             if (category != null) {
                 em.getTransaction().begin();
                 em.remove(category);
@@ -64,7 +61,6 @@ public class ExpenseCategoryDAO implements DAO<ExpenseCategory> {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            e.printStackTrace();
             return false;
         } finally {
             em.close();
@@ -75,7 +71,8 @@ public class ExpenseCategoryDAO implements DAO<ExpenseCategory> {
     public ExpenseCategory findById(Integer id) {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
-            return em.find(ExpenseCategory.class, id);
+            return em.find(ExpenseCategory.class,
+                    id);
         } finally {
             em.close();
         }
@@ -85,7 +82,9 @@ public class ExpenseCategoryDAO implements DAO<ExpenseCategory> {
     public List<ExpenseCategory> findAll() {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
-            TypedQuery<ExpenseCategory> query = em.createQuery("SELECT c FROM ExpenseCategory c", ExpenseCategory.class);
+            TypedQuery<ExpenseCategory> query = em.createQuery(
+                    "SELECT c FROM ExpenseCategory c",
+                    ExpenseCategory.class);
             return query.getResultList();
         } finally {
             em.close();
@@ -96,8 +95,10 @@ public class ExpenseCategoryDAO implements DAO<ExpenseCategory> {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
             TypedQuery<ExpenseCategory> query = em.createQuery(
-                    "SELECT c FROM ExpenseCategory c WHERE c.name = :name", ExpenseCategory.class);
-            query.setParameter("name", name);
+                    "SELECT c FROM ExpenseCategory c WHERE c.name = :name",
+                    ExpenseCategory.class);
+            query.setParameter("name",
+                    name);
             return query.getSingleResult();
         } catch (NoResultException e) {
             return null;

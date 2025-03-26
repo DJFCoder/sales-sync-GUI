@@ -2,17 +2,135 @@ package br.com.devjf.salessync.view.forms.newobjectforms;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
-
 import br.com.devjf.salessync.controller.ExpenseController;
 import br.com.devjf.salessync.model.Expense;
 import br.com.devjf.salessync.model.ExpenseCategory;
 import br.com.devjf.salessync.model.RecurrenceType;
+import static br.com.devjf.salessync.model.RecurrenceType.*;
 import br.com.devjf.salessync.util.ViewUtil;
 import br.com.devjf.salessync.view.MainAppView;
 
 public class NewExpenseForm extends javax.swing.JFrame {
+    private Expense expenseToEdit;
+    private ExpenseController expenseController;
+    private boolean isEditMode = false;
+
     public NewExpenseForm() {
         initComponents();
+    }
+
+    /**
+     * Construtor para editar uma despesa existente.
+     *
+     * @param expense A despesa a ser editada
+     */
+    public NewExpenseForm(Expense expense) {
+        initComponents();
+        this.expenseToEdit = expense;
+        this.expenseController = new ExpenseController();
+        this.isEditMode = true;
+        // Carregar categorias no combobox
+        loadCategories();
+        // Preencher os campos com os dados da despesa
+        loadExpenseData();
+        // Alterar o título do formulário
+        titleField.setText("Editar Despesa");
+        // Alterar o texto do botão para "Atualizar"
+        saveBtn.setText("Atualizar");
+    }
+
+    /**
+     * Carrega as categorias de despesa no combobox
+     */
+    private void loadCategories() {
+        // Limpar o combobox
+        categoryCmb.removeAllItems();
+        categoryCmb.addItem("Selecione");
+        // Buscar todas as categorias
+        List<ExpenseCategory> categories = expenseController.listAllCategories();
+        // Adicionar as categorias ao combobox
+        for (ExpenseCategory category : categories) {
+            categoryCmb.addItem(category.getName());
+        }
+    }
+
+    /**
+     * Carrega os dados da despesa nos campos do formulário
+     */
+    private void loadExpenseData() {
+        if (expenseToEdit != null) {
+            // Preencher descrição
+            descriptionField.setText(expenseToEdit.getDescription());
+            // Preencher valor
+            valueField.setValue(expenseToEdit.getAmount());
+            // Preencher data
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            dateField.setText(dateFormat.format(java.sql.Date.valueOf(
+                    expenseToEdit.getDate())));
+            // Selecionar categoria
+            if (expenseToEdit.getCategory() != null) {
+                for (int i = 0; i < categoryCmb.getItemCount(); i++) {
+                    if (categoryCmb.getItemAt(i).equals(
+                            expenseToEdit.getCategory().getName())) {
+                        categoryCmb.setSelectedIndex(i);
+                        break;
+                    }
+                }
+            }
+            // Selecionar recorrência
+            if (expenseToEdit.getRecurrence() != null) {
+                String recurrenceStr = mapRecurrenceTypeToDisplay(
+                        expenseToEdit.getRecurrence());
+                for (int i = 0; i < recurrenceCmb.getItemCount(); i++) {
+                    if (recurrenceCmb.getItemAt(i).equals(recurrenceStr)) {
+                        recurrenceCmb.setSelectedIndex(i);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Mapeia o enum RecurrenceType para o texto exibido no ComboBox
+     *
+     * @param type O tipo de recorrência
+     * @return O texto a ser exibido no ComboBox
+     */
+    private String mapRecurrenceTypeToDisplay(RecurrenceType type) {
+        switch (type) {
+            case DAILY:
+                return "DIÁRIA";
+            case WEEKLY:
+                return "SEMANAL";
+            case MONTHLY:
+                return "MENSAL";
+            case ANNUAL:
+                return "ANUAL";
+            default:
+                return "";
+        }
+    }
+
+    /**
+     * Mapeia o texto do ComboBox para o enum RecurrenceType
+     *
+     * @param displayText O texto exibido no ComboBox
+     * @return O enum RecurrenceType correspondente
+     */
+    private RecurrenceType mapDisplayToRecurrenceType(String displayText) {
+        switch (displayText) {
+            case "DIÁRIA":
+                return RecurrenceType.DAILY;
+            case "SEMANAL":
+                return RecurrenceType.WEEKLY;
+            case "MENSAL":
+                return RecurrenceType.MONTHLY;
+            case "ANUAL":
+                return RecurrenceType.ANNUAL;
+            default:
+                return null;
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -223,133 +341,7 @@ public class NewExpenseForm extends javax.swing.JFrame {
     private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
 
     }//GEN-LAST:event_saveBtnActionPerformed
-    
     // new NewExpenseForm().setVisible(true);
-
-    private Expense expenseToEdit;
-            private ExpenseController expenseController;
-            private boolean isEditMode = false;
-            
-            /**
-             * Construtor para editar uma despesa existente.
-             *
-             * @param expense A despesa a ser editada
-             */
-            public NewExpenseForm(Expense expense) {
-                initComponents();
-                this.expenseToEdit = expense;
-                this.expenseController = new ExpenseController();
-                this.isEditMode = true;
-                
-                // Carregar categorias no combobox
-                loadCategories();
-                
-                // Preencher os campos com os dados da despesa
-                loadExpenseData();
-                
-                // Alterar o título do formulário
-                titleField.setText("Editar Despesa");
-                
-                // Alterar o texto do botão para "Atualizar"
-                saveBtn.setText("Atualizar");
-            }
-            
-            /**
-             * Carrega as categorias de despesa no combobox
-             */
-            private void loadCategories() {
-                // Limpar o combobox
-                categoryCmb.removeAllItems();
-                categoryCmb.addItem("Selecione");
-                
-                // Buscar todas as categorias
-                List<ExpenseCategory> categories = expenseController.listAllCategories();
-                
-                // Adicionar as categorias ao combobox
-                for (ExpenseCategory category : categories) {
-                    categoryCmb.addItem(category.getName());
-                }
-            }
-            
-            /**
-             * Carrega os dados da despesa nos campos do formulário
-             */
-            private void loadExpenseData() {
-                if (expenseToEdit != null) {
-                    // Preencher descrição
-                    descriptionField.setText(expenseToEdit.getDescription());
-                    
-                    // Preencher valor
-                    valueField.setValue(expenseToEdit.getAmount());
-                    
-                    // Preencher data
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-                    dateField.setText(dateFormat.format(java.sql.Date.valueOf(expenseToEdit.getDate())));
-                    
-                    // Selecionar categoria
-                    if (expenseToEdit.getCategory() != null) {
-                        for (int i = 0; i < categoryCmb.getItemCount(); i++) {
-                            if (categoryCmb.getItemAt(i).equals(expenseToEdit.getCategory().getName())) {
-                                categoryCmb.setSelectedIndex(i);
-                                break;
-                            }
-                        }
-                    }
-                    
-                    // Selecionar recorrência
-                    if (expenseToEdit.getRecurrence() != null) {
-                        String recurrenceStr = mapRecurrenceTypeToDisplay(expenseToEdit.getRecurrence());
-                        for (int i = 0; i < recurrenceCmb.getItemCount(); i++) {
-                            if (recurrenceCmb.getItemAt(i).equals(recurrenceStr)) {
-                                recurrenceCmb.setSelectedIndex(i);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            
-            /**
-             * Mapeia o enum RecurrenceType para o texto exibido no ComboBox
-             * 
-             * @param type O tipo de recorrência
-             * @return O texto a ser exibido no ComboBox
-             */
-            private String mapRecurrenceTypeToDisplay(RecurrenceType type) {
-                switch (type) {
-                    case DAILY:
-                        return "DIÁRIA";
-                    case WEEKLY:
-                        return "SEMANAL";
-                    case MONTHLY:
-                        return "MENSAL";
-                    case ANNUAL:
-                        return "ANUAL";
-                    default:
-                        return "";
-                }
-            }
-            
-            /**
-             * Mapeia o texto do ComboBox para o enum RecurrenceType
-             * 
-             * @param displayText O texto exibido no ComboBox
-             * @return O enum RecurrenceType correspondente
-             */
-            private RecurrenceType mapDisplayToRecurrenceType(String displayText) {
-                switch (displayText) {
-                    case "DIÁRIA":
-                        return RecurrenceType.DAILY;
-                    case "SEMANAL":
-                        return RecurrenceType.WEEKLY;
-                    case "MENSAL":
-                        return RecurrenceType.MONTHLY;
-                    case "ANUAL":
-                        return RecurrenceType.ANNUAL;
-                    default:
-                        return null;
-                }
-            }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelBtn;

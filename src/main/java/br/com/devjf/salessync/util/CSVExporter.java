@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class CSVExporter {
     
-    public boolean exportToCSV(Map<String, Object> data, String filePath) {
+    public static boolean exportToCSV(Map<String, Object> data, String filePath) {
         try (FileWriter writer = new FileWriter(filePath)) {
             // Escreve o cabeçalho
             writer.append("Chave,Valor\n");

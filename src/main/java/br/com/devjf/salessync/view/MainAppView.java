@@ -18,6 +18,7 @@ import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.model.ServiceOrder;
 import br.com.devjf.salessync.model.User;
 import br.com.devjf.salessync.model.UserType;
+import static br.com.devjf.salessync.model.UserType.*;
 import br.com.devjf.salessync.util.UserSession;
 import br.com.devjf.salessync.view.forms.CustomersForm;
 import br.com.devjf.salessync.view.forms.DashboardForm;
@@ -312,116 +313,6 @@ public class MainAppView extends javax.swing.JFrame {
         });
     }
 
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        sideMenu = new javax.swing.JPanel();
-        jSeparator1 = new javax.swing.JSeparator();
-        sSyncLogo = new javax.swing.JLabel();
-        selectionList = new javax.swing.JList<>();
-        titlePanel = new javax.swing.JPanel();
-        permitionLabel = new javax.swing.JLabel();
-        permitionIcon = new javax.swing.JLabel();
-        titleLbl = new javax.swing.JLabel();
-        selectedPanel = new javax.swing.JPanel();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setResizable(false);
-
-        sideMenu.setBackground(new java.awt.Color(42, 48, 66));
-        sideMenu.setPreferredSize(new java.awt.Dimension(193, 100));
-        sideMenu.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jSeparator1.setForeground(new java.awt.Color(58, 63, 85));
-        jSeparator1.setVerifyInputWhenFocusTarget(false);
-        sideMenu.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 57, 193, -1));
-
-        sSyncLogo.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        sSyncLogo.setForeground(new java.awt.Color(255, 255, 255));
-        sSyncLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/SalesSync-logo2-small.png"))); // NOI18N
-        sSyncLogo.setText(" SalesSync");
-        sideMenu.add(sSyncLogo, new org.netbeans.lib.awtextra.AbsoluteConstraints(19, 8, -1, -1));
-
-        selectionList.setBackground(new java.awt.Color(42, 48, 66));
-        selectionList.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        selectionList.setForeground(new java.awt.Color(160, 174, 192));
-        selectionList.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Dashboard", "Vendas", "Clientes", "Ordens de Serviço", "Despesas", "Relatórios", "Usuários", "Logs do Sistema" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        selectionList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        selectionList.setAutoscrolls(false);
-        selectionList.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        selectionList.setSelectionBackground(new java.awt.Color(58, 63, 85));
-        selectionList.setSelectionForeground(new java.awt.Color(255, 255, 255));
-        selectionList.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-        selectionList.setFixedCellHeight(40);
-        selectionList.setCellRenderer(new javax.swing.DefaultListCellRenderer() {
-            @Override
-            public java.awt.Component getListCellRendererComponent(javax.swing.JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 15, 8, 0));
-                return this;
-            }
-        });
-        selectionList.setSelectedIndex(0);
-        sideMenu.add(selectionList, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 190, 320));
-
-        titlePanel.setBackground(new java.awt.Color(255, 255, 255));
-        titlePanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        titlePanel.setPreferredSize(new java.awt.Dimension(1007, 60));
-        titlePanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        permitionLabel.setBackground(new java.awt.Color(51, 51, 51));
-        permitionLabel.setFont(new java.awt.Font("Liberation Sans", 0, 10)); // NOI18N
-        permitionLabel.setForeground(new java.awt.Color(51, 51, 51));
-        permitionLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        permitionLabel.setText(getPermitionLabel());
-        titlePanel.add(permitionLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(950, 20, 30, 20));
-
-        permitionIcon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        permitionIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/EllipsePermission.png"))); // NOI18N
-        permitionIcon.setToolTipText("Permissão");
-        titlePanel.add(permitionIcon, new org.netbeans.lib.awtextra.AbsoluteConstraints(942, 7, -1, -1));
-
-        titleLbl.setBackground(new java.awt.Color(51, 51, 51));
-        titleLbl.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        titleLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        titleLbl.setText(selectionList.getSelectedValue());
-        titleLbl.setToolTipText("");
-        titlePanel.add(titleLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 10, -1, 45));
-
-        selectedPanel.setLayout(new java.awt.CardLayout());
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(sideMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(titlePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(selectedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 995, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(sideMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(titlePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(selectedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 728, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-
-        pack();
-        setLocationRelativeTo(null);
-    }// </editor-fold>//GEN-END:initComponents
-
     private String getPermitionLabel() {
         User loggedUser = UserSession.getInstance().getLoggedUser();
         if (loggedUser == null) {
@@ -592,6 +483,116 @@ public class MainAppView extends javax.swing.JFrame {
     public javax.swing.JList<String> getSelectionList() {
         return this.selectionList;
     }
+
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        sideMenu = new javax.swing.JPanel();
+        jSeparator1 = new javax.swing.JSeparator();
+        sSyncLogo = new javax.swing.JLabel();
+        selectionList = new javax.swing.JList<>();
+        titlePanel = new javax.swing.JPanel();
+        permitionLabel = new javax.swing.JLabel();
+        permitionIcon = new javax.swing.JLabel();
+        titleLbl = new javax.swing.JLabel();
+        selectedPanel = new javax.swing.JPanel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
+
+        sideMenu.setBackground(new java.awt.Color(42, 48, 66));
+        sideMenu.setPreferredSize(new java.awt.Dimension(193, 100));
+        sideMenu.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jSeparator1.setForeground(new java.awt.Color(58, 63, 85));
+        jSeparator1.setVerifyInputWhenFocusTarget(false);
+        sideMenu.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 57, 193, -1));
+
+        sSyncLogo.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        sSyncLogo.setForeground(new java.awt.Color(255, 255, 255));
+        sSyncLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/SalesSync-logo2-small.png"))); // NOI18N
+        sSyncLogo.setText(" SalesSync");
+        sideMenu.add(sSyncLogo, new org.netbeans.lib.awtextra.AbsoluteConstraints(19, 8, -1, -1));
+
+        selectionList.setBackground(new java.awt.Color(42, 48, 66));
+        selectionList.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        selectionList.setForeground(new java.awt.Color(160, 174, 192));
+        selectionList.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Dashboard", "Vendas", "Clientes", "Ordens de Serviço", "Despesas", "Relatórios", "Usuários", "Logs do Sistema" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        selectionList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        selectionList.setAutoscrolls(false);
+        selectionList.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        selectionList.setSelectionBackground(new java.awt.Color(58, 63, 85));
+        selectionList.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        selectionList.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+        selectionList.setFixedCellHeight(40);
+        selectionList.setCellRenderer(new javax.swing.DefaultListCellRenderer() {
+            @Override
+            public java.awt.Component getListCellRendererComponent(javax.swing.JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 15, 8, 0));
+                return this;
+            }
+        });
+        selectionList.setSelectedIndex(0);
+        sideMenu.add(selectionList, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 190, 320));
+
+        titlePanel.setBackground(new java.awt.Color(255, 255, 255));
+        titlePanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        titlePanel.setPreferredSize(new java.awt.Dimension(1007, 60));
+        titlePanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        permitionLabel.setBackground(new java.awt.Color(51, 51, 51));
+        permitionLabel.setFont(new java.awt.Font("Liberation Sans", 0, 10)); // NOI18N
+        permitionLabel.setForeground(new java.awt.Color(51, 51, 51));
+        permitionLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        permitionLabel.setText(getPermitionLabel());
+        titlePanel.add(permitionLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(950, 20, 30, 20));
+
+        permitionIcon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        permitionIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/EllipsePermission.png"))); // NOI18N
+        permitionIcon.setToolTipText("Permissão");
+        titlePanel.add(permitionIcon, new org.netbeans.lib.awtextra.AbsoluteConstraints(942, 7, -1, -1));
+
+        titleLbl.setBackground(new java.awt.Color(51, 51, 51));
+        titleLbl.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        titleLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        titleLbl.setText(selectionList.getSelectedValue());
+        titleLbl.setToolTipText("");
+        titlePanel.add(titleLbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 10, -1, 45));
+
+        selectedPanel.setLayout(new java.awt.CardLayout());
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(sideMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(titlePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(selectedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 995, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(sideMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(titlePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(selectedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 728, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        pack();
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JSeparator jSeparator1;

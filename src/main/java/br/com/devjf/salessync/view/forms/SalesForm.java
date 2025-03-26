@@ -3,12 +3,10 @@ package br.com.devjf.salessync.view.forms;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-
 import br.com.devjf.salessync.controller.SaleController;
 import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.util.TableEditButtonEditor;
@@ -35,6 +33,166 @@ public class SalesForm extends javax.swing.JFrame {
 
     public static SalesForm getInstance() {
         return instance;
+    }
+
+    /**
+     * Configura os filtros da tabela de vendas.
+     */
+    private void setupFilters() {
+        // Configurar os campos de texto para filtragem
+        JTextField[] filterFields = new JTextField[]{
+            customerField,
+            dateField,
+            paymentMethodField
+        };
+        // Índices das colunas correspondentes aos campos de filtro
+        int[] columnIndexes = new int[]{
+            1, // Cliente
+            2, // Data Venda
+            3 // Forma de Pagamento
+        };
+        // Configurar o filtro da tabela
+        TableFormHelper.setupTableFilter(salesTable,
+                (DefaultTableModel) salesTable.getModel(),
+                filterFields,
+                columnIndexes);
+    }
+
+    /**
+     * Carrega os dados na tabela de vendas.
+     */
+    private void loadTableData() {
+        try {
+            // Limpar a tabela
+            TableFormHelper.clearTable((DefaultTableModel) salesTable.getModel());
+            // Obter todas as vendas
+            Map<String, Object> filters = new HashMap<>();
+            List<Sale> sales = saleController.listSales(filters);
+            // Adicionar as vendas à tabela
+            for (Sale sale : sales) {
+                addSaleToTable(sale);
+            }
+            // Ajustar largura das colunas
+            TableFormHelper.adjustColumnWidths(salesTable,
+                    10);
+        } catch (Exception e) {
+            System.err.println(
+                    "Erro ao carregar dados da tabela: " + e.getMessage());
+            JOptionPane.showMessageDialog(this,
+                    "Erro ao carregar vendas: " + e.getMessage(),
+                    "Erro",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * Adiciona uma venda à tabela.
+     *
+     * @param sale A venda a ser adicionada
+     */
+    private void addSaleToTable(Sale sale) {
+        try {
+            Object[] rowData = {
+                sale.getId(),
+                sale.getCustomer().getName(),
+                TableFormHelper.formatDate(sale.getDate()),
+                sale.getPaymentMethodSafe(), // Use the safe method
+                sale.getPaymentDate() != null ? TableFormHelper.formatDate(
+                sale.getPaymentDate()) : "",
+                TableFormHelper.formatCurrency(sale.getTotalAmount()),
+                "Editar" // Texto para o botão de edição
+            };
+            TableFormHelper.addRow((DefaultTableModel) salesTable.getModel(),
+                    rowData);
+        } catch (Exception e) {
+            System.err.println(
+                    "Erro ao adicionar venda à tabela: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Configura as colunas da tabela de vendas.
+     */
+    private void setupTableColumns() {
+        // Definir nomes das colunas
+        String[] columnNames = {
+            "Código", "Cliente", "Data Venda", "Forma de Pagamento", "Data Pagamento", "Valor Total", "Ações"
+        };
+        // Definir classes das colunas
+        Class<?>[] columnClasses = {
+            Integer.class, String.class, String.class, String.class, String.class, String.class, String.class
+        };
+        // Definir quais colunas são editáveis
+        boolean[] editableColumns = {
+            false, false, false, false, false, false, true
+        };
+        // Configurar o modelo da tabela
+        TableFormHelper.setupTable(salesTable,
+                columnNames,
+                columnClasses,
+                editableColumns);
+        // Configurar o botão de edição na coluna de ações
+        setupEditButton();
+        // Adicionar listener de clique duplo para editar a venda
+        TableFormHelper.addDoubleClickListener(salesTable,
+                this::handleRowSelection);
+    }
+
+    /**
+     * Configura o botão de edição na coluna de ações da tabela.
+     */
+    private void setupEditButton() {
+        // Obter a coluna de ações (última coluna)
+        TableColumn actionColumn = salesTable.getColumnModel().getColumn(6);
+        // Configurar o renderizador e o editor para a coluna de ações
+        actionColumn.setCellRenderer(new TableEditButtonRenderer("Editar"));
+        actionColumn.setCellEditor(new TableEditButtonEditor("Editar",
+                row -> editSale(row)));
+    }
+
+    /**
+     * Manipula a seleção de uma linha na tabela.
+     *
+     * @param selectedRow O índice da linha selecionada
+     */
+    private void handleRowSelection(int selectedRow) {
+        if (selectedRow >= 0) {
+            editSale(selectedRow);
+        }
+    }
+
+    /**
+     * Abre o formulário de edição para a venda selecionada.
+     *
+     * @param selectedRow O índice da linha selecionada na tabela
+     */
+    private void editSale(int selectedRow) {
+        try {
+            // Obter o ID da venda selecionada
+            Integer saleId = (Integer) salesTable.getValueAt(selectedRow,
+                    0);
+            // Obter a venda pelo ID
+            Sale sale = saleController.findSaleById(saleId);
+            if (sale != null) {
+                // Redirecionar para o painel de nova venda com os dados da venda selecionada
+                MainAppView.redirectToPanel(MainAppView.EDIT_SALE_PANEL,
+                        sale);
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao editar venda: " + e.getMessage());
+            JOptionPane.showMessageDialog(this,
+                    "Erro ao abrir formulário de edição: " + e.getMessage(),
+                    "Erro",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * Método público para atualizar a tabela de vendas. Pode ser chamado de
+     * outras classes para atualizar a exibição após alterações.
+     */
+    public void refreshTable() {
+        loadTableData();
     }
 
     @SuppressWarnings("unchecked")
@@ -225,162 +383,6 @@ public class SalesForm extends javax.swing.JFrame {
         refreshTable();
     }//GEN-LAST:event_newSaleButtonActionPerformed
     // new SalesForm().setVisible(true);
-
-    /**
-     * Configura os filtros da tabela de vendas.
-     */
-    private void setupFilters() {
-        // Configurar os campos de texto para filtragem
-        JTextField[] filterFields = new JTextField[]{
-            customerField,
-            dateField,
-            paymentMethodField
-        };
-        // Índices das colunas correspondentes aos campos de filtro
-        int[] columnIndexes = new int[]{
-            1, // Cliente
-            2, // Data Venda
-            3 // Forma de Pagamento
-        };
-        // Configurar o filtro da tabela
-        TableFormHelper.setupTableFilter(salesTable,
-                (DefaultTableModel) salesTable.getModel(),
-                filterFields,
-                columnIndexes);
-    }
-
-    /**
-     * Carrega os dados na tabela de vendas.
-     */
-    private void loadTableData() {
-        try {
-            // Limpar a tabela
-            TableFormHelper.clearTable((DefaultTableModel) salesTable.getModel());
-            // Obter todas as vendas
-            Map<String, Object> filters = new HashMap<>();
-            List<Sale> sales = saleController.listSales(filters);
-            // Adicionar as vendas à tabela
-            for (Sale sale : sales) {
-                addSaleToTable(sale);
-            }
-            // Ajustar largura das colunas
-            TableFormHelper.adjustColumnWidths(salesTable, 10);
-        } catch (Exception e) {
-            System.err.println("Erro ao carregar dados da tabela: " + e.getMessage());
-            JOptionPane.showMessageDialog(this,
-                    "Erro ao carregar vendas: " + e.getMessage(),
-                    "Erro",
-                    JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    /**
-     * Adiciona uma venda à tabela.
-     *
-     * @param sale A venda a ser adicionada
-     */
-    private void addSaleToTable(Sale sale) {
-        try {
-            Object[] rowData = {
-                sale.getId(),
-                sale.getCustomer().getName(),
-                TableFormHelper.formatDate(sale.getDate()),
-                sale.getPaymentMethodSafe(), // Use the safe method
-                sale.getPaymentDate() != null ? TableFormHelper.formatDate(
-                sale.getPaymentDate()) : "",
-                TableFormHelper.formatCurrency(sale.getTotalAmount()),
-                "Editar" // Texto para o botão de edição
-            };
-            TableFormHelper.addRow((DefaultTableModel) salesTable.getModel(),
-                    rowData);
-        } catch (Exception e) {
-            System.err.println("Erro ao adicionar venda à tabela: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Configura as colunas da tabela de vendas.
-     */
-    private void setupTableColumns() {
-        // Definir nomes das colunas
-        String[] columnNames = {
-            "Código", "Cliente", "Data Venda", "Forma de Pagamento", "Data Pagamento", "Valor Total", "Ações"
-        };
-        // Definir classes das colunas
-        Class<?>[] columnClasses = {
-            Integer.class, String.class, String.class, String.class, String.class, String.class, String.class
-        };
-        // Definir quais colunas são editáveis
-        boolean[] editableColumns = {
-            false, false, false, false, false, false, true
-        };
-        // Configurar o modelo da tabela
-        TableFormHelper.setupTable(salesTable,
-                columnNames,
-                columnClasses,
-                editableColumns);
-        // Configurar o botão de edição na coluna de ações
-        setupEditButton();
-        // Adicionar listener de clique duplo para editar a venda
-        TableFormHelper.addDoubleClickListener(salesTable,
-                this::handleRowSelection);
-    }
-
-    /**
-     * Configura o botão de edição na coluna de ações da tabela.
-     */
-    private void setupEditButton() {
-        // Obter a coluna de ações (última coluna)
-        TableColumn actionColumn = salesTable.getColumnModel().getColumn(6);
-        // Configurar o renderizador e o editor para a coluna de ações
-        actionColumn.setCellRenderer(new TableEditButtonRenderer("Editar"));
-        actionColumn.setCellEditor(new TableEditButtonEditor("Editar",
-                row -> editSale(row)));
-    }
-
-    /**
-     * Manipula a seleção de uma linha na tabela.
-     *
-     * @param selectedRow O índice da linha selecionada
-     */
-    private void handleRowSelection(int selectedRow) {
-        if (selectedRow >= 0) {
-            editSale(selectedRow);
-        }
-    }
-
-    /**
-     * Abre o formulário de edição para a venda selecionada.
-     *
-     * @param selectedRow O índice da linha selecionada na tabela
-     */
-    private void editSale(int selectedRow) {
-        try {
-            // Obter o ID da venda selecionada
-            Integer saleId = (Integer) salesTable.getValueAt(selectedRow,
-                    0);
-            // Obter a venda pelo ID
-            Sale sale = saleController.findSaleById(saleId);
-            if (sale != null) {
-                // Redirecionar para o painel de nova venda com os dados da venda selecionada
-                MainAppView.redirectToPanel(MainAppView.EDIT_SALE_PANEL, sale);
-            }
-        } catch (Exception e) {
-            System.err.println("Erro ao editar venda: " + e.getMessage());
-            JOptionPane.showMessageDialog(this,
-                    "Erro ao abrir formulário de edição: " + e.getMessage(),
-                    "Erro",
-                    JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    /**
-     * Método público para atualizar a tabela de vendas. Pode ser chamado de
-     * outras classes para atualizar a exibição após alterações.
-     */
-    public void refreshTable() {
-        loadTableData();
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField customerField;

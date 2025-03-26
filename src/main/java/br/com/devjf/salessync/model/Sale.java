@@ -8,44 +8,37 @@ import java.util.List;
 @Entity
 @Table(name = "sales")
 public class Sale {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
-    
     @Column(nullable = false)
     private LocalDateTime date;
-    
     @Column(name = "total_amount", nullable = false)
     private Double totalAmount;
-    
     @Column(name = "subtotal_amount")
     private Double subtotalAmount;
-    
     @Column(name = "discount_amount")
     private Double discountAmount;
-    
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_method", nullable = false)
     private PaymentMethod paymentMethod;
-    
     @Column(name = "payment_date")
     private LocalDateTime paymentDate;
-    
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SaleItem> items = new ArrayList<>();
-    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-    
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     @Column(name = "canceled", nullable = false)
     private boolean canceled = false;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -54,19 +47,19 @@ public class Sale {
             this.date = LocalDateTime.now();
         }
     }
-    
+
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-    
+
     // Constructors
     public Sale() {
         this.totalAmount = 0.0;
         this.subtotalAmount = 0.0;
         this.discountAmount = 0.0;
     }
-    
+
     public Sale(Customer customer, PaymentMethod paymentMethod) {
         this.customer = customer;
         this.paymentMethod = paymentMethod;
@@ -75,7 +68,7 @@ public class Sale {
         this.subtotalAmount = 0.0;
         this.discountAmount = 0.0;
     }
-    
+
     // Methods
     public Double calculateSubtotal() {
         this.subtotalAmount = items.stream()
@@ -83,28 +76,42 @@ public class Sale {
                 .sum();
         return this.subtotalAmount;
     }
-    
+
     public Double calculateTotal() {
         // Calculate subtotal first
         calculateSubtotal();
-        
         // Apply discount if any
         this.totalAmount = this.subtotalAmount - (this.discountAmount != null ? this.discountAmount : 0.0);
         return this.totalAmount;
     }
-    
+
     public void addItem(SaleItem item) {
         items.add(item);
         item.setSale(this);
         calculateTotal();
     }
-    
+
     public void removeItem(SaleItem item) {
         items.remove(item);
         item.setSale(null);
         calculateTotal();
     }
-    
+
+    /**
+     * Obtém a forma de pagamento como string de forma segura
+     *
+     * @return A forma de pagamento como string ou string vazia se for null
+     */
+    public String getPaymentMethodSafe() {
+        try {
+            return paymentMethod != null ? paymentMethod.toString() : "";
+        } catch (Exception e) {
+            System.err.println(
+                    "Erro ao obter forma de pagamento: " + e.getMessage());
+            return ""; // Return empty string if there's an error
+        }
+    }
+
     // Getters and Setters
     public Integer getId() {
         return id;
@@ -158,17 +165,10 @@ public class Sale {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
     public boolean isCanceled() {
         return canceled;
     }
@@ -176,6 +176,7 @@ public class Sale {
     public void setCanceled(boolean canceled) {
         this.canceled = canceled;
     }
+
     public LocalDateTime getPaymentDate() {
         return paymentDate;
     }
@@ -183,20 +184,7 @@ public class Sale {
     public void setPaymentDate(LocalDateTime paymentDate) {
         this.paymentDate = paymentDate;
     }
-    
-    @ManyToOne
-        @JoinColumn(name = "user_id")
-        private User user;
-        
-        public User getUser() {
-            return user;
-        }
-        
-        public void setUser(User user) {
-            this.user = user;
-        }
-    
-    // Add getters and setters for the new fields
+
     public Double getSubtotalAmount() {
         return subtotalAmount;
     }
@@ -214,18 +202,12 @@ public class Sale {
         // Recalculate total when discount changes
         calculateTotal();
     }
-    
-    /**
-     * Obtém a forma de pagamento como string de forma segura
-     * 
-     * @return A forma de pagamento como string ou string vazia se for null
-     */
-    public String getPaymentMethodSafe() {
-        try {
-            return paymentMethod != null ? paymentMethod.toString() : "";
-        } catch (Exception e) {
-            System.err.println("Erro ao obter forma de pagamento: " + e.getMessage());
-            return ""; // Return empty string if there's an error
-        }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

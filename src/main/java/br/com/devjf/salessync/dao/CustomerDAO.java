@@ -20,7 +20,6 @@ public class CustomerDAO implements DAO<Customer> {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            e.printStackTrace();
             return false;
         } finally {
             em.close();
@@ -39,7 +38,6 @@ public class CustomerDAO implements DAO<Customer> {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            e.printStackTrace();
             return false;
         } finally {
             em.close();
@@ -50,7 +48,8 @@ public class CustomerDAO implements DAO<Customer> {
     public boolean delete(Integer id) {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
-            Customer customer = em.find(Customer.class, id);
+            Customer customer = em.find(Customer.class,
+                    id);
             if (customer != null) {
                 em.getTransaction().begin();
                 em.remove(customer);
@@ -62,7 +61,6 @@ public class CustomerDAO implements DAO<Customer> {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            e.printStackTrace();
             return false;
         } finally {
             em.close();
@@ -73,7 +71,8 @@ public class CustomerDAO implements DAO<Customer> {
     public Customer findById(Integer id) {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
-            return em.find(Customer.class, id);
+            return em.find(Customer.class,
+                    id);
         } finally {
             em.close();
         }
@@ -98,7 +97,8 @@ public class CustomerDAO implements DAO<Customer> {
             TypedQuery<Customer> query = em.createQuery(
                     "SELECT c FROM Customer c WHERE c.taxId = :taxId",
                     Customer.class);
-            query.setParameter("taxId", taxId);
+            query.setParameter("taxId",
+                    taxId);
             return query.getSingleResult();
         } catch (NoResultException e) {
             return null;
@@ -144,7 +144,8 @@ public class CustomerDAO implements DAO<Customer> {
             TypedQuery<Customer> query = em.createQuery(
                     "SELECT c FROM Customer c WHERE LOWER(c.name) LIKE LOWER(:pattern) ORDER BY c.name",
                     Customer.class);
-            query.setParameter("pattern", "%" + namePattern + "%");
+            query.setParameter("pattern",
+                    "%" + namePattern + "%");
             query.setFirstResult(page * pageSize);
             query.setMaxResults(pageSize);
             return query.getResultList();

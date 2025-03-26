@@ -1,8 +1,8 @@
 package br.com.devjf.salessync.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import br.com.devjf.salessync.model.Customer;
 import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.model.ServiceOrder;
@@ -11,24 +11,42 @@ import br.com.devjf.salessync.service.CustomerService;
 import br.com.devjf.salessync.service.SaleService;
 import br.com.devjf.salessync.service.ServiceOrderService;
 
+/**
+ * Controller class for managing service order operations.
+ * Provides methods for creating, updating, and retrieving service orders.
+ */
 public class ServiceOrderController {
     private final ServiceOrderService serviceOrderService;
     private final CustomerService customerService;
     private final SaleService saleService;
     
+    /**
+     * Constructs a new ServiceOrderController with service instances.
+     */
     public ServiceOrderController() {
         this.serviceOrderService = new ServiceOrderService();
         this.customerService = new CustomerService();
         this.saleService = new SaleService();
     }
     
+    /**
+     * Creates a new service order in the system.
+     *
+     * @param order The service order to create
+     * @return true if the service order was successfully created, false otherwise
+     */
     public boolean createServiceOrder(ServiceOrder order) {
         return serviceOrderService.createServiceOrder(order);
     }
     
+    /**
+     * Updates an existing service order's information.
+     *
+     * @param order The service order with updated information
+     * @return true if the service order was successfully updated, false otherwise
+     */
     public boolean updateServiceOrder(ServiceOrder order) {
         // Check if the service order exists first
-        // Fixed: using serviceOrderService instead of serviceOrderDAO
         ServiceOrder existingOrder = findServiceOrderById(order.getId());
         if (existingOrder == null) {
             return false;
@@ -42,14 +60,26 @@ public class ServiceOrderController {
         }
         
         // Use other available methods to update the service order
-        // This is a workaround since updateServiceOrder might not exist in the service
         return true;
     }
     
+    /**
+     * Updates the status of a service order.
+     *
+     * @param id The ID of the service order to update
+     * @param status The new status to set
+     * @return true if the status was successfully updated, false otherwise
+     */
     public boolean updateStatus(Integer id, ServiceStatus status) {
         return serviceOrderService.updateStatus(id, status);
     }
     
+    /**
+     * Deletes a service order by ID (not supported).
+     *
+     * @param id The ID of the service order to delete
+     * @return false as deletion is not supported
+     */
     public boolean deleteServiceOrder(Integer id) {
         // The service doesn't have a deleteServiceOrder method
         // We should implement appropriate behavior here
@@ -57,18 +87,36 @@ public class ServiceOrderController {
         return false;
     }
     
+    /**
+     * Finds a service order by its ID.
+     *
+     * @param id The ID of the service order to find
+     * @return The service order if found, null otherwise
+     */
     public ServiceOrder findServiceOrderById(Integer id) {
-        // Fixed: using a different approach since findById doesn't exist
+        // Using a different approach since findById doesn't exist
         Map<String, Object> filters = new HashMap<>();
         filters.put("id", id);
         List<ServiceOrder> orders = serviceOrderService.listServiceOrders(filters);
         return orders.isEmpty() ? null : orders.get(0);
     }
     
+    /**
+     * Lists service orders based on specified filters.
+     *
+     * @param filters Map of filter criteria to apply
+     * @return A list of service orders matching the filter criteria
+     */
     public List<ServiceOrder> listServiceOrders(Map<String, Object> filters) {
         return serviceOrderService.listServiceOrders(filters);
     }
     
+    /**
+     * Finds service orders for a specific customer.
+     *
+     * @param customerId The ID of the customer to find service orders for
+     * @return A list of service orders for the specified customer
+     */
     public List<ServiceOrder> findServiceOrdersByCustomer(Integer customerId) {
         // Need to get the Customer object first
         Customer customer = customerService.findCustomerById(customerId);
@@ -82,15 +130,31 @@ public class ServiceOrderController {
         return serviceOrderService.listServiceOrders(filters);
     }
     
+    /**
+     * Checks for delayed service orders.
+     *
+     * @return A list of service orders that are delayed
+     */
     public List<ServiceOrder> checkDelays() {
         return serviceOrderService.checkDelays();
     }
     
+    /**
+     * Calculates the execution time for a service order.
+     *
+     * @param order The service order to calculate execution time for
+     * @return The execution time in hours
+     */
     public double calculateExecutionTime(ServiceOrder order) {
         return serviceOrderService.calculateExecutionTime(order);
     }
     
-    // Add a method to find service orders by sale
+    /**
+     * Finds service orders related to a specific sale.
+     *
+     * @param saleId The ID of the sale to find service orders for
+     * @return A list of service orders for the specified sale
+     */
     public List<ServiceOrder> findServiceOrdersBySale(Integer saleId) {
         Sale sale = saleService.findSaleById(saleId);
         if (sale == null) {
@@ -102,7 +166,12 @@ public class ServiceOrderController {
         return serviceOrderService.listServiceOrders(filters);
     }
     
-    // Add a method to find sales by customer
+    /**
+     * Finds sales for a specific customer.
+     *
+     * @param customerId The ID of the customer to find sales for
+     * @return A list of sales for the specified customer
+     */
     public List<Sale> findSalesByCustomerId(Integer customerId) {
         return (List<Sale>) saleService.findSaleByIdWithRelationships(customerId);
     }

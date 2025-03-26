@@ -7,79 +7,81 @@ import br.com.devjf.salessync.util.UserSession;
 import br.com.devjf.salessync.util.ViewUtil;
 import br.com.devjf.salessync.view.Login;
 import br.com.devjf.salessync.view.MainAppView;
-
 import java.util.List;
 
 public class DashboardForm extends javax.swing.JFrame {
     private final UserController userController;
     private User loggedUser;
-    
+
     public DashboardForm() {
         initComponents();
         userController = new UserController();
         loggedUser = UserSession.getInstance().getLoggedUser();
         initUserData();
     }
-    
+
     /**
-     * Inicializa os dados do usuário no dashboard
-     * Preenche as informações do usuário logado e suas atividades recentes
+     * Inicializa os dados do usuário no dashboard Preenche as informações do
+     * usuário logado e suas atividades recentes
      */
     private void initUserData() {
         if (loggedUser == null) {
             return;
         }
         updateUserInfo();
-        
     }
-    
+
     /**
-     * Atualiza as informações do usuário e suas atividades no dashboard
-     * Este método pode ser chamado a qualquer momento para atualizar os dados exibidos
+     * Atualiza as informações do usuário e suas atividades no dashboard Este
+     * método pode ser chamado a qualquer momento para atualizar os dados
+     * exibidos
      */
     public void updateUserInfo() {
         if (loggedUser == null) {
             return;
         }
-        
         // Atualiza o nome de boas-vindas
         welcomeLbl.setText("Bem vindo(a), " + loggedUser.getName());
-        
         // Atualiza o último acesso
-        lastAccessLbl.setText("Último acesso: " + userController.getLastAccessFormatted(loggedUser));
-        
+        lastAccessLbl.setText(
+                "Último acesso: " + userController.getLastAccessFormatted(
+                        loggedUser));
         // Atualiza as informações do perfil do usuário
         nameLbl.setText("Nome: " + loggedUser.getName());
-        permitionLbl.setText("Permissão: " + userController.getUserTypeInPortuguese(loggedUser.getType()));
-        statusLbl.setText("Status: " + (loggedUser.isActive() ? "Ativo" : "Inativo"));
-        
+        permitionLbl.setText(
+                "Permissão: " + userController.getUserTypeInPortuguese(
+                        loggedUser.getType()));
+        statusLbl.setText(
+                "Status: " + (loggedUser.isActive() ? "Ativo" : "Inativo"));
         // Busca as atividades recentes do usuário (últimas 3)
-        List<UserActivity> recentActivities = userController.getRecentActivities(loggedUser, 3);
-        
+        List<UserActivity> recentActivities = userController.getRecentActivities(
+                loggedUser,
+                3);
         // Atualiza as labels de atividades
         if (!recentActivities.isEmpty()) {
             // Primeira atividade (mais recente)
             if (recentActivities.size() >= 1) {
                 UserActivity firstActivity = recentActivities.get(0);
                 fstActivitieLbl.setText(firstActivity.getDescription());
-                fstTimeActivitieLbl.setText(firstActivity.getFormattedTimeShort());
+                fstTimeActivitieLbl.setText(
+                        firstActivity.getFormattedTimeShort());
             }
-            
             // Segunda atividade
             if (recentActivities.size() >= 2) {
                 UserActivity secondActivity = recentActivities.get(1);
                 scdActivitieLbl.setText(secondActivity.getDescription());
-                scdTimeActivitieLbl.setText(secondActivity.getFormattedTimeShort());
+                scdTimeActivitieLbl.setText(
+                        secondActivity.getFormattedTimeShort());
             } else {
                 scdActivitieLbl.setText("Nenhuma atividade");
                 scdTimeActivitieLbl.setText("");
             }
-            
             // Terceira atividade
             if (recentActivities.size() >= 3) {
                 UserActivity thirdActivity = recentActivities.get(2);
                 trdActivitieLbl.setText(thirdActivity.getDescription());
-                trdTimeActivitieLbl.setText(thirdActivity.getFormattedTimeShort());
+                trdTimeActivitieLbl.setText(
+                        thirdActivity.getFormattedTimeShort());
             } else {
                 trdActivitieLbl.setText("Nenhuma atividade");
                 trdTimeActivitieLbl.setText("");
@@ -496,19 +498,16 @@ public class DashboardForm extends javax.swing.JFrame {
     private void logoffBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoffBtnActionPerformed
         // Obter o usuário logado
         User loggedUser = UserSession.getInstance().getLoggedUser();
-        
         // Registrar a atividade de logout
         if (loggedUser != null) {
             UserController userController = new UserController();
-            userController.registerActivity(loggedUser, "Logout do sistema");
+            userController.registerActivity(loggedUser,
+                    "Logout do sistema");
         }
-        
         // Limpar a sessão do usuário
         UserSession.getInstance().clearSession();
-        
         // Fechar a janela principal
         MainAppView.getInstance().dispose();
-        
         // Abrir a tela de login
         java.awt.EventQueue.invokeLater(() -> {
             new Login().setVisible(true);

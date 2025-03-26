@@ -13,7 +13,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
-
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -21,7 +20,6 @@ import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-
 import br.com.devjf.salessync.controller.SaleController;
 import br.com.devjf.salessync.model.Customer;
 import br.com.devjf.salessync.model.PaymentMethod;
@@ -76,6 +74,42 @@ public class NewSaleForm extends javax.swing.JFrame {
         updateTotals();
     }
 
+    /**
+     * Construtor para editar uma venda existente.
+     *
+     * @param sale A venda a ser editada
+     */
+    public NewSaleForm(Sale sale) {
+        initComponents();
+        setupTable();
+        // Configurar o formulário para edição
+        this.saleToCreate = sale;
+        this.selectedCustomer = sale.getCustomer();
+        this.currentUser = UserSession.getInstance().getLoggedUser();
+        // Preencher os campos do formulário com os dados da venda
+        loadSaleData(sale);
+        // Adicionar listener para o campo de desconto
+        discountField.getDocument().addDocumentListener(
+                new javax.swing.event.DocumentListener() {
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                updateTotals();
+            }
+
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                updateTotals();
+            }
+
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                updateTotals();
+            }
+        });
+        // Alterar o texto do botão para "Atualizar Venda"
+        newSaleBtn.setText("Atualizar Venda");
+    }
+
     // This method set the current date at paymentDate field
     private void setCurrentDateInPaymentField() {
         // Format current date as dd/MM/yyyy
@@ -127,7 +161,8 @@ public class NewSaleForm extends javax.swing.JFrame {
         // Set payment method
         String selectedPaymentMethodStr = paymentMethodCmb.getSelectedItem().toString();
         if (!"Selecione".equals(selectedPaymentMethodStr)) {
-            PaymentMethod paymentMethod = PaymentMethod.valueOf(selectedPaymentMethodStr);
+            PaymentMethod paymentMethod = PaymentMethod.valueOf(
+                    selectedPaymentMethodStr);
             saleToCreate.setPaymentMethod(paymentMethod);
         } else {
             JOptionPane.showMessageDialog(null,
@@ -389,6 +424,93 @@ public class NewSaleForm extends javax.swing.JFrame {
                     hasFocus,
                     row,
                     column);
+        }
+    }
+
+    /**
+     * Atualiza a tabela de vendas no SalesForm.
+     */
+    private void refreshSalesTable() {
+        // Obter a instância do SalesForm
+        SalesForm salesForm = SalesForm.getInstance();
+        if (salesForm != null) {
+            // Chamar o método refreshTable do SalesForm
+            salesForm.refreshTable();
+        }
+    }
+
+    /**
+     * Carrega os dados da venda no formulário para edição.
+     *
+     * @param sale A venda a ser editada
+     */
+    private void loadSaleData(Sale sale) {
+        try {
+            // Preencher os campos com os dados da venda
+            if (sale.getCustomer() != null) {
+                nameField.setText(sale.getCustomer().getName());
+                selectedCustomer = sale.getCustomer();
+            }
+            // Selecionar o método de pagamento
+            if (sale.getPaymentMethod() != null) {
+                paymentMethodCmb.setSelectedItem(mapPaymentMethodToDisplay(
+                        sale.getPaymentMethod()));
+            }
+            // Definir a data de pagamento
+            if (sale.getPaymentDate() != null) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                // Convert LocalDateTime to Date
+                Date paymentDate = Date.from(sale.getPaymentDate().atZone(
+                        ZoneId.systemDefault()).toInstant());
+                paymentMethodField.setText(dateFormat.format(paymentDate));
+            } else {
+                // Set current date if payment date is null
+                setCurrentDateInPaymentField();
+            }
+            // Carregar os itens da venda na tabela
+            loadSaleItems(sale);
+            // Atualizar o desconto
+            if (sale.getDiscountAmount() != null) {
+                discountField.setText(sale.getDiscountAmount().toString());
+            }
+            // Atualizar os totais
+            updateTotals();
+        } catch (Exception e) {
+            System.err.println(
+                    "Erro ao carregar dados da venda: " + e.getMessage());
+            JOptionPane.showMessageDialog(this,
+                    "Erro ao carregar dados da venda: " + e.getMessage(),
+                    "Erro",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * Mapeia o enum PaymentMethod para o texto exibido no ComboBox
+     *
+     * @param method O método de pagamento
+     * @return O texto a ser exibido no ComboBox
+     */
+    private String mapPaymentMethodToDisplay(PaymentMethod method) {
+        // Reurn enum name
+        return method.name();
+    }
+
+    private void loadSaleItems(Sale sale) {
+        // Limpar a tabela
+        while (tableModel.getRowCount() > 0) {
+            tableModel.removeRow(0);
+        }
+        // Adicionar os itens da venda à tabela
+        for (SaleItem item : sale.getItems()) {
+            Object[] rowData = {
+                item.getDescription(),
+                item.getQuantity(),
+                currencyFormat.format(item.getUnitPrice()),
+                currencyFormat.format(item.getQuantity() * item.getUnitPrice())
+            };
+            tableModel.addRow(rowData);
+            saleItems.add(item);
         }
     }
 
@@ -656,130 +778,6 @@ public class NewSaleForm extends javax.swing.JFrame {
         addNewRow();
     }//GEN-LAST:event_addItemBtnActionPerformed
 
-    /**
-     * Atualiza a tabela de vendas no SalesForm.
-     */
-    private void refreshSalesTable() {
-        // Obter a instância do SalesForm
-        SalesForm salesForm = SalesForm.getInstance();
-        if (salesForm != null) {
-            // Chamar o método refreshTable do SalesForm
-            salesForm.refreshTable();
-        }
-    }
-
-    /**
-     * Construtor para editar uma venda existente.
-     *
-     * @param sale A venda a ser editada
-     */
-    public NewSaleForm(Sale sale) {
-        initComponents();
-        setupTable();
-        // Configurar o formulário para edição
-        this.saleToCreate = sale;
-        this.selectedCustomer = sale.getCustomer();
-        this.currentUser = UserSession.getInstance().getLoggedUser();
-        // Preencher os campos do formulário com os dados da venda
-        loadSaleData(sale);
-        // Adicionar listener para o campo de desconto
-        discountField.getDocument().addDocumentListener(
-                new javax.swing.event.DocumentListener() {
-            @Override
-            public void insertUpdate(javax.swing.event.DocumentEvent e) {
-                updateTotals();
-            }
-
-            @Override
-            public void removeUpdate(javax.swing.event.DocumentEvent e) {
-                updateTotals();
-            }
-
-            @Override
-            public void changedUpdate(javax.swing.event.DocumentEvent e) {
-                updateTotals();
-            }
-        });
-        // Alterar o texto do botão para "Atualizar Venda"
-        newSaleBtn.setText("Atualizar Venda");
-    }
-
-    /**
-     * Carrega os dados da venda no formulário para edição.
-     *
-     * @param sale A venda a ser editada
-     */
-    private void loadSaleData(Sale sale) {
-        try {
-            // Preencher os campos com os dados da venda
-            if (sale.getCustomer() != null) {
-                nameField.setText(sale.getCustomer().getName());
-                selectedCustomer = sale.getCustomer();
-            }
-            
-            // Selecionar o método de pagamento
-            if (sale.getPaymentMethod() != null) {
-                paymentMethodCmb.setSelectedItem(mapPaymentMethodToDisplay(sale.getPaymentMethod()));
-            }
-            
-            // Definir a data de pagamento
-            if (sale.getPaymentDate() != null) {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-                // Convert LocalDateTime to Date
-                Date paymentDate = Date.from(sale.getPaymentDate().atZone(ZoneId.systemDefault()).toInstant());
-                paymentMethodField.setText(dateFormat.format(paymentDate));
-            } else {
-                // Set current date if payment date is null
-                setCurrentDateInPaymentField();
-            }
-            
-            // Carregar os itens da venda na tabela
-            loadSaleItems(sale);
-            
-            // Atualizar o desconto
-            if (sale.getDiscountAmount() != null) {
-                discountField.setText(sale.getDiscountAmount().toString());
-            }
-            
-            // Atualizar os totais
-            updateTotals();
-        } catch (Exception e) {
-            System.err.println("Erro ao carregar dados da venda: " + e.getMessage());
-            JOptionPane.showMessageDialog(this, 
-                "Erro ao carregar dados da venda: " + e.getMessage(),
-                "Erro", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-    
-    /**
-     * Mapeia o enum PaymentMethod para o texto exibido no ComboBox
-     * 
-     * @param method O método de pagamento
-     * @return O texto a ser exibido no ComboBox
-     */
-    private String mapPaymentMethodToDisplay(PaymentMethod method) {
-        // Reurn enum name
-        return method.name();
-    }
-
-    private void loadSaleItems(Sale sale) {
-        // Limpar a tabela
-        while (tableModel.getRowCount() > 0) {
-            tableModel.removeRow(0);
-        }
-        // Adicionar os itens da venda à tabela
-        for (SaleItem item : sale.getItems()) {
-            Object[] rowData = {
-                item.getDescription(),
-                item.getQuantity(),
-                currencyFormat.format(item.getUnitPrice()),
-                currencyFormat.format(item.getQuantity() * item.getUnitPrice())
-            };
-            tableModel.addRow(rowData);
-            saleItems.add(item);
-        }
-    }
-
     private void newSaleBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newSaleBtnActionPerformed
         try {
             // Validate form data
@@ -793,7 +791,8 @@ public class NewSaleForm extends javax.swing.JFrame {
             // Validate payment method
             String selectedPaymentMethodStr = paymentMethodCmb.getSelectedItem().toString();
             if (!"Selecione".equals(selectedPaymentMethodStr)) {
-                PaymentMethod paymentMethod = PaymentMethod.valueOf(selectedPaymentMethodStr);
+                PaymentMethod paymentMethod = PaymentMethod.valueOf(
+                        selectedPaymentMethodStr);
                 saleToCreate.setPaymentMethod(paymentMethod);
             } else {
                 JOptionPane.showMessageDialog(null,
@@ -827,7 +826,8 @@ public class NewSaleForm extends javax.swing.JFrame {
                 // É uma edição, então atualizar a venda existente
                 sale.setId(saleToCreate.getId()); // Garantir que o ID seja mantido
                 success = controller.updateSale(sale);
-                MainAppView.getInstance().registerUserActivity("Editou a venda ID: " + sale.getId());
+                MainAppView.getInstance().registerUserActivity(
+                        "Editou a venda ID: " + sale.getId());
                 JOptionPane.showMessageDialog(this,
                         "Venda atualizada com sucesso!",
                         "Sucesso",
@@ -835,7 +835,8 @@ public class NewSaleForm extends javax.swing.JFrame {
             } else {
                 // É uma nova venda, então criar uma nova
                 success = controller.createSale(sale);
-                MainAppView.getInstance().registerUserActivity("Registrou uma venda ID: " + sale.getId());
+                MainAppView.getInstance().registerUserActivity(
+                        "Registrou uma venda ID: " + sale.getId());
                 JOptionPane.showMessageDialog(this,
                         "Venda registrada com sucesso!",
                         "Sucesso",

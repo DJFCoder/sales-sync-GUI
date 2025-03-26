@@ -9,15 +9,29 @@ import br.com.devjf.salessync.model.UserType;
 import br.com.devjf.salessync.service.UserActivityService;
 import br.com.devjf.salessync.service.UserService;
 
+/**
+ * Controller class for managing user-related operations.
+ * Provides methods for user authentication, creation, updates, and activity tracking.
+ */
 public class UserController {
     private final UserService userService;
     private final UserActivityService activityService;
 
+    /**
+     * Constructs a new UserController with UserService and UserActivityService instances.
+     */
     public UserController() {
         this.userService = new UserService();
         this.activityService = new UserActivityService();
     }
 
+    /**
+     * Displays information about the logged-in user.
+     *
+     * @param login The user's login
+     * @param password The user's password
+     * @return The name of the logged-in user, or null if authentication fails
+     */
     public String showUserLogged(String login, String password) {
         User getUserLogged = userService.authenticateUser(login, password);
         if (getUserLogged != null) {
@@ -30,38 +44,99 @@ public class UserController {
         return null;
     }
     
+    /**
+     * Creates a new user in the system.
+     *
+     * @param name The user's name
+     * @param login The user's login (username)
+     * @param password The user's password
+     * @param type The user's type/role
+     * @return true if the user was successfully created, false otherwise
+     */
     public boolean createUser(String name, String login, String password, UserType type) {
         return userService.createUser(name, login, password, type);
     }
     
+    /**
+     * Updates an existing user's information.
+     *
+     * @param userId The ID of the user to update
+     * @param name The new name for the user
+     * @param type The new type/role for the user
+     * @return true if the user was successfully updated, false otherwise
+     */
     public boolean updateUser(Integer userId, String name, UserType type) {
         return userService.updateUser(userId, name, type);
     }
     
+    /**
+     * Changes a user's password.
+     *
+     * @param userId The ID of the user
+     * @param currentPassword The user's current password
+     * @param newPassword The new password to set
+     * @return true if the password was successfully changed, false otherwise
+     */
     public boolean changePassword(Integer userId, String currentPassword, String newPassword) {
         return userService.changePassword(userId, currentPassword, newPassword);
     }
     
+    /**
+     * Deactivates a user account.
+     *
+     * @param userId The ID of the user to deactivate
+     * @return true if the user was successfully deactivated, false otherwise
+     */
     public boolean deactivateUser(Integer userId) {
         return userService.deactivateUser(userId);
     }
     
+    /**
+     * Reactivates a previously deactivated user account.
+     *
+     * @param userId The ID of the user to reactivate
+     * @return true if the user was successfully reactivated, false otherwise
+     */
     public boolean reactivateUser(Integer userId) {
         return userService.reactivateUser(userId);
     }
     
+    /**
+     * Lists all users in the system.
+     *
+     * @return A list of all users
+     */
     public List<User> listAllUsers() {
         return userService.getAllUsers();
     }
     
+    /**
+     * Finds a user by their ID.
+     *
+     * @param id The ID of the user to find
+     * @return The user object if found, null otherwise
+     */
     public User findUserById(Integer id) {
         return userService.getUserById(id);
     }
     
+    /**
+     * Finds a user by their login (username).
+     *
+     * @param login The login of the user to find
+     * @return The user object if found, null otherwise
+     */
     public User findUserByLogin(String login) {
         return userService.getUserByLogin(login);
     }
     
+    /**
+     * Authenticates a user and records the login activity.
+     *
+     * @param login The user's login
+     * @param password The user's password
+     * @return The authenticated user object if successful, null otherwise
+     */
     public User authenticateUser(String login, String password) {
         User user = userService.authenticateUser(login, password);
         if (user != null) {
@@ -72,32 +147,32 @@ public class UserController {
     }
     
     /**
-     * Registra uma nova atividade para o usuário
+     * Registers a new activity for the user.
      * 
-     * @param user Usuário que realizou a atividade
-     * @param description Descrição da atividade
-     * @return true se a atividade foi registrada com sucesso
+     * @param user User who performed the activity
+     * @param description Description of the activity
+     * @return true if the activity was successfully registered
      */
     public boolean registerActivity(User user, String description) {
         return activityService.registerActivity(user, description);
     }
     
     /**
-     * Obtém as atividades recentes do usuário
+     * Gets the recent activities of a user.
      * 
-     * @param user Usuário para buscar as atividades
-     * @param limit Número máximo de atividades a retornar
-     * @return Lista de atividades recentes do usuário
+     * @param user User to get activities for
+     * @param limit Maximum number of activities to return
+     * @return List of recent user activities
      */
     public List<UserActivity> getRecentActivities(User user, int limit) {
         return activityService.getRecentActivities(user, limit);
     }
     
     /**
-     * Obtém o último acesso do usuário formatado
+     * Gets the formatted last access time of a user.
      * 
-     * @param user Usuário para buscar o último acesso
-     * @return String formatada com a data e hora do último acesso ou "Primeiro acesso" se não houver registro
+     * @param user User to get the last access for
+     * @return Formatted string with date and time of last access or "Primeiro acesso" if no record exists
      */
     public String getLastAccessFormatted(User user) {
         LocalDateTime lastAccess = activityService.getLastAccess(user);
@@ -110,10 +185,10 @@ public class UserController {
     }
     
     /**
-     * Traduz o tipo de usuário para português
+     * Translates the user type to Portuguese.
      * 
-     * @param type Tipo de usuário
-     * @return Nome do tipo de usuário em português
+     * @param type User type
+     * @return Name of the user type in Portuguese
      */
     public String getUserTypeInPortuguese(UserType type) {
         if (type == null) {

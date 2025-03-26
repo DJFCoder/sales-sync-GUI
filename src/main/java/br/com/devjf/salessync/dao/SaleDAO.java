@@ -1,13 +1,14 @@
 package br.com.devjf.salessync.dao;
 
-import br.com.devjf.salessync.model.Sale;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import br.com.devjf.salessync.model.Customer;
+import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.util.HibernateUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
-import java.time.LocalDateTime;
-import java.util.List;
 
 public class SaleDAO implements DAO<Sale> {
 
@@ -145,11 +146,12 @@ public class SaleDAO implements DAO<Sale> {
             try {
                 // Buscar a venda com join fetch para carregar os itens
                 Sale sale = em.createQuery(
-                        "SELECT s FROM Sale s "
-                        + "LEFT JOIN FETCH s.items "
-                        + "LEFT JOIN FETCH s.customer "
-                        + "LEFT JOIN FETCH s.user "
-                        + "WHERE s.id = :id",
+                        """
+                            SELECT s FROM Sale s \
+                            LEFT JOIN FETCH s.items \
+                            LEFT JOIN FETCH s.customer \
+                            LEFT JOIN FETCH s.user \
+                            WHERE s.id = :id""",
                         Sale.class)
                         .setParameter("id", id)
                         .getSingleResult();
@@ -161,6 +163,30 @@ public class SaleDAO implements DAO<Sale> {
                 System.err.println("Erro ao buscar venda por ID: " + e.getMessage());
                 return null;
             }
+        } finally {
+            em.close();
+        }
+    }
+
+        /**
+     * Encontra vendas por cliente e intervalo de datas.
+     * 
+     * @param customerId O ID do cliente
+     * @param startDateTime A data e hora inicial do intervalo
+     * @param endDateTime A data e hora final do intervalo
+     * @return Uma lista de vendas que correspondem aos critérios
+     */
+    public List<Sale> findByCustomerAndDateRange(Integer customerId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        EntityManager em = HibernateUtil.getEntityManager();
+        try {
+            TypedQuery<Sale> query = em.createQuery(
+                    "SELECT s FROM Sale s WHERE s.customer.id = :customerId AND s.dateTime BETWEEN :startDateTime AND :endDateTime ORDER BY s.dateTime DESC",
+                    Sale.class
+            );
+            query.setParameter("customerId", customerId);
+            query.setParameter("startDateTime", startDateTime);
+            query.setParameter("endDateTime", endDateTime);
+            return query.getResultList();
         } finally {
             em.close();
         }

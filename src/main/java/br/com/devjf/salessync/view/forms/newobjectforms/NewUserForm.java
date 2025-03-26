@@ -7,11 +7,10 @@ import br.com.devjf.salessync.util.ViewUtil;
 import br.com.devjf.salessync.view.MainAppView;
 
 public class NewUserForm extends javax.swing.JFrame {
-    
     private User userToEdit;
     private UserController userController;
     private boolean isEditMode = false;
-    
+
     public NewUserForm() {
         initComponents();
         this.userController = new UserController();
@@ -19,10 +18,10 @@ public class NewUserForm extends javax.swing.JFrame {
         // Set default status to active
         statusCheckBox.setSelected(true);
     }
-    
+
     /**
      * Constructor for editing an existing user
-     * 
+     *
      * @param user The user to edit
      */
     public NewUserForm(User user) {
@@ -30,36 +29,31 @@ public class NewUserForm extends javax.swing.JFrame {
         this.userToEdit = user;
         this.userController = new UserController();
         this.isEditMode = true;
-        
         // Setup the form for editing
         setupUserTypeComboBox();
         loadUserData();
-        
         // Change the title and button text
         titleField.setText("Editar Usuário");
         saveBtn.setText("Atualizar");
-        
         // Password fields should be empty when editing
         passwordField.setText("");
         confirmPasswordField.setText("");
-        
         // Add a note about password
         passwordLbl.setText("Senha (deixe em branco para manter a atual)");
     }
-    
+
     /**
      * Setup the user type combo box with available user types
      */
     private void setupUserTypeComboBox() {
         userTypeCmb.removeAllItems();
         userTypeCmb.addItem("Selecione");
-        
         // Add all user types
         for (UserType type : UserType.values()) {
             userTypeCmb.addItem(getUserTypeDisplayName(type));
         }
     }
-    
+
     /**
      * Load user data into the form fields
      */
@@ -68,7 +62,6 @@ public class NewUserForm extends javax.swing.JFrame {
             // Set name and login
             nameField.setText(userToEdit.getName());
             loginField.setText(userToEdit.getLogin());
-            
             // Set user type
             UserType userType = userToEdit.getType();
             for (int i = 0; i < userTypeCmb.getItemCount(); i++) {
@@ -78,15 +71,14 @@ public class NewUserForm extends javax.swing.JFrame {
                     break;
                 }
             }
-            
             // Set active status
             statusCheckBox.setSelected(userToEdit.isActive());
         }
     }
-    
+
     /**
      * Get display name for user type
-     * 
+     *
      * @param type The user type
      * @return The display name
      */
@@ -102,10 +94,10 @@ public class NewUserForm extends javax.swing.JFrame {
                 return "";
         }
     }
-    
+
     /**
      * Convert display name to UserType enum
-     * 
+     *
      * @param displayName The display name
      * @return The UserType enum
      */
@@ -348,7 +340,6 @@ public class NewUserForm extends javax.swing.JFrame {
     private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
 
     }//GEN-LAST:event_saveBtnActionPerformed
-    
     // new NewUserForm().setVisible(true);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -40,6 +40,29 @@ public class Login extends javax.swing.JFrame {
                 5);
     }
 
+    /**
+     * Configura o acesso às funcionalidades com base no tipo de usuário
+     *
+     * @param userType Tipo do usuário autenticado
+     * @param mainView Referência à tela principal
+     */
+    private void configureAccessByUserType(UserType userType, MainAppView mainView) {
+        try {
+            // Não modificamos o modelo da lista, apenas configuramos a visibilidade dos itens
+            // com base no tipo de usuário
+            JList<String> selectionList = mainView.getSelectionList();
+            // Garantir que o Dashboard seja selecionado por padrão
+            selectionList.setSelectedIndex(0);
+            // Forçar a atualização da UI
+            mainView.updateTitle("Dashboard");
+            mainView.showPanel("Dashboard");
+            // Atualizar o label de permissão
+            mainView.updatePermissionLabel();
+        } catch (Exception e) {
+            System.err.println("Erro ao configurar acesso: " + e.getMessage());
+        }
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -280,29 +303,6 @@ public class Login extends javax.swing.JFrame {
         // Iniciar o worker
         worker.execute();
     }//GEN-LAST:event_loginBtnActionPerformed
-
-    /**
-     * Configura o acesso às funcionalidades com base no tipo de usuário
-     *
-     * @param userType Tipo do usuário autenticado
-     * @param mainView Referência à tela principal
-     */
-    private void configureAccessByUserType(UserType userType, MainAppView mainView) {
-        try {
-            // Não modificamos o modelo da lista, apenas configuramos a visibilidade dos itens
-            // com base no tipo de usuário
-            JList<String> selectionList = mainView.getSelectionList();
-            // Garantir que o Dashboard seja selecionado por padrão
-            selectionList.setSelectedIndex(0);
-            // Forçar a atualização da UI
-            mainView.updateTitle("Dashboard");
-            mainView.showPanel("Dashboard");
-            // Atualizar o label de permissão
-            mainView.updatePermissionLabel();
-        } catch (Exception e) {
-            System.err.println("Erro ao configurar acesso: " + e.getMessage());
-        }
-    }
 
     private void forgotPasswordLblMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_forgotPasswordLblMouseClicked
         JOptionPane.showMessageDialog(null,

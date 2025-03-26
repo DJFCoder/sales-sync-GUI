@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,70 +17,64 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "customers")
 public class Customer {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    
     @Column(nullable = false, length = 100)
     private String name;
-    
     @Column(name = "tax_id", nullable = false, length = 20, unique = true)
     private String taxId;
-    
     @Column(length = 255)
     private String address;
-    
     @Column(length = 20)
     private String phone;
-    
     @Column(length = 100)
     private String email;
-    
     @Column(columnDefinition = "TEXT")
     private String notes;
-    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-    
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    
     @OneToMany(mappedBy = "customer")
     private List<Sale> sales = new ArrayList<>();
-    
     @OneToMany(mappedBy = "customer")
     private List<ServiceOrder> serviceOrders = new ArrayList<>();
-    
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
-    
+
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-    
+
     // Constructors
     public Customer() {
     }
-    
+
     public Customer(String name, String taxId) {
         this.name = name;
         this.taxId = taxId;
     }
-    
+
     // Methods
     public List<Sale> getPurchaseHistory() {
         return this.sales;
     }
-    
+
     public List<ServiceOrder> getServiceHistory() {
         return this.serviceOrders;
     }
-    
+
+    // Get registration date from createdAt for backward compatibility
+    public LocalDate getRegistrationDate() {
+        return createdAt != null ? createdAt.toLocalDate() : null;
+    }
+
     // Getters and Setters
     public Integer getId() {
         return id;
@@ -131,8 +124,6 @@ public class Customer {
         this.email = email;
     }
 
-    // Removed getRegistrationDate() and setRegistrationDate() methods
-
     public String getNotes() {
         return notes;
     }
@@ -145,20 +136,7 @@ public class Customer {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-    
-    // Add a method to get registration date from createdAt for backward compatibility
-    public LocalDate getRegistrationDate() {
-        return createdAt != null ? createdAt.toLocalDate() : null;
     }
 }
