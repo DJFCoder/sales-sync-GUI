@@ -124,7 +124,7 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newExpenseBtnActionPerformed"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(newExpenseBtn);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(newExpenseBtn);"/>
           </AuxValues>
         </Component>
         <Component class="javax.swing.JButton" name="manageCategorysBtn">
@@ -147,7 +147,7 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="manageCategorysBtnActionPerformed"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_ListenersCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(manageCategorysBtn);"/>
+            <AuxValue name="JavaCodeGenerator_ListenersCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(manageCategorysBtn);"/>
           </AuxValues>
         </Component>
         <Container class="javax.swing.JPanel" name="filterPanel">
@@ -157,7 +157,7 @@
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(filterPanel);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(filterPanel);"/>
           </AuxValues>
 
           <Layout>
@@ -215,7 +215,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(descriptionField);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(descriptionField);"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="descriptionLbl">
@@ -245,7 +245,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(valueField);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(valueField);"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="categoryLbl">
@@ -267,7 +267,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(categoryField);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(categoryField);"/>
               </AuxValues>
             </Component>
           </SubComponents>

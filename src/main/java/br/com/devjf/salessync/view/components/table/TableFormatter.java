@@ -1,4 +1,4 @@
-package br.com.devjf.salessync.util;
+package br.com.devjf.salessync.view.components.table;
 
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
@@ -22,7 +22,7 @@ import javax.swing.table.TableRowSorter;
  * Classe utilitária para auxiliar na implementação e manipulação de tabelas no sistema.
  * Fornece métodos para configuração, carregamento e manipulação de dados em tabelas.
  */
-public class TableUtil {
+public class TableFormatter {
     
     // Formatador de data e hora padrão para exibição em tabelas
     private static final DateTimeFormatter DEFAULT_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");

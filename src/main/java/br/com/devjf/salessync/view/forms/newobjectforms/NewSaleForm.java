@@ -26,11 +26,11 @@ import br.com.devjf.salessync.model.PaymentMethod;
 import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.model.SaleItem;
 import br.com.devjf.salessync.model.User;
-import br.com.devjf.salessync.util.CustomerSelectionUtil;
-import br.com.devjf.salessync.util.TableButtonEditor;
-import br.com.devjf.salessync.util.TableButtonRenderer;
-import br.com.devjf.salessync.util.UserSession;
-import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.view.components.CustomerSelectionDialog;
+import br.com.devjf.salessync.view.components.table.TableDeleteButtonEditor;
+import br.com.devjf.salessync.view.components.table.TableDeleteButtonRenderer;
+import br.com.devjf.salessync.service.auth.UserSessionManager;
+import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.MainAppView;
 import br.com.devjf.salessync.view.forms.SalesForm;
 
@@ -85,7 +85,7 @@ public class NewSaleForm extends javax.swing.JFrame {
         // Configurar o formulário para edição
         this.saleToCreate = sale;
         this.selectedCustomer = sale.getCustomer();
-        this.currentUser = UserSession.getInstance().getLoggedUser();
+        this.currentUser = UserSessionManager.getInstance().getLoggedUser();
         // Preencher os campos do formulário com os dados da venda
         loadSaleData(sale);
         // Adicionar listener para o campo de desconto
@@ -133,7 +133,7 @@ public class NewSaleForm extends javax.swing.JFrame {
         saleToCreate.setTotalAmount(0.0);
         // Get current logged-in user
         try {
-            currentUser = UserSession.getInstance().getLoggedUser();
+            currentUser = UserSessionManager.getInstance().getLoggedUser();
             saleToCreate.setUser(currentUser);
         } catch (Exception e) {
             System.err.println("Error getting current user: " + e.getMessage());
@@ -332,8 +332,8 @@ public class NewSaleForm extends javax.swing.JFrame {
         newSaleTable.setModel(tableModel);
         // Configurar o renderizador e editor para a coluna de ações (botão remover)
         TableColumn actionColumn = newSaleTable.getColumnModel().getColumn(4);
-        actionColumn.setCellRenderer(new TableButtonRenderer("Remover"));
-        actionColumn.setCellEditor(new TableButtonEditor("Remover",
+        actionColumn.setCellRenderer(new TableDeleteButtonRenderer("Remover"));
+        actionColumn.setCellEditor(new TableDeleteButtonEditor("Remover",
                 tableModel,
                 () -> updateTotals(), // ação após remover (se tabela não estiver vazia)
                 () -> addNewRow() // ação se tabela ficar vazia
@@ -549,7 +549,7 @@ public class NewSaleForm extends javax.swing.JFrame {
         newSaleBtn.setForeground(new java.awt.Color(255, 255, 255));
         newSaleBtn.setText("Salvar");
         newSaleBtn.setPreferredSize(new java.awt.Dimension(150, 40));
-        ViewUtil.standardCornerRadius(newSaleBtn);
+        ViewComponentStyle.standardCornerRadius(newSaleBtn);
         newSaleBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newSaleBtnActionPerformed(evt);
@@ -557,7 +557,7 @@ public class NewSaleForm extends javax.swing.JFrame {
         });
 
         sellInformationPnl.setPreferredSize(new java.awt.Dimension(917, 50));
-        ViewUtil.standardCornerRadius(sellInformationPnl);
+        ViewComponentStyle.standardCornerRadius(sellInformationPnl);
 
         paymentMethodLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         paymentMethodLbl.setText("Forma de Pagamento:");
@@ -573,13 +573,13 @@ public class NewSaleForm extends javax.swing.JFrame {
         nameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         nameField.setFocusable(false);
         nameField.setPreferredSize(new java.awt.Dimension(181, 30));
-        ViewUtil.standardCornerRadius(nameField);
+        ViewComponentStyle.standardCornerRadius(nameField);
 
         findCustomerBtn.setBackground(new java.awt.Color(96, 125, 139));
         findCustomerBtn.setForeground(new java.awt.Color(255, 255, 255));
         findCustomerBtn.setText("Buscar");
         findCustomerBtn.setPreferredSize(new java.awt.Dimension(85, 30));
-        ViewUtil.standardCornerRadius(findCustomerBtn);
+        ViewComponentStyle.standardCornerRadius(findCustomerBtn);
         findCustomerBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 findCustomerBtnActionPerformed(evt);
@@ -599,7 +599,7 @@ public class NewSaleForm extends javax.swing.JFrame {
         }
         paymentMethodField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         paymentMethodField.setPreferredSize(new java.awt.Dimension(114, 30));
-        ViewUtil.standardCornerRadius(paymentMethodField);
+        ViewComponentStyle.standardCornerRadius(paymentMethodField);
 
         javax.swing.GroupLayout sellInformationPnlLayout = new javax.swing.GroupLayout(sellInformationPnl);
         sellInformationPnl.setLayout(sellInformationPnlLayout);
@@ -663,14 +663,14 @@ public class NewSaleForm extends javax.swing.JFrame {
                 addItemBtnActionPerformed(evt);
             }
         });
-        ViewUtil.standardCornerRadius(addItemBtn);
+        ViewComponentStyle.standardCornerRadius(addItemBtn);
 
         cancelSaleBtn.setBackground(new java.awt.Color(175, 76, 78));
         cancelSaleBtn.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         cancelSaleBtn.setForeground(new java.awt.Color(255, 255, 255));
         cancelSaleBtn.setText("Cancelar");
         cancelSaleBtn.setPreferredSize(new java.awt.Dimension(150, 40));
-        ViewUtil.standardCornerRadius(cancelSaleBtn);
+        ViewComponentStyle.standardCornerRadius(cancelSaleBtn);
         cancelSaleBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelSaleBtnActionPerformed(evt);
@@ -686,7 +686,7 @@ public class NewSaleForm extends javax.swing.JFrame {
         discountField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         discountField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         discountField.setPreferredSize(new java.awt.Dimension(121, 30));
-        ViewUtil.standardCornerRadius(nameField);
+        ViewComponentStyle.standardCornerRadius(nameField);
 
         totalLbl.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         totalLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -869,7 +869,7 @@ public class NewSaleForm extends javax.swing.JFrame {
             @Override
             protected Customer doInBackground() throws Exception {
                 // Use the utility class to select a customer
-                return CustomerSelectionUtil.selectCustomer(NewSaleForm.this);
+                return CustomerSelectionDialog.selectCustomer(NewSaleForm.this);
             }
 
             @Override

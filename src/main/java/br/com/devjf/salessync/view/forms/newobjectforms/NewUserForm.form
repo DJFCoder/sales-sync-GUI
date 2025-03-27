@@ -88,7 +88,7 @@
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(userPnl);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(userPnl);"/>
           </AuxValues>
 
           <Layout>
@@ -210,7 +210,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cancelBtnActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(cancelBtn);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(cancelBtn);"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JButton" name="saveBtn">
@@ -233,7 +233,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveBtnActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(saveBtn);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(saveBtn);"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JTextField" name="nameField">
@@ -247,7 +247,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(nameField);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(nameField);"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="nameLbl">
@@ -305,7 +305,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(loginField);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(loginField);"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="passwordLbl">
@@ -324,7 +324,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(passwordField);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(passwordField);"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="confirmPasswordLbl">
@@ -343,7 +343,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(confirmPasswordField);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(confirmPasswordField);"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JCheckBox" name="statusCheckBox">

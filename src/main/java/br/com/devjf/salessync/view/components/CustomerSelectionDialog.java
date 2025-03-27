@@ -1,4 +1,4 @@
-package br.com.devjf.salessync.util;
+package br.com.devjf.salessync.view.components;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -27,7 +27,7 @@ import br.com.devjf.salessync.model.Customer;
 /**
  * Utility class for customer selection using JOptionPane
  */
-public class CustomerSelectionUtil {
+public class CustomerSelectionDialog {
     /**
      * Shows a dialog to select a customer from the database
      *

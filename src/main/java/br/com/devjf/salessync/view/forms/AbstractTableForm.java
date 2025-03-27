@@ -1,6 +1,6 @@
 package br.com.devjf.salessync.view.forms;
 
-import br.com.devjf.salessync.util.TableUtil;
+import br.com.devjf.salessync.view.components.table.TableFormatter;
 import java.time.LocalDateTime;
 import java.util.function.Consumer;
 import javax.swing.JTable;
@@ -26,7 +26,7 @@ public abstract class AbstractTableForm extends javax.swing.JFrame {
      */
     protected DefaultTableModel setupTable(JTable table, String[] columnNames, 
             Class<?>[] columnClasses, boolean[] editableColumns) {
-        return TableUtil.setupTableModel(table, columnNames, columnClasses, editableColumns);
+        return TableFormatter.setupTableModel(table, columnNames, columnClasses, editableColumns);
     }
     
     /**
@@ -35,7 +35,7 @@ public abstract class AbstractTableForm extends javax.swing.JFrame {
      * @param model O modelo de tabela a ser limpo
      */
     protected void clearTable(DefaultTableModel model) {
-        TableUtil.clearTable(model);
+        TableFormatter.clearTable(model);
     }
     
     /**
@@ -45,7 +45,7 @@ public abstract class AbstractTableForm extends javax.swing.JFrame {
      * @param margin Margem adicional para cada coluna (em pixels)
      */
     protected void adjustColumnWidths(JTable table, int margin) {
-        TableUtil.adjustColumnWidths(table, margin);
+        TableFormatter.adjustColumnWidths(table, margin);
     }
     
     /**
@@ -55,7 +55,7 @@ public abstract class AbstractTableForm extends javax.swing.JFrame {
      * @param rowHeight A altura das linhas em pixels
      */
     protected void setRowHeight(JTable table, int rowHeight) {
-        TableUtil.setRowHeight(table, rowHeight);
+        TableFormatter.setRowHeight(table, rowHeight);
     }
     
     /**
@@ -65,7 +65,7 @@ public abstract class AbstractTableForm extends javax.swing.JFrame {
      * @param rowData Os dados da linha a ser adicionada
      */
     protected void addRow(DefaultTableModel model, Object[] rowData) {
-        TableUtil.addRow(model, rowData);
+        TableFormatter.addRow(model, rowData);
     }
     
     /**
@@ -76,7 +76,7 @@ public abstract class AbstractTableForm extends javax.swing.JFrame {
      * @param width A largura desejada em pixels
      */
     protected void setColumnWidth(JTable table, int columnIndex, int width) {
-        TableUtil.setColumnWidth(table, columnIndex, width);
+        TableFormatter.setColumnWidth(table, columnIndex, width);
     }
     
     /**
@@ -88,7 +88,7 @@ public abstract class AbstractTableForm extends javax.swing.JFrame {
      * @return O valor da célula
      */
     protected Object getCellValue(JTable table, int row, int column) {
-        return TableUtil.getCellValue(table, row, column);
+        return TableFormatter.getCellValue(table, row, column);
     }
     
     /**
@@ -98,7 +98,7 @@ public abstract class AbstractTableForm extends javax.swing.JFrame {
      * @return O índice da linha selecionada ou -1 se nenhuma linha estiver selecionada
      */
     protected int getSelectedRowIndex(JTable table) {
-        return TableUtil.getSelectedRowIndex(table);
+        return TableFormatter.getSelectedRowIndex(table);
     }
     
     /**
@@ -108,7 +108,7 @@ public abstract class AbstractTableForm extends javax.swing.JFrame {
      * @return true se houver uma linha selecionada, false caso contrário
      */
     protected boolean hasSelectedRow(JTable table) {
-        return TableUtil.hasSelectedRow(table);
+        return TableFormatter.hasSelectedRow(table);
     }
     
     /**
@@ -123,7 +123,7 @@ public abstract class AbstractTableForm extends javax.swing.JFrame {
      */
     protected <T extends DefaultTableModel> TableRowSorter<T> setupTableFilter(
             JTable table, T model, JTextField[] textFields, int[] columnIndexes) {
-        return TableUtil.setupTableFilter(table, model, textFields, columnIndexes);
+        return TableFormatter.setupTableFilter(table, model, textFields, columnIndexes);
     }
     
     /**
@@ -133,7 +133,7 @@ public abstract class AbstractTableForm extends javax.swing.JFrame {
      * @param action A ação a ser executada quando ocorrer um clique duplo em uma linha
      */
     protected void addDoubleClickListener(JTable table, Consumer<Integer> action) {
-        TableUtil.addDoubleClickListener(table, action);
+        TableFormatter.addDoubleClickListener(table, action);
     }
     
     /**
@@ -143,7 +143,7 @@ public abstract class AbstractTableForm extends javax.swing.JFrame {
      * @return A string formatada ou uma string vazia se a data for nula
      */
     protected String formatDateTime(LocalDateTime dateTime) {
-        return TableUtil.formatDateTime(dateTime);
+        return TableFormatter.formatDateTime(dateTime);
     }
     
     /**
@@ -153,7 +153,7 @@ public abstract class AbstractTableForm extends javax.swing.JFrame {
      * @return A string formatada ou uma string vazia se a data for nula
      */
     protected String formatDate(LocalDateTime dateTime) {
-        return TableUtil.formatDate(dateTime);
+        return TableFormatter.formatDate(dateTime);
     }
     
     /**
@@ -163,7 +163,7 @@ public abstract class AbstractTableForm extends javax.swing.JFrame {
      * @return A string formatada ou uma string vazia se o valor for nulo
      */
     protected String formatCurrency(Double value) {
-        return TableUtil.formatCurrency(value);
+        return TableFormatter.formatCurrency(value);
     }
     
     /**

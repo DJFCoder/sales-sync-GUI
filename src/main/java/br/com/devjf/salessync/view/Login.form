@@ -133,7 +133,7 @@
         </Property>
       </Properties>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(mainPanel);"/>
+        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(mainPanel);"/>
       </AuxValues>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
@@ -198,7 +198,7 @@
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="loginField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, &quot;Usu&#xe1;rio&quot;);&#xa;&#xa;ViewUtil.standardCornerRadius(loginField);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="loginField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, &quot;Usu&#xe1;rio&quot;);&#xa;&#xa;br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(loginField);"/>
           </AuxValues>
         </Component>
         <Component class="javax.swing.JPasswordField" name="passwordField">
@@ -218,7 +218,7 @@
             <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>
           </AccessibilityProperties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="passwordField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, &quot;Senha&quot;);&#xa;&#xa;ViewUtil.standardCornerRadius(passwordField);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="passwordField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, &quot;Senha&quot;);&#xa;&#xa;br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(passwordField);"/>
           </AuxValues>
         </Component>
         <Component class="javax.swing.JButton" name="loginBtn">
@@ -241,7 +241,7 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loginBtnActionPerformed"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewUtil.standardCornerRadius(loginBtn);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(loginBtn);"/>
           </AuxValues>
         </Component>
         <Component class="javax.swing.JLabel" name="forgotPasswordLbl">

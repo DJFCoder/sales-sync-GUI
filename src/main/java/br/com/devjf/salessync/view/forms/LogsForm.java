@@ -1,6 +1,6 @@
 package br.com.devjf.salessync.view.forms;
 
-import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 
 public class LogsForm extends javax.swing.JFrame {
     public LogsForm() {
@@ -32,12 +32,12 @@ public class LogsForm extends javax.swing.JFrame {
         filterLbl.setText("Filtar");
 
         filterPanel.setPreferredSize(new java.awt.Dimension(917, 50));
-        ViewUtil.standardCornerRadius(filterPanel);
+        ViewComponentStyle.standardCornerRadius(filterPanel);
 
         dateTimeField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         dateTimeField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         dateTimeField.setPreferredSize(new java.awt.Dimension(121, 30));
-        ViewUtil.standardCornerRadius(dateTimeField);
+        ViewComponentStyle.standardCornerRadius(dateTimeField);
 
         dateTimeLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         dateTimeLbl.setText("Data/Hora:");
@@ -48,7 +48,7 @@ public class LogsForm extends javax.swing.JFrame {
         actionField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         actionField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         actionField.setPreferredSize(new java.awt.Dimension(121, 30));
-        ViewUtil.standardCornerRadius(actionField);
+        ViewComponentStyle.standardCornerRadius(actionField);
 
         userLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         userLbl.setText("Usuário:");
@@ -56,7 +56,7 @@ public class LogsForm extends javax.swing.JFrame {
         userField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         userField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         userField.setPreferredSize(new java.awt.Dimension(121, 30));
-        ViewUtil.standardCornerRadius(userField);
+        ViewComponentStyle.standardCornerRadius(userField);
 
         javax.swing.GroupLayout filterPanelLayout = new javax.swing.GroupLayout(filterPanel);
         filterPanel.setLayout(filterPanelLayout);

@@ -1,4 +1,4 @@
-package br.com.devjf.salessync.util;
+package br.com.devjf.salessync.view.components.table;
 
 import java.time.LocalDateTime;
 import java.util.function.Consumer;
@@ -25,7 +25,7 @@ public class TableFormHelper {
      */
     public static DefaultTableModel setupTable(JTable table, String[] columnNames, 
             Class<?>[] columnClasses, boolean[] editableColumns) {
-        return TableUtil.setupTableModel(table, columnNames, columnClasses, editableColumns);
+        return TableFormatter.setupTableModel(table, columnNames, columnClasses, editableColumns);
     }
     
     /**
@@ -40,7 +40,7 @@ public class TableFormHelper {
      */
     public static <T extends DefaultTableModel> TableRowSorter<T> setupTableFilter(
             JTable table, T model, JTextField[] textFields, int[] columnIndexes) {
-        return TableUtil.setupTableFilter(table, model, textFields, columnIndexes);
+        return TableFormatter.setupTableFilter(table, model, textFields, columnIndexes);
     }
     
     /**
@@ -50,7 +50,7 @@ public class TableFormHelper {
      * @param action A ação a ser executada quando ocorrer um clique duplo em uma linha
      */
     public static void addDoubleClickListener(JTable table, Consumer<Integer> action) {
-        TableUtil.addDoubleClickListener(table, action);
+        TableFormatter.addDoubleClickListener(table, action);
     }
     
     /**
@@ -59,7 +59,7 @@ public class TableFormHelper {
      * @param model O modelo de tabela a ser limpo
      */
     public static void clearTable(DefaultTableModel model) {
-        TableUtil.clearTable(model);
+        TableFormatter.clearTable(model);
     }
     
     /**
@@ -69,7 +69,7 @@ public class TableFormHelper {
      * @param margin Margem adicional para cada coluna (em pixels)
      */
     public static void adjustColumnWidths(JTable table, int margin) {
-        TableUtil.adjustColumnWidths(table, margin);
+        TableFormatter.adjustColumnWidths(table, margin);
     }
     
     /**
@@ -79,7 +79,7 @@ public class TableFormHelper {
      * @param rowHeight A altura das linhas em pixels
      */
     public static void setRowHeight(JTable table, int rowHeight) {
-        TableUtil.setRowHeight(table, rowHeight);
+        TableFormatter.setRowHeight(table, rowHeight);
     }
     
     /**
@@ -89,7 +89,7 @@ public class TableFormHelper {
      * @param rowData Os dados da linha a ser adicionada
      */
     public static void addRow(DefaultTableModel model, Object[] rowData) {
-        TableUtil.addRow(model, rowData);
+        TableFormatter.addRow(model, rowData);
     }
     
     /**
@@ -100,7 +100,7 @@ public class TableFormHelper {
      * @param width A largura desejada em pixels
      */
     public static void setColumnWidth(JTable table, int columnIndex, int width) {
-        TableUtil.setColumnWidth(table, columnIndex, width);
+        TableFormatter.setColumnWidth(table, columnIndex, width);
     }
     
     /**
@@ -112,7 +112,7 @@ public class TableFormHelper {
      * @return O valor da célula
      */
     public static Object getCellValue(JTable table, int row, int column) {
-        return TableUtil.getCellValue(table, row, column);
+        return TableFormatter.getCellValue(table, row, column);
     }
     
     /**
@@ -122,7 +122,7 @@ public class TableFormHelper {
      * @return O índice da linha selecionada ou -1 se nenhuma linha estiver selecionada
      */
     public static int getSelectedRowIndex(JTable table) {
-        return TableUtil.getSelectedRowIndex(table);
+        return TableFormatter.getSelectedRowIndex(table);
     }
     
     /**
@@ -132,7 +132,7 @@ public class TableFormHelper {
      * @return true se houver uma linha selecionada, false caso contrário
      */
     public static boolean hasSelectedRow(JTable table) {
-        return TableUtil.hasSelectedRow(table);
+        return TableFormatter.hasSelectedRow(table);
     }
     
     /**
@@ -142,7 +142,7 @@ public class TableFormHelper {
      * @return A string formatada ou uma string vazia se a data for nula
      */
     public static String formatDateTime(LocalDateTime dateTime) {
-        return TableUtil.formatDateTime(dateTime);
+        return TableFormatter.formatDateTime(dateTime);
     }
     
     /**
@@ -152,7 +152,7 @@ public class TableFormHelper {
      * @return A string formatada ou uma string vazia se a data for nula
      */
     public static String formatDate(LocalDateTime dateTime) {
-        return TableUtil.formatDate(dateTime);
+        return TableFormatter.formatDate(dateTime);
     }
     
     /**
@@ -162,6 +162,6 @@ public class TableFormHelper {
      * @return A string formatada ou uma string vazia se o valor for nulo
      */
     public static String formatCurrency(Double value) {
-        return TableUtil.formatCurrency(value);
+        return TableFormatter.formatCurrency(value);
     }
 }

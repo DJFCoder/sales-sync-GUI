@@ -7,7 +7,7 @@ import br.com.devjf.salessync.model.Expense;
 import br.com.devjf.salessync.model.ExpenseCategory;
 import br.com.devjf.salessync.model.RecurrenceType;
 import static br.com.devjf.salessync.model.RecurrenceType.*;
-import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.MainAppView;
 
 public class NewExpenseForm extends javax.swing.JFrame {
@@ -159,14 +159,14 @@ public class NewExpenseForm extends javax.swing.JFrame {
         mainPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
 
         expensePnl.setPreferredSize(new java.awt.Dimension(813, 459));
-        ViewUtil.standardCornerRadius(expensePnl);
+        ViewComponentStyle.standardCornerRadius(expensePnl);
 
         cancelBtn.setBackground(new java.awt.Color(175, 76, 78));
         cancelBtn.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         cancelBtn.setForeground(new java.awt.Color(255, 255, 255));
         cancelBtn.setText("Cancelar");
         cancelBtn.setPreferredSize(new java.awt.Dimension(120, 40));
-        ViewUtil.standardCornerRadius(cancelBtn);
+        ViewComponentStyle.standardCornerRadius(cancelBtn);
         cancelBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelBtnActionPerformed(evt);
@@ -178,7 +178,7 @@ public class NewExpenseForm extends javax.swing.JFrame {
         saveBtn.setForeground(new java.awt.Color(255, 255, 255));
         saveBtn.setText("Salvar");
         saveBtn.setPreferredSize(new java.awt.Dimension(120, 40));
-        ViewUtil.standardCornerRadius(saveBtn);
+        ViewComponentStyle.standardCornerRadius(saveBtn);
         saveBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveBtnActionPerformed(evt);
@@ -188,7 +188,7 @@ public class NewExpenseForm extends javax.swing.JFrame {
         descriptionField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         descriptionField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         descriptionField.setPreferredSize(new java.awt.Dimension(376, 40));
-        ViewUtil.standardCornerRadius(descriptionField);
+        ViewComponentStyle.standardCornerRadius(descriptionField);
 
         descriptionLbl.setText("Descrição:");
 
@@ -211,7 +211,7 @@ public class NewExpenseForm extends javax.swing.JFrame {
         valueField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         valueField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         valueField.setPreferredSize(new java.awt.Dimension(179, 40));
-        ViewUtil.standardCornerRadius(valueField);
+        ViewComponentStyle.standardCornerRadius(valueField);
 
         try {
             dateField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##/##/####")));
@@ -222,7 +222,7 @@ public class NewExpenseForm extends javax.swing.JFrame {
         dateField.setToolTipText("");
         dateField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         dateField.setPreferredSize(new java.awt.Dimension(179, 40));
-        ViewUtil.standardCornerRadius(dateField);
+        ViewComponentStyle.standardCornerRadius(dateField);
 
         javax.swing.GroupLayout expensePnlLayout = new javax.swing.GroupLayout(expensePnl);
         expensePnl.setLayout(expensePnlLayout);

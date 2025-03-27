@@ -1,6 +1,6 @@
 package br.com.devjf.salessync.view.forms;
 
-import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 
 public class ReportsForm extends javax.swing.JFrame {
     public ReportsForm() {
@@ -53,7 +53,7 @@ public class ReportsForm extends javax.swing.JFrame {
         newReportBtn.setForeground(new java.awt.Color(255, 255, 255));
         newReportBtn.setText("Emitir Relatório");
         newReportBtn.setPreferredSize(new java.awt.Dimension(150, 40));
-        ViewUtil.standardCornerRadius(newReportBtn);
+        ViewComponentStyle.standardCornerRadius(newReportBtn);
 
         filterReportBtn.setBackground(new java.awt.Color(255, 178, 0));
         filterReportBtn.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
@@ -66,10 +66,10 @@ public class ReportsForm extends javax.swing.JFrame {
                 filterReportBtnActionPerformed(evt);
             }
         });
-        ViewUtil.standardCornerRadius(filterReportBtn);
+        ViewComponentStyle.standardCornerRadius(filterReportBtn);
 
         filterPanel.setPreferredSize(new java.awt.Dimension(917, 50));
-        ViewUtil.standardCornerRadius(filterPanel);
+        ViewComponentStyle.standardCornerRadius(filterPanel);
 
         recurrenceLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         recurrenceLbl.setText("Recorrência:");
@@ -135,7 +135,7 @@ public class ReportsForm extends javax.swing.JFrame {
         tableScrollPanel.setViewportView(expenseTable);
 
         jPanel1.setPreferredSize(new java.awt.Dimension(575, 270));
-        ViewUtil.standardCornerRadius(jPanel1);
+        ViewComponentStyle.standardCornerRadius(jPanel1);
 
         resumeTitleLbl.setFont(new java.awt.Font("Liberation Sans", 0, 16)); // NOI18N
         resumeTitleLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);

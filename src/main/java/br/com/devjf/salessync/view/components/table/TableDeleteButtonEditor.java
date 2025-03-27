@@ -1,4 +1,4 @@
-package br.com.devjf.salessync.util;
+package br.com.devjf.salessync.view.components.table;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -12,7 +12,7 @@ import javax.swing.table.DefaultTableModel;
  * A reusable button editor for JTable cells. This class provides a button that
  * can be used in a table cell with customizable appearance and behavior.
  */
-public class TableButtonEditor extends AbstractCellEditor implements TableCellEditor {
+public class TableDeleteButtonEditor extends AbstractCellEditor implements TableCellEditor {
     private final JButton button;
     private int clickedRow;
     private final DefaultTableModel tableModel;
@@ -29,7 +29,7 @@ public class TableButtonEditor extends AbstractCellEditor implements TableCellEd
      * @param emptyTableAction Action to run if the table becomes empty after
      * removal
      */
-    public TableButtonEditor(String buttonText, DefaultTableModel tableModel,
+    public TableDeleteButtonEditor(String buttonText, DefaultTableModel tableModel,
             Runnable afterRemoveAction, Runnable emptyTableAction) {
         this.tableModel = tableModel;
         this.afterRemoveAction = afterRemoveAction;

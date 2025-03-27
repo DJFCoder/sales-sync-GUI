@@ -1,4 +1,4 @@
-package br.com.devjf.salessync.util;
+package br.com.devjf.salessync.view.components.style;
 
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
@@ -8,7 +8,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-public class ViewUtil {
+public class ViewComponentStyle {
     public static void standardCornerRadius(JPanel panel) {
         panel.putClientProperty("FlatLaf.style",
                 "arc: 10");

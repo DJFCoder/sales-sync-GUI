@@ -3,7 +3,7 @@ package br.com.devjf.salessync.view.forms.newobjectforms;
 import br.com.devjf.salessync.controller.UserController;
 import br.com.devjf.salessync.model.User;
 import br.com.devjf.salessync.model.UserType;
-import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.MainAppView;
 
 public class NewUserForm extends javax.swing.JFrame {
@@ -143,14 +143,14 @@ public class NewUserForm extends javax.swing.JFrame {
         mainPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
 
         userPnl.setPreferredSize(new java.awt.Dimension(813, 549));
-        ViewUtil.standardCornerRadius(userPnl);
+        ViewComponentStyle.standardCornerRadius(userPnl);
 
         cancelBtn.setBackground(new java.awt.Color(175, 76, 78));
         cancelBtn.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         cancelBtn.setForeground(new java.awt.Color(255, 255, 255));
         cancelBtn.setText("Cancelar");
         cancelBtn.setPreferredSize(new java.awt.Dimension(120, 40));
-        ViewUtil.standardCornerRadius(cancelBtn);
+        ViewComponentStyle.standardCornerRadius(cancelBtn);
         cancelBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelBtnActionPerformed(evt);
@@ -162,7 +162,7 @@ public class NewUserForm extends javax.swing.JFrame {
         saveBtn.setForeground(new java.awt.Color(255, 255, 255));
         saveBtn.setText("Salvar");
         saveBtn.setPreferredSize(new java.awt.Dimension(120, 40));
-        ViewUtil.standardCornerRadius(saveBtn);
+        ViewComponentStyle.standardCornerRadius(saveBtn);
         saveBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveBtnActionPerformed(evt);
@@ -172,7 +172,7 @@ public class NewUserForm extends javax.swing.JFrame {
         nameField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         nameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         nameField.setPreferredSize(new java.awt.Dimension(376, 40));
-        ViewUtil.standardCornerRadius(nameField);
+        ViewComponentStyle.standardCornerRadius(nameField);
 
         nameLbl.setText("Nome:");
 
@@ -190,21 +190,21 @@ public class NewUserForm extends javax.swing.JFrame {
         loginField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         loginField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         loginField.setPreferredSize(new java.awt.Dimension(376, 40));
-        ViewUtil.standardCornerRadius(loginField);
+        ViewComponentStyle.standardCornerRadius(loginField);
 
         passwordLbl.setText("Senha:");
 
         passwordField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         passwordField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         passwordField.setPreferredSize(new java.awt.Dimension(376, 40));
-        ViewUtil.standardCornerRadius(passwordField);
+        ViewComponentStyle.standardCornerRadius(passwordField);
 
         confirmPasswordLbl.setText("Confirmar Senha:");
 
         confirmPasswordField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         confirmPasswordField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         confirmPasswordField.setPreferredSize(new java.awt.Dimension(376, 40));
-        ViewUtil.standardCornerRadius(confirmPasswordField);
+        ViewComponentStyle.standardCornerRadius(confirmPasswordField);
 
         statusCheckBox.setText("Ativo");
 

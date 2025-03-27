@@ -12,8 +12,8 @@ import br.com.devjf.salessync.model.Customer;
 import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.model.ServiceOrder;
 import br.com.devjf.salessync.model.ServiceStatus;
-import br.com.devjf.salessync.util.CustomerSelectionUtil;
-import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.view.components.CustomerSelectionDialog;
+import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.MainAppView;
 
 public class NewServiceOrderForm extends javax.swing.JFrame {
@@ -149,7 +149,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
             @Override
             protected Customer doInBackground() throws Exception {
                 // Use the utility class to select a customer
-                return CustomerSelectionUtil.selectCustomer(
+                return CustomerSelectionDialog.selectCustomer(
                         NewServiceOrderForm.this);
             }
 
@@ -230,14 +230,14 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
         mainPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
 
         serviceOrderPnl.setPreferredSize(new java.awt.Dimension(813, 594));
-        ViewUtil.standardCornerRadius(serviceOrderPnl);
+        ViewComponentStyle.standardCornerRadius(serviceOrderPnl);
 
         cancelBtn.setBackground(new java.awt.Color(175, 76, 78));
         cancelBtn.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         cancelBtn.setForeground(new java.awt.Color(255, 255, 255));
         cancelBtn.setText("Cancelar");
         cancelBtn.setPreferredSize(new java.awt.Dimension(120, 40));
-        ViewUtil.standardCornerRadius(cancelBtn);
+        ViewComponentStyle.standardCornerRadius(cancelBtn);
         cancelBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelBtnActionPerformed(evt);
@@ -249,7 +249,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
         saveBtn.setForeground(new java.awt.Color(255, 255, 255));
         saveBtn.setText("Salvar");
         saveBtn.setPreferredSize(new java.awt.Dimension(120, 40));
-        ViewUtil.standardCornerRadius(saveBtn);
+        ViewComponentStyle.standardCornerRadius(saveBtn);
         saveBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveBtnActionPerformed(evt);
@@ -258,13 +258,13 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
 
         idField.setEditable(false);
         idField.setPreferredSize(new java.awt.Dimension(180, 40));
-        ViewUtil.standardCornerRadius(idField);
+        ViewComponentStyle.standardCornerRadius(idField);
 
         idLbl.setText("Código:");
 
         customerField.setEditable(false);
         customerField.setPreferredSize(new java.awt.Dimension(437, 40));
-        ViewUtil.standardCornerRadius(customerField);
+        ViewComponentStyle.standardCornerRadius(customerField);
 
         taxIdLbl.setText("Cliente:");
 
@@ -283,7 +283,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
         findCustomerBtn.setForeground(new java.awt.Color(255, 255, 255));
         findCustomerBtn.setText("Buscar");
         findCustomerBtn.setPreferredSize(new java.awt.Dimension(120, 40));
-        ViewUtil.standardCornerRadius(findCustomerBtn);
+        ViewComponentStyle.standardCornerRadius(findCustomerBtn);
         findCustomerBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 findCustomerBtnActionPerformed(evt);

@@ -3,8 +3,8 @@ package br.com.devjf.salessync.view.forms;
 import br.com.devjf.salessync.controller.UserController;
 import br.com.devjf.salessync.model.User;
 import br.com.devjf.salessync.model.UserActivity;
-import br.com.devjf.salessync.util.UserSession;
-import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.service.auth.UserSessionManager;
+import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.Login;
 import br.com.devjf.salessync.view.MainAppView;
 import java.util.List;
@@ -16,7 +16,7 @@ public class DashboardForm extends javax.swing.JFrame {
     public DashboardForm() {
         initComponents();
         userController = new UserController();
-        loggedUser = UserSession.getInstance().getLoggedUser();
+        loggedUser = UserSessionManager.getInstance().getLoggedUser();
         initUserData();
     }
 
@@ -142,7 +142,7 @@ public class DashboardForm extends javax.swing.JFrame {
         lastAccessLbl.setText("Último acesso: ");
 
         sellPnl.setPreferredSize(new java.awt.Dimension(170, 125));
-        ViewUtil.standardCornerRadius(sellPnl);
+        ViewComponentStyle.standardCornerRadius(sellPnl);
 
         sellsLbl.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         sellsLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -198,7 +198,7 @@ public class DashboardForm extends javax.swing.JFrame {
         );
 
         customerPnl.setPreferredSize(new java.awt.Dimension(170, 125));
-        ViewUtil.standardCornerRadius(customerPnl);
+        ViewComponentStyle.standardCornerRadius(customerPnl);
 
         customersLbl.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         customersLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -251,7 +251,7 @@ public class DashboardForm extends javax.swing.JFrame {
         );
 
         serviceOrderPnl.setPreferredSize(new java.awt.Dimension(170, 125));
-        ViewUtil.standardCornerRadius(serviceOrderPnl);
+        ViewComponentStyle.standardCornerRadius(serviceOrderPnl);
 
         serviceOrdersLbl.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         serviceOrdersLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -304,7 +304,7 @@ public class DashboardForm extends javax.swing.JFrame {
         );
 
         userPnl.setPreferredSize(new java.awt.Dimension(291, 373));
-        ViewUtil.standardCornerRadius(userPnl);
+        ViewComponentStyle.standardCornerRadius(userPnl);
 
         profileLbl.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         profileLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -347,7 +347,7 @@ public class DashboardForm extends javax.swing.JFrame {
         );
 
         activitiesPnl.setPreferredSize(new java.awt.Dimension(570, 219));
-        ViewUtil.standardCornerRadius(activitiesPnl);
+        ViewComponentStyle.standardCornerRadius(activitiesPnl);
 
         activitiesLbl.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         activitiesLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -418,7 +418,7 @@ public class DashboardForm extends javax.swing.JFrame {
         logoffBtn.setForeground(new java.awt.Color(255, 255, 255));
         logoffBtn.setText("Sair");
         logoffBtn.setPreferredSize(new java.awt.Dimension(85, 40));
-        ViewUtil.standardCornerRadius(logoffBtn);
+        ViewComponentStyle.standardCornerRadius(logoffBtn);
         logoffBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 logoffBtnActionPerformed(evt);
@@ -497,7 +497,7 @@ public class DashboardForm extends javax.swing.JFrame {
 
     private void logoffBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoffBtnActionPerformed
         // Obter o usuário logado
-        User loggedUser = UserSession.getInstance().getLoggedUser();
+        User loggedUser = UserSessionManager.getInstance().getLoggedUser();
         // Registrar a atividade de logout
         if (loggedUser != null) {
             UserController userController = new UserController();
@@ -505,7 +505,7 @@ public class DashboardForm extends javax.swing.JFrame {
                     "Logout do sistema");
         }
         // Limpar a sessão do usuário
-        UserSession.getInstance().clearSession();
+        UserSessionManager.getInstance().clearSession();
         // Fechar a janela principal
         MainAppView.getInstance().dispose();
         // Abrir a tela de login

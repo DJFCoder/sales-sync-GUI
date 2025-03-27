@@ -9,10 +9,10 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import br.com.devjf.salessync.controller.SaleController;
 import br.com.devjf.salessync.model.Sale;
-import br.com.devjf.salessync.util.TableEditButtonEditor;
-import br.com.devjf.salessync.util.TableEditButtonRenderer;
-import br.com.devjf.salessync.util.TableFormHelper;
-import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.view.components.table.TableEditButtonEditor;
+import br.com.devjf.salessync.view.components.table.TableEditButtonRenderer;
+import br.com.devjf.salessync.view.components.table.TableFormHelper;
+import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.MainAppView;
 
 public class SalesForm extends javax.swing.JFrame {
@@ -226,7 +226,7 @@ public class SalesForm extends javax.swing.JFrame {
         newSaleButton.setForeground(new java.awt.Color(255, 255, 255));
         newSaleButton.setText("Nova Venda");
         newSaleButton.setPreferredSize(new java.awt.Dimension(150, 40));
-        ViewUtil.standardCornerRadius(newSaleButton);
+        ViewComponentStyle.standardCornerRadius(newSaleButton);
         newSaleButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -239,15 +239,15 @@ public class SalesForm extends javax.swing.JFrame {
         deleteSaleButton.setForeground(new java.awt.Color(255, 255, 255));
         deleteSaleButton.setText("Excluir Venda");
         deleteSaleButton.setPreferredSize(new java.awt.Dimension(150, 40));
-        ViewUtil.standardCornerRadius(deleteSaleButton);
+        ViewComponentStyle.standardCornerRadius(deleteSaleButton);
 
         filterPanel.setPreferredSize(new java.awt.Dimension(917, 50));
-        ViewUtil.standardCornerRadius(filterPanel);
+        ViewComponentStyle.standardCornerRadius(filterPanel);
 
         dateField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         dateField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         dateField.setPreferredSize(new java.awt.Dimension(121, 30));
-        ViewUtil.standardCornerRadius(dateField);
+        ViewComponentStyle.standardCornerRadius(dateField);
 
         dateLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         dateLbl.setText("Data:");
@@ -258,7 +258,7 @@ public class SalesForm extends javax.swing.JFrame {
         paymentMethodField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         paymentMethodField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         paymentMethodField.setPreferredSize(new java.awt.Dimension(121, 30));
-        ViewUtil.standardCornerRadius(paymentMethodField);
+        ViewComponentStyle.standardCornerRadius(paymentMethodField);
 
         customerLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         customerLbl.setText("Cliente:");
@@ -266,7 +266,7 @@ public class SalesForm extends javax.swing.JFrame {
         customerField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         customerField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         customerField.setPreferredSize(new java.awt.Dimension(121, 30));
-        ViewUtil.standardCornerRadius(customerField);
+        ViewComponentStyle.standardCornerRadius(customerField);
 
         javax.swing.GroupLayout filterPanelLayout = new javax.swing.GroupLayout(filterPanel);
         filterPanel.setLayout(filterPanelLayout);

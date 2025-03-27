@@ -19,7 +19,7 @@ import br.com.devjf.salessync.model.ServiceOrder;
 import br.com.devjf.salessync.model.User;
 import br.com.devjf.salessync.model.UserType;
 import static br.com.devjf.salessync.model.UserType.*;
-import br.com.devjf.salessync.util.UserSession;
+import br.com.devjf.salessync.service.auth.UserSessionManager;
 import br.com.devjf.salessync.view.forms.CustomersForm;
 import br.com.devjf.salessync.view.forms.DashboardForm;
 import br.com.devjf.salessync.view.forms.ExpensesForm;
@@ -314,7 +314,7 @@ public class MainAppView extends javax.swing.JFrame {
     }
 
     private String getPermitionLabel() {
-        User loggedUser = UserSession.getInstance().getLoggedUser();
+        User loggedUser = UserSessionManager.getInstance().getLoggedUser();
         if (loggedUser == null) {
             return "???";
         }
@@ -346,7 +346,7 @@ public class MainAppView extends javax.swing.JFrame {
      * @param description Descrição da atividade
      */
     public void registerUserActivity(String description) {
-        User loggedUser = UserSession.getInstance().getLoggedUser();
+        User loggedUser = UserSessionManager.getInstance().getLoggedUser();
         if (loggedUser != null) {
             userController.registerActivity(loggedUser,
                     description);

@@ -1,4 +1,4 @@
-package br.com.devjf.salessync.util;
+package br.com.devjf.salessync.view.components.table;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;

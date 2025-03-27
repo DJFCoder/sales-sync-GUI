@@ -1,6 +1,6 @@
 package br.com.devjf.salessync.view.forms;
 
-import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.MainAppView;
 
 public class CustomersForm extends javax.swing.JFrame {
@@ -39,7 +39,7 @@ public class CustomersForm extends javax.swing.JFrame {
         newCustomerBtn.setForeground(new java.awt.Color(255, 255, 255));
         newCustomerBtn.setText("Novo Cliente");
         newCustomerBtn.setPreferredSize(new java.awt.Dimension(150, 40));
-        ViewUtil.standardCornerRadius(newCustomerBtn);
+        ViewComponentStyle.standardCornerRadius(newCustomerBtn);
         newCustomerBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newCustomerBtnActionPerformed(evt);
@@ -51,15 +51,15 @@ public class CustomersForm extends javax.swing.JFrame {
         deleteCustomerBtn.setForeground(new java.awt.Color(255, 255, 255));
         deleteCustomerBtn.setText("Excluir Cliente");
         deleteCustomerBtn.setPreferredSize(new java.awt.Dimension(150, 40));
-        ViewUtil.standardCornerRadius(deleteCustomerBtn);
+        ViewComponentStyle.standardCornerRadius(deleteCustomerBtn);
 
         filterPanel.setPreferredSize(new java.awt.Dimension(917, 50));
-        ViewUtil.standardCornerRadius(filterPanel);
+        ViewComponentStyle.standardCornerRadius(filterPanel);
 
         idField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         idField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         idField.setPreferredSize(new java.awt.Dimension(121, 30));
-        ViewUtil.standardCornerRadius(idField);
+        ViewComponentStyle.standardCornerRadius(idField);
 
         idLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         idLbl.setText("Código:");
@@ -70,7 +70,7 @@ public class CustomersForm extends javax.swing.JFrame {
         taxIdField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         taxIdField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         taxIdField.setPreferredSize(new java.awt.Dimension(121, 30));
-        ViewUtil.standardCornerRadius(taxIdField);
+        ViewComponentStyle.standardCornerRadius(taxIdField);
 
         customerLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         customerLbl.setText("Cliente:");
@@ -78,7 +78,7 @@ public class CustomersForm extends javax.swing.JFrame {
         customerField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         customerField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         customerField.setPreferredSize(new java.awt.Dimension(121, 30));
-        ViewUtil.standardCornerRadius(customerField);
+        ViewComponentStyle.standardCornerRadius(customerField);
 
         javax.swing.GroupLayout filterPanelLayout = new javax.swing.GroupLayout(filterPanel);
         filterPanel.setLayout(filterPanelLayout);
@@ -132,7 +132,7 @@ public class CustomersForm extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        ViewUtil.standardCornerRadius(customerField);
+        ViewComponentStyle.standardCornerRadius(customerField);
         tableScrollPanel.setViewportView(customerTable);
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);

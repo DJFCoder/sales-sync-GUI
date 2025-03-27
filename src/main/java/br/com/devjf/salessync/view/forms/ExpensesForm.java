@@ -1,6 +1,6 @@
 package br.com.devjf.salessync.view.forms;
 
-import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.MainAppView;
 
 public class ExpensesForm extends javax.swing.JFrame {
@@ -39,7 +39,7 @@ public class ExpensesForm extends javax.swing.JFrame {
         newExpenseBtn.setForeground(new java.awt.Color(255, 255, 255));
         newExpenseBtn.setText("Nova Despesa");
         newExpenseBtn.setPreferredSize(new java.awt.Dimension(150, 40));
-        ViewUtil.standardCornerRadius(newExpenseBtn);
+        ViewComponentStyle.standardCornerRadius(newExpenseBtn);
         newExpenseBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newExpenseBtnActionPerformed(evt);
@@ -56,15 +56,15 @@ public class ExpensesForm extends javax.swing.JFrame {
                 manageCategorysBtnActionPerformed(evt);
             }
         });
-        ViewUtil.standardCornerRadius(manageCategorysBtn);
+        ViewComponentStyle.standardCornerRadius(manageCategorysBtn);
 
         filterPanel.setPreferredSize(new java.awt.Dimension(917, 50));
-        ViewUtil.standardCornerRadius(filterPanel);
+        ViewComponentStyle.standardCornerRadius(filterPanel);
 
         descriptionField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         descriptionField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         descriptionField.setPreferredSize(new java.awt.Dimension(121, 30));
-        ViewUtil.standardCornerRadius(descriptionField);
+        ViewComponentStyle.standardCornerRadius(descriptionField);
 
         descriptionLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         descriptionLbl.setText("Descrição:");
@@ -75,7 +75,7 @@ public class ExpensesForm extends javax.swing.JFrame {
         valueField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         valueField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         valueField.setPreferredSize(new java.awt.Dimension(121, 30));
-        ViewUtil.standardCornerRadius(valueField);
+        ViewComponentStyle.standardCornerRadius(valueField);
 
         categoryLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         categoryLbl.setText("Categoria:");
@@ -83,7 +83,7 @@ public class ExpensesForm extends javax.swing.JFrame {
         categoryField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         categoryField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         categoryField.setPreferredSize(new java.awt.Dimension(121, 30));
-        ViewUtil.standardCornerRadius(categoryField);
+        ViewComponentStyle.standardCornerRadius(categoryField);
 
         javax.swing.GroupLayout filterPanelLayout = new javax.swing.GroupLayout(filterPanel);
         filterPanel.setLayout(filterPanelLayout);

@@ -1,6 +1,6 @@
 package br.com.devjf.salessync.view.forms;
 
-import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.MainAppView;
 
 public class ServiceOrdersForm extends javax.swing.JFrame {
@@ -39,7 +39,7 @@ public class ServiceOrdersForm extends javax.swing.JFrame {
         newServiceOrderButton.setForeground(new java.awt.Color(255, 255, 255));
         newServiceOrderButton.setText("Nova Ordem");
         newServiceOrderButton.setPreferredSize(new java.awt.Dimension(150, 40));
-        ViewUtil.standardCornerRadius(newServiceOrderButton);
+        ViewComponentStyle.standardCornerRadius(newServiceOrderButton);
         newServiceOrderButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newServiceOrderButtonActionPerformed(evt);
@@ -51,15 +51,15 @@ public class ServiceOrdersForm extends javax.swing.JFrame {
         cancelServiceOrderButton.setForeground(new java.awt.Color(255, 255, 255));
         cancelServiceOrderButton.setText("Cancelar Ordem");
         cancelServiceOrderButton.setPreferredSize(new java.awt.Dimension(150, 40));
-        ViewUtil.standardCornerRadius(cancelServiceOrderButton);
+        ViewComponentStyle.standardCornerRadius(cancelServiceOrderButton);
 
         filterPanel.setPreferredSize(new java.awt.Dimension(917, 50));
-        ViewUtil.standardCornerRadius(filterPanel);
+        ViewComponentStyle.standardCornerRadius(filterPanel);
 
         statusField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         statusField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         statusField.setPreferredSize(new java.awt.Dimension(121, 30));
-        ViewUtil.standardCornerRadius(statusField);
+        ViewComponentStyle.standardCornerRadius(statusField);
 
         statusLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         statusLbl.setText("Status:");
@@ -70,7 +70,7 @@ public class ServiceOrdersForm extends javax.swing.JFrame {
         idField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         idField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         idField.setPreferredSize(new java.awt.Dimension(121, 30));
-        ViewUtil.standardCornerRadius(idField);
+        ViewComponentStyle.standardCornerRadius(idField);
 
         customerLbl.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         customerLbl.setText("Cliente:");
@@ -78,7 +78,7 @@ public class ServiceOrdersForm extends javax.swing.JFrame {
         customerField.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         customerField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         customerField.setPreferredSize(new java.awt.Dimension(121, 30));
-        ViewUtil.standardCornerRadius(customerField);
+        ViewComponentStyle.standardCornerRadius(customerField);
 
         javax.swing.GroupLayout filterPanelLayout = new javax.swing.GroupLayout(filterPanel);
         filterPanel.setLayout(filterPanelLayout);

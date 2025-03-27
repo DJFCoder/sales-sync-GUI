@@ -3,8 +3,8 @@ package br.com.devjf.salessync.view;
 import br.com.devjf.salessync.controller.UserController;
 import br.com.devjf.salessync.model.User;
 import br.com.devjf.salessync.model.UserType;
-import br.com.devjf.salessync.util.UserSession;
-import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.service.auth.UserSessionManager;
+import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import com.formdev.flatlaf.FlatClientProperties;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -145,7 +145,7 @@ public class Login extends javax.swing.JFrame {
         getContentPane().add(borderTop, java.awt.BorderLayout.PAGE_START);
 
         mainPanel.setBackground(new java.awt.Color(255, 255, 255));
-        ViewUtil.standardCornerRadius(mainPanel);
+        ViewComponentStyle.standardCornerRadius(mainPanel);
 
         loginField.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         loginField.setToolTipText("");
@@ -156,7 +156,7 @@ public class Login extends javax.swing.JFrame {
         loginField.setPreferredSize(new java.awt.Dimension(310, 50));
         loginField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Usuário");
 
-        ViewUtil.standardCornerRadius(loginField);
+        ViewComponentStyle.standardCornerRadius(loginField);
 
         passwordField.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         passwordField.setToolTipText("");
@@ -164,14 +164,14 @@ public class Login extends javax.swing.JFrame {
         passwordField.setPreferredSize(new java.awt.Dimension(310, 50));
         passwordField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Senha");
 
-        ViewUtil.standardCornerRadius(passwordField);
+        ViewComponentStyle.standardCornerRadius(passwordField);
 
         loginBtn.setBackground(new java.awt.Color(33, 150, 243));
         loginBtn.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         loginBtn.setForeground(new java.awt.Color(255, 255, 255));
         loginBtn.setText("ENTRAR");
         loginBtn.setPreferredSize(new java.awt.Dimension(310, 50));
-        ViewUtil.standardCornerRadius(loginBtn);
+        ViewComponentStyle.standardCornerRadius(loginBtn);
         loginBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loginBtnActionPerformed(evt);
@@ -271,7 +271,7 @@ public class Login extends javax.swing.JFrame {
                     loginBtn.setEnabled(true);
                     if (authenticatedUser != null) {
                         // Configurar a sessão do usuário
-                        UserSession.getInstance().setLoggedUser(
+                        UserSessionManager.getInstance().setLoggedUser(
                                 authenticatedUser);
                         // Abrir a tela principal
                         MainAppView mainView = new MainAppView();

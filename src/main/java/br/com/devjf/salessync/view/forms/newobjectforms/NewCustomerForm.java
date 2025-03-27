@@ -2,7 +2,7 @@ package br.com.devjf.salessync.view.forms.newobjectforms;
 
 import br.com.devjf.salessync.controller.CustomerController;
 import br.com.devjf.salessync.model.Customer;
-import br.com.devjf.salessync.util.ViewUtil;
+import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.MainAppView;
 
 public class NewCustomerForm extends javax.swing.JFrame {
@@ -102,14 +102,14 @@ public class NewCustomerForm extends javax.swing.JFrame {
         mainPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 2, true));
 
         customerPnl.setPreferredSize(new java.awt.Dimension(813, 624));
-        ViewUtil.standardCornerRadius(customerPnl);
+        ViewComponentStyle.standardCornerRadius(customerPnl);
 
         cancelBtn.setBackground(new java.awt.Color(175, 76, 78));
         cancelBtn.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         cancelBtn.setForeground(new java.awt.Color(255, 255, 255));
         cancelBtn.setText("Cancelar");
         cancelBtn.setPreferredSize(new java.awt.Dimension(120, 40));
-        ViewUtil.standardCornerRadius(cancelBtn);
+        ViewComponentStyle.standardCornerRadius(cancelBtn);
         cancelBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelBtnActionPerformed(evt);
@@ -121,7 +121,7 @@ public class NewCustomerForm extends javax.swing.JFrame {
         saveBtn.setForeground(new java.awt.Color(255, 255, 255));
         saveBtn.setText("Salvar");
         saveBtn.setPreferredSize(new java.awt.Dimension(120, 40));
-        ViewUtil.standardCornerRadius(saveBtn);
+        ViewComponentStyle.standardCornerRadius(saveBtn);
         saveBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveBtnActionPerformed(evt);
@@ -129,29 +129,29 @@ public class NewCustomerForm extends javax.swing.JFrame {
         });
 
         nameField.setPreferredSize(new java.awt.Dimension(475, 40));
-        ViewUtil.standardCornerRadius(nameField);
+        ViewComponentStyle.standardCornerRadius(nameField);
 
         nameLbl.setText("Nome:");
 
         taxIdField.setPreferredSize(new java.awt.Dimension(278, 40));
-        ViewUtil.standardCornerRadius(taxIdField);
+        ViewComponentStyle.standardCornerRadius(taxIdField);
 
         taxIdLbl.setText("CPF/CNPJ:");
 
         emailField.setPreferredSize(new java.awt.Dimension(475, 40));
-        ViewUtil.standardCornerRadius(emailField);
+        ViewComponentStyle.standardCornerRadius(emailField);
 
         emailLbl.setText("E-mail:");
 
         phoneLbl.setText("Telefone:");
 
         phoneField.setPreferredSize(new java.awt.Dimension(278, 40));
-        ViewUtil.standardCornerRadius(phoneField);
+        ViewComponentStyle.standardCornerRadius(phoneField);
 
         adressLbl.setText("Endereço:");
 
         adressField.setPreferredSize(new java.awt.Dimension(475, 40));
-        ViewUtil.standardCornerRadius(adressField);
+        ViewComponentStyle.standardCornerRadius(adressField);
 
         observationLbl.setText("Observação:");
 
