@@ -120,7 +120,51 @@ sales-sync/
             ├── db                                               # Scripts SQL
             └── images                                           # Imagens e ícones
 ```
+## Arquitetura do Sistema
 
+O SalesSync utiliza uma **Arquitetura em Camadas (Layered Architecture)** com implementação do padrão **Model-View-Controller (MVC)** e **Service Layer**, seguindo boas práticas de desenvolvimento de software empresarial Java.
+
+### Camadas da Arquitetura
+
+1. **Camada de Apresentação (View)**
+   - Responsável pela interface gráfica usando Swing
+   - Localização: `br.com.devjf.salessync.view`
+   - Implementa as telas e formulários da aplicação
+
+2. **Camada de Controle (Controller)**
+   - Gerencia a lógica de interação entre View e Model
+   - Localização: `br.com.devjf.salessync.controller`
+   - Coordena as operações entre diferentes componentes
+
+3. **Camada de Serviço (Service)**
+   - Contém a lógica de negócio da aplicação
+   - Localização: `br.com.devjf.salessync.service`
+   - Implementa regras de negócio e orquestração de operações
+
+4. **Camada de Modelo (Model)**
+   - Define as entidades e objetos de negócio
+   - Localização: `br.com.devjf.salessync.model`
+   - Representa as estruturas de dados fundamentais
+
+5. **Camada de Persistência (DAO)**
+   - Responsável pelo acesso e manipulação de dados
+   - Localização: `br.com.devjf.salessync.dao`
+   - Utiliza JPA/Hibernate para interação com banco de dados
+
+### Padrões Adicionais
+
+- **Repository Pattern**: Implementado através da camada DAO
+- **Dependency Injection**: Gerenciado pelo próprio design das camadas
+- **Session Management**: Implementado em `UserSessionManager`
+- **Authorization**: Controle de acesso com diferentes níveis de permissão
+
+### Benefícios da Arquitetura
+
+- Alta modularidade
+- Separação clara de responsabilidades
+- Facilidade de manutenção e evolução do sistema
+- Flexibilidade para adicionar novas funcionalidades
+  
 ## Uso
 
 ### Login Inicial
