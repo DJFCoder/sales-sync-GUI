@@ -3,17 +3,19 @@ package br.com.devjf.salessync.view.forms;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+
 import br.com.devjf.salessync.controller.SaleController;
 import br.com.devjf.salessync.model.Sale;
+import br.com.devjf.salessync.view.MainAppView;
+import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.components.table.TableEditButtonEditor;
 import br.com.devjf.salessync.view.components.table.TableEditButtonRenderer;
-import br.com.devjf.salessync.view.components.table.TableFormHelper;
-import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
-import br.com.devjf.salessync.view.MainAppView;
+import br.com.devjf.salessync.view.components.table.TableFormatter;
 
 public class SalesForm extends javax.swing.JFrame {
     private static SalesForm instance;
@@ -52,7 +54,7 @@ public class SalesForm extends javax.swing.JFrame {
             3 // Forma de Pagamento
         };
         // Configurar o filtro da tabela
-        TableFormHelper.setupTableFilter(salesTable,
+        TableFormatter.setupTableFilter(salesTable,
                 (DefaultTableModel) salesTable.getModel(),
                 filterFields,
                 columnIndexes);
@@ -64,7 +66,7 @@ public class SalesForm extends javax.swing.JFrame {
     private void loadTableData() {
         try {
             // Limpar a tabela
-            TableFormHelper.clearTable((DefaultTableModel) salesTable.getModel());
+            TableFormatter.clearTable((DefaultTableModel) salesTable.getModel());
             // Obter todas as vendas
             Map<String, Object> filters = new HashMap<>();
             List<Sale> sales = saleController.listSales(filters);
@@ -73,7 +75,7 @@ public class SalesForm extends javax.swing.JFrame {
                 addSaleToTable(sale);
             }
             // Ajustar largura das colunas
-            TableFormHelper.adjustColumnWidths(salesTable,
+            TableFormatter.adjustColumnWidths(salesTable,
                     10);
         } catch (Exception e) {
             System.err.println(
@@ -95,14 +97,14 @@ public class SalesForm extends javax.swing.JFrame {
             Object[] rowData = {
                 sale.getId(),
                 sale.getCustomer().getName(),
-                TableFormHelper.formatDate(sale.getDate()),
+                TableFormatter.formatDate(sale.getDate()),
                 sale.getPaymentMethodSafe(), // Use the safe method
-                sale.getPaymentDate() != null ? TableFormHelper.formatDate(
+                sale.getPaymentDate() != null ? TableFormatter.formatDate(
                 sale.getPaymentDate()) : "",
-                TableFormHelper.formatCurrency(sale.getTotalAmount()),
+                TableFormatter.formatCurrency(sale.getTotalAmount()),
                 "Editar" // Texto para o botão de edição
             };
-            TableFormHelper.addRow((DefaultTableModel) salesTable.getModel(),
+            TableFormatter.addRow((DefaultTableModel) salesTable.getModel(),
                     rowData);
         } catch (Exception e) {
             System.err.println(
@@ -127,15 +129,34 @@ public class SalesForm extends javax.swing.JFrame {
             false, false, false, false, false, false, true
         };
         // Configurar o modelo da tabela
-        TableFormHelper.setupTable(salesTable,
+        TableFormatter.setupTableModel(salesTable,
                 columnNames,
                 columnClasses,
                 editableColumns);
+        
         // Configurar o botão de edição na coluna de ações
         setupEditButton();
+        
+        // Configurar o comportamento de seleção da tabela
+        configureTableSelectionBehavior();
+        
         // Adicionar listener de clique duplo para editar a venda
-        TableFormHelper.addDoubleClickListener(salesTable,
+        TableFormatter.addDoubleClickListener(salesTable,
                 this::handleRowSelection);
+    }
+    
+    /**
+     * Configura o comportamento de seleção da tabela para melhorar a experiência do usuário
+     */
+    private void configureTableSelectionBehavior() {
+        // Permitir seleção de apenas uma linha por vez
+        salesTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        
+        // Configurar para que o clique na célula do botão inicie a edição imediatamente
+        salesTable.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+        
+        // Permitir que a célula do botão seja editável com um único clique
+        salesTable.setEditingColumn(6);
     }
 
     /**
@@ -144,10 +165,16 @@ public class SalesForm extends javax.swing.JFrame {
     private void setupEditButton() {
         // Obter a coluna de ações (última coluna)
         TableColumn actionColumn = salesTable.getColumnModel().getColumn(6);
+        
         // Configurar o renderizador e o editor para a coluna de ações
         actionColumn.setCellRenderer(new TableEditButtonRenderer("Editar"));
         actionColumn.setCellEditor(new TableEditButtonEditor("Editar",
                 row -> editSale(row)));
+        
+        // Definir largura preferencial para a coluna de ações
+        actionColumn.setPreferredWidth(80);
+        actionColumn.setMaxWidth(100);
+        actionColumn.setMinWidth(80);
     }
 
     /**

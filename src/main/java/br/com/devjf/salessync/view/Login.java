@@ -1,19 +1,22 @@
 package br.com.devjf.salessync.view;
 
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.HeadlessException;
+import java.util.concurrent.ExecutionException;
+
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
+import javax.swing.SwingWorker;
+
+import com.formdev.flatlaf.FlatClientProperties;
+
 import br.com.devjf.salessync.controller.UserController;
 import br.com.devjf.salessync.model.User;
 import br.com.devjf.salessync.model.UserType;
 import br.com.devjf.salessync.service.auth.UserSessionManager;
 import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
-import com.formdev.flatlaf.FlatClientProperties;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.HeadlessException;
-import java.util.concurrent.ExecutionException;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JProgressBar;
-import javax.swing.SwingWorker;
 
 public class Login extends javax.swing.JFrame {
     private JProgressBar loadingBar;
@@ -51,13 +54,9 @@ public class Login extends javax.swing.JFrame {
             // Não modificamos o modelo da lista, apenas configuramos a visibilidade dos itens
             // com base no tipo de usuário
             JList<String> selectionList = mainView.getSelectionList();
+            
             // Garantir que o Dashboard seja selecionado por padrão
             selectionList.setSelectedIndex(0);
-            // Forçar a atualização da UI
-            mainView.updateTitle("Dashboard");
-            mainView.showPanel("Dashboard");
-            // Atualizar o label de permissão
-            mainView.updatePermissionLabel();
         } catch (Exception e) {
             System.err.println("Erro ao configurar acesso: " + e.getMessage());
         }
@@ -173,6 +172,7 @@ public class Login extends javax.swing.JFrame {
         loginBtn.setPreferredSize(new java.awt.Dimension(310, 50));
         ViewComponentStyle.standardCornerRadius(loginBtn);
         loginBtn.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loginBtnActionPerformed(evt);
             }
@@ -182,6 +182,7 @@ public class Login extends javax.swing.JFrame {
         forgotPasswordLbl.setText("Esqueceu a senha?");
         forgotPasswordLbl.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         forgotPasswordLbl.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 forgotPasswordLblMouseClicked(evt);
             }
@@ -275,10 +276,17 @@ public class Login extends javax.swing.JFrame {
                                 authenticatedUser);
                         // Abrir a tela principal
                         MainAppView mainView = new MainAppView();
-                        mainView.setVisible(true);
+                        
                         // Configurar acesso baseado no tipo de usuário
                         configureAccessByUserType(authenticatedUser.getType(),
                                 mainView);
+                                
+                        // Registrar atividade de login após a inicialização completa
+                        mainView.registerUserActivity("Login realizado com sucesso");
+                        
+                        // Tornar a tela visível após toda a configuração
+                        mainView.setVisible(true);
+                        
                         // Fechar a tela de login
                         dispose();
                     } else {

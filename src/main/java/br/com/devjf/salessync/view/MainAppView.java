@@ -1,51 +1,33 @@
 package br.com.devjf.salessync.view;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.util.HashMap;
-import java.util.Map;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
-import br.com.devjf.salessync.controller.UserController;
-import br.com.devjf.salessync.model.Customer;
-import br.com.devjf.salessync.model.Expense;
-import br.com.devjf.salessync.model.Sale;
-import br.com.devjf.salessync.model.ServiceOrder;
-import br.com.devjf.salessync.model.User;
-import br.com.devjf.salessync.model.UserType;
-import static br.com.devjf.salessync.model.UserType.*;
-import br.com.devjf.salessync.service.auth.UserSessionManager;
-import br.com.devjf.salessync.view.forms.CustomersForm;
-import br.com.devjf.salessync.view.forms.DashboardForm;
-import br.com.devjf.salessync.view.forms.ExpensesForm;
-import br.com.devjf.salessync.view.forms.LogsForm;
-import br.com.devjf.salessync.view.forms.ReportsForm;
-import br.com.devjf.salessync.view.forms.SalesForm;
-import br.com.devjf.salessync.view.forms.ServiceOrdersForm;
-import br.com.devjf.salessync.view.forms.UsersForm;
-import br.com.devjf.salessync.view.forms.newobjectforms.NewCustomerForm;
-import br.com.devjf.salessync.view.forms.newobjectforms.NewExpenseForm;
-import br.com.devjf.salessync.view.forms.newobjectforms.NewSaleForm;
-import br.com.devjf.salessync.view.forms.newobjectforms.NewServiceOrderForm;
-import br.com.devjf.salessync.view.forms.newobjectforms.NewUserForm;
 
-public class MainAppView extends javax.swing.JFrame {
+import br.com.devjf.salessync.controller.UserController;
+import br.com.devjf.salessync.controller.navigation.PanelFactory;
+import br.com.devjf.salessync.controller.navigation.PanelNavigationController;
+import br.com.devjf.salessync.model.User;
+import br.com.devjf.salessync.service.activity.UserActivityService;
+import br.com.devjf.salessync.service.activity.UserActivityServiceImpl;
+import br.com.devjf.salessync.service.auth.UserSessionManager;
+import br.com.devjf.salessync.service.navigation.PanelNavigationService;
+import br.com.devjf.salessync.service.navigation.PanelNavigationServiceImpl;
+import br.com.devjf.salessync.service.permission.UserPermissionService;
+import br.com.devjf.salessync.service.permission.UserPermissionServiceImpl;
+
+public final class MainAppView extends javax.swing.JFrame {
     // Singleton instance
     private static MainAppView instance;
-    private final UserController userController;
-    private static final String DASHBOARD_PANEL = "Dashboard";
+    
+    // Panel keys
+    public static final String DASHBOARD_PANEL = "Dashboard";
     public static final String SALES_PANEL = "Vendas";
     public static final String CUSTOMERS_PANEL = "Clientes";
     public static final String SERVICE_ORDERS_PANEL = "Ordens de Serviço";
     public static final String EXPENSES_PANEL = "Despesas";
-    private static final String REPORTS_PANEL = "Relatórios";
+    public static final String REPORTS_PANEL = "Relatórios";
     public static final String USERS_PANEL = "Usuários";
-    private static final String SYSTEM_LOGS_PANEL = "Logs do Sistema";
+    public static final String SYSTEM_LOGS_PANEL = "Logs do Sistema";
     public static final String NEW_SALE_PANEL = "Cadastrar Venda";
     public static final String EDIT_SALE_PANEL = "Editar Venda";
     public static final String NEW_CUSTOMER_PANEL = "Cadastrar Cliente";
@@ -57,11 +39,28 @@ public class MainAppView extends javax.swing.JFrame {
     public static final String NEW_USER_PANEL = "Cadastrar Usuário";
     public static final String EDIT_USER_PANEL = "Editar Usuário";
 
+    // Services and controllers
+    private final PanelNavigationController navigationController;
+    private final UserPermissionService permissionService;
+    private final UserActivityService activityService;
+
     public MainAppView() {
         initComponents();
+        
         // Set this instance as the singleton instance
         instance = this;
-        userController = new UserController();
+        
+        // Initialize services
+        UserController userController = new UserController();
+        PanelNavigationService navigationService = new PanelNavigationServiceImpl(selectedPanel);
+        PanelFactory panelFactory = new PanelFactory();
+        
+        this.navigationController = new PanelNavigationController(navigationService, panelFactory);
+        this.permissionService = new UserPermissionServiceImpl();
+        this.activityService = new UserActivityServiceImpl(userController);
+        
+        initializePermissionLabel();
+        
         initPanels();
         setupListeners();
     }
@@ -74,7 +73,7 @@ public class MainAppView extends javax.swing.JFrame {
     public void updateTitle(String panelKey) {
         titleLbl.setText(panelKey);
     }
-
+    
     /**
      * Get the singleton instance of MainAppView
      *
@@ -83,69 +82,59 @@ public class MainAppView extends javax.swing.JFrame {
     public static MainAppView getInstance() {
         return instance;
     }
-    // Variavel de instância para implementar lazy loading
-    private final Map<String, JPanel> loadedPanels = new HashMap<>();
 
     private void initPanels() {
-        CardLayout cardLayout = (CardLayout) selectedPanel.getLayout();
-        // Inicializa apenas o painel inicial (Dashboard) para melhorar o tempo de inicialização
-        try {
-            // Carrega apenas o Dashboard inicialmente
-            JPanel dashboardPanel = createPanelFromForm(new DashboardForm());
-            selectedPanel.add(dashboardPanel,
-                    DASHBOARD_PANEL);
-            loadedPanels.put(DASHBOARD_PANEL,
-                    dashboardPanel);
-            // Mostra o painel inicial
-            cardLayout.show(selectedPanel,
-                    DASHBOARD_PANEL);
-        } catch (Exception e) {
-            System.err.println(
-                    "Erro ao inicializar painel inicial: " + e.getMessage());
-        }
+        // Initialize only the dashboard panel initially
+        navigationController.navigateToPanel(DASHBOARD_PANEL);
     }
 
-    private void navigateToPanel(String panelName) {
-        CardLayout cardLayout = (CardLayout) selectedPanel.getLayout();
-        String panelKey = getPanelKeyFromName(panelName);
-        // Registrar atividade do usuário ao navegar para um novo painel
-        // registerUserActivity("Acessou " + panelName);
-        // Verifica se o painel já foi carregado
-        if (!loadedPanels.containsKey(panelKey)) {
-            try {
-                // Carrega o painel sob demanda
-                JPanel newPanel = createPanelForKey(panelKey);
-                if (newPanel != null) {
-                    selectedPanel.add(newPanel,
-                            panelKey);
-                    loadedPanels.put(panelKey,
-                            newPanel);
-                    // Força o layout a ser calculado imediatamente
-                    selectedPanel.validate();
-                }
-            } catch (Exception e) {
-                System.err.println(
-                        "Erro ao carregar painel " + panelName + ": " + e.getMessage());
-                return;
-            }
-        }
-        // Exibe o painel
-        cardLayout.show(selectedPanel,
-                panelKey);
-        // Força a revalidação do layout após a exibição
-        SwingUtilities.invokeLater(() -> {
-            selectedPanel.revalidate();
-            selectedPanel.repaint();
-            // Atualiza o dashboard se estiver sendo exibido
-            if (panelKey.equals(DASHBOARD_PANEL) && loadedPanels.containsKey(
-                    DASHBOARD_PANEL)) {
-                Component dashboardPanel = loadedPanels.get(DASHBOARD_PANEL);
-                if (dashboardPanel instanceof DashboardForm) {
-                    DashboardForm dashboard = (DashboardForm) dashboardPanel;
-                    dashboard.updateUserInfo();
+    private void setupListeners() {
+        // Refresh title label when selected and navigate to the corresponding panel
+        selectionList.addListSelectionListener((ListSelectionEvent e) -> {
+            if (!e.getValueIsAdjusting()) {
+                String selectedItem = selectionList.getSelectedValue();
+                updateTitle(selectedItem);
+                
+                // Check if user has permission to access this panel
+                User loggedUser = UserSessionManager.getInstance().getLoggedUser();
+                if (permissionService.hasAccessToPanel(loggedUser, selectedItem)) {
+                    // Register user activity
+                    activityService.registerActivity(loggedUser, "Acessou " + selectedItem);
+                    
+                    // Navigate to the panel
+                    navigationController.navigateToPanel(getPanelKeyFromName(selectedItem));
+                } else {
+                    JOptionPane.showMessageDialog(this, 
+                            "Você não tem permissão para acessar este painel", 
+                            "Acesso Negado", 
+                            JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
+    }
+
+    /**
+     * Método unificado para navegar entre painéis no CardLayout com objeto
+     * opcional
+     *
+     * @param panelKey Chave do painel para o qual navegar
+     * @param object Objeto opcional (Sale, Customer, etc.)
+     */
+    public static void redirectToPanel(String panelKey, Object object) {
+        MainAppView instance = MainAppView.getInstance();
+        if (instance == null) {
+            System.err.println("Erro: Instância do MainAppView não encontrada");
+            return;
+        }
+        
+        if (object != null) {
+            instance.navigationController.navigateToPanel(panelKey, object);
+        } else {
+            instance.navigationController.navigateToPanel(panelKey);
+        }
+        
+        // Update the title
+        instance.updateTitle(panelKey);
     }
 
     private String getPanelKeyFromName(String panelName) {
@@ -171,172 +160,24 @@ public class MainAppView extends javax.swing.JFrame {
         }
     }
 
-    private JPanel createPanelFromForm(JFrame form) {
-        // Configura o formulário para não fechar a aplicação quando fechado
-        form.setDefaultCloseOperation(
-                javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        // Força o layout a ser calculado antes de adicionar ao painel
-        form.pack();
-        // Obtém o contentPane do formulário
-        Container contentPane = form.getContentPane();
-        // Remove o contentPane do formulário para poder adicioná-lo ao nosso painel
-        form.setContentPane(new javax.swing.JPanel());
-        // Cria um novo painel com as dimensões corretas
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        panel.setPreferredSize(new Dimension(995,
-                728));
-        // Adiciona o conteúdo do formulário ao painel
-        panel.add(contentPane,
-                BorderLayout.CENTER);
-        return panel;
-    }
-
     /**
-     * Creates a panel based on the panel key with optional object parameters
-     *
-     * @param panelKey The key identifying which panel to create
-     * @param objects Optional objects needed for panel creation (Sale,
-     * Customer, etc.)
-     * @return The created panel or null if the key is not recognized
+     * This method to initialize permition label should be called after all 
+     * services are initialized
      */
-    private JPanel createPanelForKey(String panelKey, Object... objects) {
-        try {
-            // Extract objects from the varargs if provided
-            Sale sale = null;
-            Customer customer = null;
-            ServiceOrder serviceOrder = null;
-            Expense expense = null;
-            User user = null;
-            // Check each object and assign to the appropriate variable
-            for (Object obj : objects) {
-                if (obj instanceof Sale) {
-                    sale = (Sale) obj;
-                } else if (obj instanceof Customer) {
-                    customer = (Customer) obj;
-                } else if (obj instanceof ServiceOrder) {
-                    serviceOrder = (ServiceOrder) obj;
-                } else if (obj instanceof Expense) {
-                    expense = (Expense) obj;
-                } else if (obj instanceof User) {
-                    user = (User) obj;
-                }
-            }
-            switch (panelKey) {
-                case DASHBOARD_PANEL:
-                    return createPanelFromForm(new DashboardForm());
-                case SALES_PANEL:
-                    return createPanelFromForm(new SalesForm());
-                case CUSTOMERS_PANEL:
-                    return createPanelFromForm(new CustomersForm());
-                case SERVICE_ORDERS_PANEL:
-                    return createPanelFromForm(new ServiceOrdersForm());
-                case EXPENSES_PANEL:
-                    return createPanelFromForm(new ExpensesForm());
-                case REPORTS_PANEL:
-                    return createPanelFromForm(new ReportsForm());
-                case USERS_PANEL:
-                    return createPanelFromForm(new UsersForm());
-                case SYSTEM_LOGS_PANEL:
-                    return createPanelFromForm(new LogsForm());
-                // New object forms
-                case NEW_SALE_PANEL:
-                    return createPanelFromForm(new NewSaleForm());
-                case EDIT_SALE_PANEL:
-                    if (sale != null) {
-                        return createPanelFromForm(new NewSaleForm(sale));
-                    } else {
-                        System.err.println(
-                                "Erro: Tentativa de editar venda sem fornecer objeto Sale");
-                        return null;
-                    }
-                case NEW_CUSTOMER_PANEL:
-                    return createPanelFromForm(new NewCustomerForm());
-                case EDIT_CUSTOMER_PANEL:
-                    if (customer != null) {
-                        return createPanelFromForm(new NewCustomerForm(customer));
-                    } else {
-                        System.err.println(
-                                "Erro: Tentativa de editar cliente sem fornecer objeto Customer");
-                        return null;
-                    }
-                case NEW_SO_PANEL:
-                    return createPanelFromForm(new NewServiceOrderForm());
-                case EDIT_SO_PANEL:
-                    if (serviceOrder != null) {
-                        return createPanelFromForm(new NewServiceOrderForm(
-                                serviceOrder));
-                    } else {
-                        System.err.println(
-                                "Erro: Tentativa de editar ordem de serviço sem fornecer objeto ServiceOrder");
-                        return null;
-                    }
-                case NEW_EXPENSE_PANEL:
-                    return createPanelFromForm(new NewExpenseForm());
-                case EDIT_EXPENSE_PANEL:
-                    if (expense != null) {
-                        return createPanelFromForm(new NewExpenseForm(expense));
-                    } else {
-                        System.err.println(
-                                "Erro: Tentativa de editar despesa sem fornecer objeto Expense");
-                        return null;
-                    }
-                case NEW_USER_PANEL:
-                    return createPanelFromForm(new NewUserForm());
-                case EDIT_USER_PANEL:
-                    if (user != null) {
-                        return createPanelFromForm(new NewUserForm(user));
-                    } else {
-                        System.err.println(
-                                "Erro: Tentativa de editar usuário sem fornecer objeto User");
-                        return null;
-                    }
-                default:
-                    return null;
-            }
-        } catch (Exception e) {
-            System.err.println(
-                    "Erro ao criar painel " + panelKey + ": " + e.getMessage());
-            return null;
-        }
-    }
-
-    private void setupListeners() {
-        // Refresh title label when selected and navigate to the corresponding panel
-        selectionList.addListSelectionListener((ListSelectionEvent e) -> {
-            if (!e.getValueIsAdjusting()) {
-                String selectedItem = selectionList.getSelectedValue();
-                titleLbl.setText(selectedItem);
-                // Navega para o painel correspondente
-                navigateToPanel(selectedItem);
-            }
-        });
-    }
-
-    private String getPermitionLabel() {
-        User loggedUser = UserSessionManager.getInstance().getLoggedUser();
-        if (loggedUser == null) {
-            return "???";
-        }
-        UserType userType = loggedUser.getType();
-        switch (userType) {
-            case ADMIN:
-                return "ADM";
-            case OWNER:
-                return "OWN";
-            case EMPLOYEE:
-                return "EMP";
-            default:
-                return "???";
+    public void initializePermissionLabel() {
+        if (permitionLabel != null && permissionService != null) {
+            User loggedUser = UserSessionManager.getInstance().getLoggedUser();
+            permitionLabel.setText(permissionService.getPermissionLabel(loggedUser));
         }
     }
 
     /**
-     * Atualiza o label de permissão com base no usuário logado
+     * Updates the permission label after user login
      */
     public void updatePermissionLabel() {
-        if (permitionLabel != null) {
-            permitionLabel.setText(getPermitionLabel());
+        if (permitionLabel != null && permissionService != null) {
+            User loggedUser = UserSessionManager.getInstance().getLoggedUser();
+            permitionLabel.setText(permissionService.getPermissionLabel(loggedUser));
         }
     }
 
@@ -347,58 +188,7 @@ public class MainAppView extends javax.swing.JFrame {
      */
     public void registerUserActivity(String description) {
         User loggedUser = UserSessionManager.getInstance().getLoggedUser();
-        if (loggedUser != null) {
-            userController.registerActivity(loggedUser,
-                    description);
-        }
-    }
-
-    /**
-     * Método unificado para navegar entre painéis no CardLayout com objeto
-     * opcional
-     *
-     * @param panelKey Chave do painel para o qual navegar
-     * @param object Objeto opcional (Sale, Customer, etc.)
-     */
-    public static void redirectToPanel(String panelKey, Object object) {
-        MainAppView instance = MainAppView.getInstance();
-        if (instance == null) {
-            System.err.println("Erro: Instância do MainAppView não encontrada");
-            return;
-        }
-        CardLayout cardLayout = (CardLayout) instance.selectedPanel.getLayout();
-        try {
-            // Remove o painel existente se houver
-            if (instance.loadedPanels.containsKey(panelKey)) {
-                instance.selectedPanel.remove(
-                        instance.loadedPanels.get(panelKey));
-                instance.loadedPanels.remove(panelKey);
-            }
-            // Cria um novo painel com o objeto fornecido (se houver)
-            JPanel newPanel;
-            if (object != null) {
-                newPanel = instance.createPanelForKey(panelKey,
-                        object);
-            } else {
-                newPanel = instance.createPanelForKey(panelKey);
-            }
-            if (newPanel != null) {
-                instance.selectedPanel.add(newPanel,
-                        panelKey);
-                instance.loadedPanels.put(panelKey,
-                        newPanel);
-                // Mostra o painel
-                cardLayout.show(instance.selectedPanel,
-                        panelKey);
-                // Atualiza a interface
-                instance.selectedPanel.revalidate();
-                instance.selectedPanel.repaint();
-                // Atualiza o título
-                instance.updateTitle(panelKey);
-            }
-        } catch (Exception e) {
-            System.err.println("Erro ao criar/mostrar painel: " + e.getMessage());
-        }
+        activityService.registerActivity(loggedUser, description);
     }
 
     /**
@@ -410,49 +200,6 @@ public class MainAppView extends javax.swing.JFrame {
     public static void redirectToPanel(String panelKey) {
         redirectToPanel(panelKey,
                 null);
-    }
-
-    /**
-     * Add a panel to the CardLayout
-     *
-     * @param panel The panel to add
-     * @param name The name to identify the panel
-     */
-    public void addPanelToCardLayout(Container panel, String name) {
-        // Convert Container to JPanel if needed
-        JPanel jpanel;
-        if (panel instanceof javax.swing.JPanel) {
-            jpanel = (JPanel) panel;
-        } else {
-            // Create a new JPanel and add the container's components
-            jpanel = new javax.swing.JPanel();
-            jpanel.setLayout(new BorderLayout());
-            // Add all components from the container
-            Component[] components = panel.getComponents();
-            for (Component component : components) {
-                jpanel.add(component);
-            }
-        }
-        // Add the panel to the CardLayout
-        selectedPanel.add(jpanel,
-                name);
-        // Store the panel in the loadedPanels map
-        loadedPanels.put(name,
-                jpanel);
-    }
-
-    /**
-     * Show a panel in the CardLayout
-     *
-     * @param name The name of the panel to show
-     */
-    public void showPanel(String name) {
-        CardLayout cardLayout = (CardLayout) selectedPanel.getLayout();
-        cardLayout.show(selectedPanel,
-                name);
-        // Update the UI
-        selectedPanel.revalidate();
-        selectedPanel.repaint();
     }
 
     /**
@@ -520,7 +267,9 @@ public class MainAppView extends javax.swing.JFrame {
         selectionList.setForeground(new java.awt.Color(160, 174, 192));
         selectionList.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Dashboard", "Vendas", "Clientes", "Ordens de Serviço", "Despesas", "Relatórios", "Usuários", "Logs do Sistema" };
+            @Override
             public int getSize() { return strings.length; }
+            @Override
             public String getElementAt(int i) { return strings[i]; }
         });
         selectionList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -550,7 +299,7 @@ public class MainAppView extends javax.swing.JFrame {
         permitionLabel.setFont(new java.awt.Font("Liberation Sans", 0, 10)); // NOI18N
         permitionLabel.setForeground(new java.awt.Color(51, 51, 51));
         permitionLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        permitionLabel.setText(getPermitionLabel());
+        permitionLabel.setText("???");
         titlePanel.add(permitionLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(950, 20, 30, 20));
 
         permitionIcon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);

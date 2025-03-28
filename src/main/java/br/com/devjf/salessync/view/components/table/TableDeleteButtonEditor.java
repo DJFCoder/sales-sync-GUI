@@ -1,20 +1,14 @@
 package br.com.devjf.salessync.view.components.table;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
-import javax.swing.AbstractCellEditor;
-import javax.swing.JButton;
-import javax.swing.JTable;
-import javax.swing.table.TableCellEditor;
+import java.awt.Color;
 import javax.swing.table.DefaultTableModel;
 
 /**
  * A reusable button editor for JTable cells. This class provides a button that
  * can be used in a table cell with customizable appearance and behavior.
  */
-public class TableDeleteButtonEditor extends AbstractCellEditor implements TableCellEditor {
-    private final JButton button;
-    private int clickedRow;
+public class TableDeleteButtonEditor extends AbstractButtonEditor {
     private final DefaultTableModel tableModel;
     private final Runnable afterRemoveAction;
     private final Runnable emptyTableAction;
@@ -31,17 +25,11 @@ public class TableDeleteButtonEditor extends AbstractCellEditor implements Table
      */
     public TableDeleteButtonEditor(String buttonText, DefaultTableModel tableModel,
             Runnable afterRemoveAction, Runnable emptyTableAction) {
+        super(buttonText, new Color(175, 76, 78), Color.WHITE);
         this.tableModel = tableModel;
         this.afterRemoveAction = afterRemoveAction;
         this.emptyTableAction = emptyTableAction;
-        button = new JButton(buttonText);
-        button.setOpaque(true);
-        button.setBackground(new java.awt.Color(175,
-                76,
-                78));
-        button.setForeground(new java.awt.Color(255,
-                255,
-                255));
+        
         button.addActionListener((ActionEvent e) -> {
             // Verificar se a linha existe antes de remover
             if (clickedRow >= 0 && clickedRow < tableModel.getRowCount()) {
@@ -60,19 +48,7 @@ public class TableDeleteButtonEditor extends AbstractCellEditor implements Table
                 }
             }
             // Encerrar a edição
-            cancelCellEditing();
+            fireEditingStopped();
         });
-    }
-
-    @Override
-    public Component getTableCellEditorComponent(JTable table, Object value,
-            boolean isSelected, int row, int column) {
-        clickedRow = row;
-        return button;
-    }
-
-    @Override
-    public Object getCellEditorValue() {
-        return "";
     }
 }
