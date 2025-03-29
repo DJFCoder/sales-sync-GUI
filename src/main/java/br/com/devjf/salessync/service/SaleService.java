@@ -8,10 +8,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import br.com.devjf.salessync.dao.SaleDAO;
 import br.com.devjf.salessync.dao.SaleItemDAO;
+import br.com.devjf.salessync.model.Customer;
+import br.com.devjf.salessync.model.PaymentMethod;
 import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.model.SaleItem;
+import br.com.devjf.salessync.model.User;
 
 public class SaleService {
     private final SaleDAO saleDAO;
@@ -66,53 +70,57 @@ public class SaleService {
     }
 
     /**
-     * Updates an existing sale with its items
+     * Updates an existing sale with new data
      *
-     * @param sale The sale to be updated
+     * @param sale The sale to update
      * @return The updated sale, or null if update failed
      */
     public Sale updateSale(Sale sale) {
         try {
-            // First, find the existing sale with its items
-            Sale existingSale = findSaleByIdWithRelationships(sale.getId());
+            // First, find the existing sale to get the managed entity
+            Sale existingSale = saleDAO.findByIdWithRelationships(sale.getId());
             if (existingSale == null) {
                 return null;
             }
-            // Update the basic sale properties
+            
+            // Get existing items before updating
+            List<SaleItem> existingItems = new ArrayList<>(existingSale.getItems());
+            
+            // Update the sale properties
             existingSale.setCustomer(sale.getCustomer());
+            existingSale.setUser(sale.getUser());
             existingSale.setPaymentMethod(sale.getPaymentMethod());
             existingSale.setPaymentDate(sale.getPaymentDate());
             existingSale.setSubtotalAmount(sale.getSubtotalAmount());
             existingSale.setDiscountAmount(sale.getDiscountAmount());
             existingSale.setTotalAmount(sale.getTotalAmount());
-            // First, delete all existing items
-            for (SaleItem item : new ArrayList<>(existingSale.getItems())) {
-                boolean deleteSuccess = saleItemDAO.delete(item.getId());
-                if (!deleteSuccess) {
-                    return null;
-                }
-            }
-            existingSale.getItems().clear();
-            // Update the sale
-            boolean updateSuccess = saleDAO.update(existingSale);
-            if (!updateSuccess) {
+            
+            // Save the updated sale first
+            boolean saleUpdateSuccess = saleDAO.update(existingSale);
+            if (!saleUpdateSuccess) {
                 return null;
             }
-            // Now add new items
-            for (SaleItem item : sale.getItems()) {
-                SaleItem newItem = new SaleItem();
-                newItem.setDescription(item.getDescription());
-                newItem.setQuantity(item.getQuantity());
-                newItem.setUnitPrice(item.getUnitPrice());
-                newItem.setSale(existingSale);
-                // Save the new item
-                boolean itemSuccess = saleItemDAO.save(newItem);
-                if (!itemSuccess) {
-                    return null;
-                }
-                // Add to the collection
-                existingSale.getItems().add(newItem);
+            
+            // Delete old items
+            for (SaleItem item : existingItems) {
+                saleItemDAO.delete(item.getId());
             }
+            
+            // Create and add new items
+            for (SaleItem newItem : sale.getItems()) {
+                SaleItem item = new SaleItem();
+                item.setDescription(newItem.getDescription());
+                item.setQuantity(newItem.getQuantity());
+                item.setUnitPrice(newItem.getUnitPrice());
+                item.setSale(existingSale);
+                boolean itemSuccess = saleItemDAO.save(item);
+                if (!itemSuccess) {
+                    // If any item fails, log the error but continue
+                    System.err.println("Failed to save item: " + item.getDescription());
+                }
+                existingSale.getItems().add(item);
+            }
+            
             return existingSale;
         } catch (Exception e) {
             e.printStackTrace();
@@ -398,5 +406,117 @@ public class SaleService {
         }
         // Then delete the sale
         return saleDAO.delete(saleId);
+    }
+
+    /**
+     * Prepares a new Sale object with the provided data
+     *
+     * @param customer The customer for the sale
+     * @param paymentMethod The payment method
+     * @param paymentDate The payment date
+     * @param items The list of sale items
+     * @param subtotal The subtotal amount
+     * @param discount The discount amount
+     * @param user The user creating the sale
+     * @return A prepared Sale object
+     */
+    public Sale prepareSaleObject(Customer customer, PaymentMethod paymentMethod,
+            LocalDateTime paymentDate, List<SaleItem> items, double subtotal,
+            double discount, User user) {
+        
+        // Create a new sale
+        Sale sale = new Sale();
+        
+        // Set the customer
+        sale.setCustomer(customer);
+        
+        // Set the payment method
+        sale.setPaymentMethod(paymentMethod);
+        
+        // Set the payment date
+        sale.setPaymentDate(paymentDate);
+        
+        // Set the current date as the sale date
+        sale.setDate(LocalDateTime.now());
+        
+        // Set the user
+        sale.setUser(user);
+        
+        // Set the amounts
+        sale.setSubtotalAmount(subtotal);
+        sale.setDiscountAmount(discount);
+        sale.setTotalAmount(subtotal - discount);
+        
+        // Set the items
+        List<SaleItem> saleItems = new ArrayList<>();
+        for (SaleItem item : items) {
+            SaleItem newItem = new SaleItem();
+            newItem.setDescription(item.getDescription());
+            newItem.setQuantity(item.getQuantity());
+            newItem.setUnitPrice(item.getUnitPrice());
+            newItem.setSale(sale);
+            saleItems.add(newItem);
+        }
+        sale.setItems(saleItems);
+        
+        return sale;
+    }
+
+    /**
+     * Prepares a Sale object for update with the provided data
+     * 
+     * @param saleId The ID of the existing sale
+     * @param createdAt The original creation date
+     * @param saleDate The original sale date
+     * @param customer The customer for the sale
+     * @param paymentMethod The payment method
+     * @param paymentDate The payment date
+     * @param items The list of sale items
+     * @param subtotal The subtotal amount
+     * @param discount The discount amount
+     * @param user The user associated with the sale
+     * @return A prepared Sale object ready for update
+     */
+    public Sale prepareSaleForUpdate(
+            Integer saleId,
+            LocalDateTime createdAt,
+            LocalDateTime saleDate,
+            Customer customer,
+            PaymentMethod paymentMethod,
+            LocalDateTime paymentDate,
+            List<SaleItem> items,
+            double subtotal,
+            double discount,
+            User user) {
+        
+        // Create a new Sale object with the same ID
+        Sale sale = new Sale();
+        sale.setId(saleId);
+        sale.setDate(saleDate);
+        
+        // Set the updated values
+        sale.setCustomer(customer);
+        sale.setUser(user);
+        sale.setPaymentMethod(paymentMethod);
+        sale.setPaymentDate(paymentDate);
+        
+        // Set amounts
+        sale.setSubtotalAmount(subtotal);
+        sale.setDiscountAmount(discount);
+        sale.setTotalAmount(subtotal - discount);
+        
+        // Create new items and associate them with this sale
+        List<SaleItem> newItems = new ArrayList<>();
+        for (SaleItem item : items) {
+            SaleItem newItem = new SaleItem();
+            newItem.setDescription(item.getDescription());
+            newItem.setQuantity(item.getQuantity());
+            newItem.setUnitPrice(item.getUnitPrice());
+            newItem.setSale(sale);
+            newItems.add(newItem);
+        }
+        sale.setItems(newItems);
+        
+        return sale;
     }
 }

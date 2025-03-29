@@ -4,9 +4,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import br.com.devjf.salessync.dto.SaleItemDTO;
 import br.com.devjf.salessync.model.Customer;
 import br.com.devjf.salessync.model.PaymentMethod;
 import br.com.devjf.salessync.model.Sale;
@@ -14,7 +17,6 @@ import br.com.devjf.salessync.model.SaleItem;
 import br.com.devjf.salessync.model.User;
 import br.com.devjf.salessync.service.CustomerService;
 import br.com.devjf.salessync.service.SaleService;
-import java.util.ArrayList;
 
 /**
  * Controller class for managing sale-related operations. Provides methods for
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 public class SaleController {
     private final SaleService saleService;
     private final CustomerService customerService;
+    private final UserController userController;
 
     /**
      * Constructs a new SaleController with a SaleService instance.
@@ -30,14 +33,9 @@ public class SaleController {
     public SaleController() {
         this.saleService = new SaleService();
         this.customerService = new CustomerService();
+        this.userController = new UserController();
     }
 
-    /**
-     * Creates a new sale with its items
-     *
-     * @param sale The sale to be created
-     * @return true if the sale was successfully created, false otherwise
-     */
     /**
      * Registers a new sale
      *
@@ -53,12 +51,6 @@ public class SaleController {
         return saleService.createSale(sale);
     }
 
-    /**
-     * Updates an existing sale with its items
-     *
-     * @param sale The sale to be updated
-     * @return true if the sale was successfully updated, false otherwise
-     */
     /**
      * Updates an existing sale
      *
@@ -289,43 +281,163 @@ public class SaleController {
     public Sale prepareSaleObject(Customer customer, String paymentMethodStr,
             String paymentDateStr, List<SaleItem> items, double subtotal,
             double discount, User user) throws ParseException {
-        // Create a new sale or use existing one if ID is present
-        Sale sale = new Sale();
-        // Set the customer
-        sale.setCustomer(customer);
-        // Set the payment method
-        PaymentMethod paymentMethod = PaymentMethod.valueOf(paymentMethodStr);
-        sale.setPaymentMethod(paymentMethod);
-        // Parse and set the payment date
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        Date paymentDate = dateFormat.parse(paymentDateStr);
-        // Convert to LocalDateTime
-        LocalDateTime paymentDateTime = paymentDate.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
-        sale.setPaymentDate(paymentDateTime);
-        // Set the current date as the sale date
-        sale.setDate(LocalDateTime.now());
-        // Set the user
-        sale.setUser(user);
-        // Set the amounts
-        sale.setSubtotalAmount(subtotal);
-        sale.setDiscountAmount(discount);
-        sale.setTotalAmount(subtotal - discount);
-        // Set the items
-        List<SaleItem> saleItems = new ArrayList<>();
-        for (SaleItem item : items) {
-            SaleItem newItem = new SaleItem();
-            newItem.setDescription(item.getDescription());
-            newItem.setQuantity(item.getQuantity());
-            newItem.setUnitPrice(item.getUnitPrice());
-            newItem.setSale(sale);
-            saleItems.add(newItem);
+        
+        // Parse the payment date
+        LocalDateTime paymentDateTime = null;
+        if (paymentDateStr != null && !paymentDateStr.trim().isEmpty()) {
+            paymentDateTime = convertStringToLocalDateTime(paymentDateStr);
         }
-        sale.setItems(saleItems);
-        return sale;
+        
+        // Convert string payment method to enum
+        PaymentMethod paymentMethod = PaymentMethod.valueOf(paymentMethodStr);
+        
+        // Delegate to the service layer to prepare the new sale
+        return saleService.prepareSaleObject(
+                customer,
+                paymentMethod,
+                paymentDateTime,
+                items,
+                subtotal,
+                discount,
+                user);
     }
 
+    /**
+     * Prepares a Sale object for update with validation
+     * 
+     * @param saleId The ID of the existing sale
+     * @param createdAt The original creation date
+     * @param saleDate The original sale date
+     * @param customer The customer for the sale
+     * @param paymentMethodStr The payment method as a string
+     * @param paymentDateStr The payment date as a string
+     * @param itemsData The list of sale item DTOs
+     * @param subtotal The subtotal amount
+     * @param discount The discount amount
+     * @param userId The ID of the user associated with the sale
+     * @return A prepared Sale object ready for update
+     * @throws ParseException If there's an error parsing the payment date
+     */
+    public Sale prepareSaleUpdate(
+            Integer saleId,
+            LocalDateTime createdAt,
+            LocalDateTime saleDate,
+            Customer customer,
+            String paymentMethodStr,
+            String paymentDateStr,
+            List<SaleItemDTO> itemsData,
+            double subtotal,
+            double discount,
+            int userId) throws ParseException {
+        
+        // Validate inputs
+        validateSaleInputs(customer, paymentMethodStr, paymentDateStr, itemsData);
+        
+        // Convert items DTOs to SaleItems
+        List<SaleItem> items = convertItemDTOsToEntities(itemsData);
+        
+        // Get user
+        User user = userController.findUserById(userId);
+        
+        // Parse the payment date
+        LocalDateTime paymentDateTime = null;
+        if (paymentDateStr != null && !paymentDateStr.trim().isEmpty()) {
+            paymentDateTime = convertStringToLocalDateTime(paymentDateStr);
+        }
+        
+        // Convert string payment method to enum
+        PaymentMethod paymentMethod = PaymentMethod.valueOf(paymentMethodStr);
+        
+        // Delegate to the service layer to prepare the sale for update
+        return saleService.prepareSaleForUpdate(
+                saleId,
+                createdAt,
+                saleDate,
+                customer,
+                paymentMethod,
+                paymentDateTime,
+                items,
+                subtotal,
+                discount,
+                user);
+    }
+    
+    /**
+     * Prepares a new Sale object with validation
+     * 
+     * @param customer The customer for the sale
+     * @param paymentMethodStr The payment method as a string
+     * @param paymentDateStr The payment date as a string
+     * @param itemsData The list of sale item DTOs
+     * @param subtotal The subtotal amount
+     * @param discount The discount amount
+     * @param userId The ID of the user associated with the sale
+     * @return A prepared Sale object
+     * @throws ParseException If there's an error parsing the payment date
+     */
+    public Sale prepareNewSale(
+            Customer customer,
+            String paymentMethodStr,
+            String paymentDateStr,
+            List<SaleItemDTO> itemsData,
+            double subtotal,
+            double discount,
+            int userId) throws ParseException {
+        
+        // Validate inputs
+        validateSaleInputs(customer, paymentMethodStr, paymentDateStr, itemsData);
+        
+        // Convert items DTOs to SaleItems
+        List<SaleItem> items = convertItemDTOsToEntities(itemsData);
+        
+        // Get user
+        User user = userController.findUserById(userId);
+        
+        // Delegate to existing method
+        return prepareSaleObject(customer, paymentMethodStr, paymentDateStr, 
+                items, subtotal, discount, user);
+    }
+    
+    /**
+     * Validates all sale inputs
+     */
+    private void validateSaleInputs(Customer customer, String paymentMethodStr, 
+            String paymentDateStr, List<SaleItemDTO> itemsData) {
+        // Validate customer
+        if (customer == null) {
+            throw new IllegalArgumentException("É necessário selecionar um cliente.");
+        }
+        
+        // Validate payment method
+        if (paymentMethodStr == null || paymentMethodStr.equals("Selecione")) {
+            throw new IllegalArgumentException("É necessário selecionar uma forma de pagamento.");
+        }
+        
+        // Validate payment date
+        if (paymentDateStr == null || paymentDateStr.trim().isEmpty()) {
+            throw new IllegalArgumentException("É necessário informar a data de pagamento.");
+        }
+        
+        // Validate items
+        if (itemsData == null || itemsData.isEmpty()) {
+            throw new IllegalArgumentException("É necessário adicionar pelo menos um item à venda.");
+        }
+    }
+    
+    /**
+     * Converts DTOs to entities
+     */
+    private List<SaleItem> convertItemDTOsToEntities(List<SaleItemDTO> itemsData) {
+        List<SaleItem> items = new ArrayList<>();
+        for (SaleItemDTO dto : itemsData) {
+            SaleItem item = createSaleItem(
+                    dto.getDescription(),
+                    dto.getQuantity(),
+                    dto.getPrice());
+            items.add(item);
+        }
+        return items;
+    }
     /**
      * Creates a SaleItem from table data
      *

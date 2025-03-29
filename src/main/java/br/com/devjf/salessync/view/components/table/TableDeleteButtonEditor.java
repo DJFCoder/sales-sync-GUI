@@ -1,7 +1,7 @@
 package br.com.devjf.salessync.view.components.table;
 
-import java.awt.event.ActionEvent;
 import java.awt.Color;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -12,6 +12,7 @@ public class TableDeleteButtonEditor extends AbstractButtonEditor {
     private final DefaultTableModel tableModel;
     private final Runnable afterRemoveAction;
     private final Runnable emptyTableAction;
+    private final JTable table;
 
     /**
      * Creates a new button editor for table cells.
@@ -24,31 +25,41 @@ public class TableDeleteButtonEditor extends AbstractButtonEditor {
      * removal
      */
     public TableDeleteButtonEditor(String buttonText, DefaultTableModel tableModel,
-            Runnable afterRemoveAction, Runnable emptyTableAction) {
-        super(buttonText, new Color(175, 76, 78), Color.WHITE);
+            JTable table, Runnable afterRemoveAction, Runnable emptyTableAction) {
+        super(buttonText,
+                new Color(175,
+                        76,
+                        78),
+                Color.WHITE);
         this.tableModel = tableModel;
+        this.table = table;
         this.afterRemoveAction = afterRemoveAction;
         this.emptyTableAction = emptyTableAction;
-        
-        button.addActionListener((ActionEvent e) -> {
-            // Verificar se a linha existe antes de remover
-            if (clickedRow >= 0 && clickedRow < tableModel.getRowCount()) {
-                // Remover a linha
-                tableModel.removeRow(clickedRow);
-                // Se a tabela ficou vazia, executar a ação para tabela vazia
-                if (tableModel.getRowCount() == 0) {
-                    if (emptyTableAction != null) {
+        button.addActionListener(e -> {
+            try {
+                // Get the current row
+                int row = table.getEditingRow();
+                // First stop editing to prevent the table from trying to update a removed row
+                fireEditingStopped();
+                // Then check if the row is valid and remove it
+                if (row >= 0 && row < tableModel.getRowCount()) {
+                    // Remove the row
+                    tableModel.removeRow(row);
+                    // Check if table is empty after removal
+                    if (tableModel.getRowCount() == 0 && emptyTableAction != null) {
                         emptyTableAction.run();
-                    }
-                } else {
-                    // Executar a ação após remoção
-                    if (afterRemoveAction != null) {
+                    } else if (afterRemoveAction != null) {
+                        // Run the after remove action if table is not empty
                         afterRemoveAction.run();
                     }
                 }
+            } catch (Exception ex) {
+                // Log the error but don't crash
+                System.err.println(
+                        "Error in delete button action: " + ex.getMessage());
+                ex.printStackTrace();
+                fireEditingStopped();
             }
-            // Encerrar a edição
-            fireEditingStopped();
         });
     }
 }
