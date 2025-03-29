@@ -3,11 +3,9 @@ package br.com.devjf.salessync.controller.navigation;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
-
 import br.com.devjf.salessync.model.Customer;
 import br.com.devjf.salessync.model.Expense;
 import br.com.devjf.salessync.model.Sale;
@@ -32,10 +30,9 @@ import br.com.devjf.salessync.view.forms.newobjectforms.NewUserForm;
  * Factory class for creating panels based on panel keys.
  */
 public class PanelFactory {
-    
     /**
      * Creates a panel based on the panel key with optional object parameters.
-     * 
+     *
      * @param panelKey The key identifying which panel to create
      * @param objects Optional objects needed for panel creation
      * @return The created panel or null if the key is not recognized
@@ -48,7 +45,6 @@ public class PanelFactory {
             ServiceOrder serviceOrder = null;
             Expense expense = null;
             User user = null;
-            
             // Check each object and assign to the appropriate variable
             for (Object obj : objects) {
                 if (obj instanceof Sale) {
@@ -63,9 +59,7 @@ public class PanelFactory {
                     user = (User) obj;
                 }
             }
-            
             JFrame form = null;
-            
             switch (panelKey) {
                 case MainAppView.DASHBOARD_PANEL:
                     form = new DashboardForm();
@@ -99,7 +93,8 @@ public class PanelFactory {
                     if (sale != null) {
                         form = new NewSaleForm(sale);
                     } else {
-                        System.err.println("Erro: Tentativa de editar venda sem fornecer objeto Sale");
+                        System.err.println(
+                                "Erro: Tentativa de editar venda sem fornecer objeto Sale");
                         return null;
                     }
                     break;
@@ -110,7 +105,8 @@ public class PanelFactory {
                     if (customer != null) {
                         form = new NewCustomerForm(customer);
                     } else {
-                        System.err.println("Erro: Tentativa de editar cliente sem fornecer objeto Customer");
+                        System.err.println(
+                                "Erro: Tentativa de editar cliente sem fornecer objeto Customer");
                         return null;
                     }
                     break;
@@ -121,7 +117,8 @@ public class PanelFactory {
                     if (serviceOrder != null) {
                         form = new NewServiceOrderForm(serviceOrder);
                     } else {
-                        System.err.println("Erro: Tentativa de editar ordem de serviço sem fornecer objeto ServiceOrder");
+                        System.err.println(
+                                "Erro: Tentativa de editar ordem de serviço sem fornecer objeto ServiceOrder");
                         return null;
                     }
                     break;
@@ -132,7 +129,8 @@ public class PanelFactory {
                     if (expense != null) {
                         form = new NewExpenseForm(expense);
                     } else {
-                        System.err.println("Erro: Tentativa de editar despesa sem fornecer objeto Expense");
+                        System.err.println(
+                                "Erro: Tentativa de editar despesa sem fornecer objeto Expense");
                         return null;
                     }
                     break;
@@ -143,28 +141,28 @@ public class PanelFactory {
                     if (user != null) {
                         form = new NewUserForm(user);
                     } else {
-                        System.err.println("Erro: Tentativa de editar usuário sem fornecer objeto User");
+                        System.err.println(
+                                "Erro: Tentativa de editar usuário sem fornecer objeto User");
                         return null;
                     }
                     break;
                 default:
                     return null;
             }
-            
             if (form != null) {
                 return createPanelFromForm(form);
             }
-            
             return null;
         } catch (Exception e) {
-            System.err.println("Erro ao criar painel " + panelKey + ": " + e.getMessage());
+            System.err.println(
+                    "Erro ao criar painel " + panelKey + ": " + e.getMessage());
             return null;
         }
     }
-    
+
     /**
      * Creates a panel from a JFrame form.
-     * 
+     *
      * @param form The form to create a panel from
      * @return The created panel
      */
@@ -180,9 +178,11 @@ public class PanelFactory {
         // Cria um novo painel com as dimensões corretas
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
-        panel.setPreferredSize(new Dimension(995, 728));
+        panel.setPreferredSize(new Dimension(995,
+                728));
         // Adiciona o conteúdo do formulário ao painel
-        panel.add(contentPane, BorderLayout.CENTER);
+        panel.add(contentPane,
+                BorderLayout.CENTER);
         return panel;
     }
 }

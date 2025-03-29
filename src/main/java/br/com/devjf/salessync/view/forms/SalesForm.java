@@ -3,19 +3,16 @@ package br.com.devjf.salessync.view.forms;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-
 import br.com.devjf.salessync.controller.SaleController;
 import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.view.MainAppView;
 import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.components.table.TableEditButtonEditor;
 import br.com.devjf.salessync.view.components.table.TableEditButtonRenderer;
-import br.com.devjf.salessync.view.components.table.TableFormatter;
+import br.com.devjf.salessync.view.components.table.TableManager;
 
 public class SalesForm extends javax.swing.JFrame {
     private static SalesForm instance;
@@ -28,7 +25,10 @@ public class SalesForm extends javax.swing.JFrame {
         // Configurar a tabela
         setupTableColumns();
         // Configurar filtros
-        setupFilters();
+        TableManager.setupFilters(customerField,
+                dateField,
+                paymentMethodField,
+                salesTable);
         // Carregar dados iniciais
         loadTableData();
     }
@@ -38,44 +38,62 @@ public class SalesForm extends javax.swing.JFrame {
     }
 
     /**
-     * Configura os filtros da tabela de vendas.
+     * Adiciona uma venda à tabela.
+     *
+     * @param saleId O ID da venda a ser adicionada
      */
-    private void setupFilters() {
-        // Configurar os campos de texto para filtragem
-        JTextField[] filterFields = new JTextField[]{
-            customerField,
-            dateField,
-            paymentMethodField
-        };
-        // Índices das colunas correspondentes aos campos de filtro
-        int[] columnIndexes = new int[]{
-            1, // Cliente
-            2, // Data Venda
-            3 // Forma de Pagamento
-        };
-        // Configurar o filtro da tabela
-        TableFormatter.setupTableFilter(salesTable,
-                (DefaultTableModel) salesTable.getModel(),
-                filterFields,
-                columnIndexes);
+    public void addSaleToTable(Integer saleId) {
+        try {
+            // Get sale data
+            Object[] rowData = {
+                saleId,
+                saleController.getCustomerName(saleId),
+                TableManager.formatDate(saleController.getSaleDate(saleId)),
+                saleController.getPaymentMethodSafe(saleId),
+                saleController.getPaymentDate(saleId) != null
+                ? TableManager.formatDate(saleController.getPaymentDate(saleId)) : "",
+                TableManager.formatCurrency(
+                saleController.getTotalAmount(saleId)),
+                "Editar"
+            };
+            TableManager.addRow((DefaultTableModel) salesTable.getModel(),
+                    rowData);
+        } catch (Exception e) {
+            System.err.println(
+                    "Erro ao adicionar venda à tabela: " + e.getMessage());
+        }
     }
 
-    /**
-     * Carrega os dados na tabela de vendas.
-     */
     private void loadTableData() {
         try {
-            // Limpar a tabela
-            TableFormatter.clearTable((DefaultTableModel) salesTable.getModel());
-            // Obter todas as vendas
+            // Clear table
+            TableManager.clearTable((DefaultTableModel) salesTable.getModel());
+            // Get filter values
             Map<String, Object> filters = new HashMap<>();
-            List<Sale> sales = saleController.listSales(filters);
-            // Adicionar as vendas à tabela
-            for (Sale sale : sales) {
-                addSaleToTable(sale);
+            String customerFilter = customerField.getText().trim();
+            String dateFilter = dateField.getText().trim();
+            String paymentMethodFilter = paymentMethodField.getText().trim();
+            // Add filters if they are not empty
+            if (!customerFilter.isEmpty()) {
+                filters.put("customerName",
+                        customerFilter);
             }
-            // Ajustar largura das colunas
-            TableFormatter.adjustColumnWidths(salesTable,
+            if (!dateFilter.isEmpty()) {
+                filters.put("saleDate",
+                        dateFilter);
+            }
+            if (!paymentMethodFilter.isEmpty()) {
+                filters.put("paymentMethod",
+                        paymentMethodFilter);
+            }
+            // Get sales through controller
+            List<Sale> sales = saleController.listSales(filters);
+            // Add sales to table
+            for (Sale sale : sales) {
+                addSaleToTable(sale.getId());
+            }
+            // Adjust column widths
+            TableManager.adjustColumnWidths(salesTable,
                     10);
         } catch (Exception e) {
             System.err.println(
@@ -84,31 +102,6 @@ public class SalesForm extends javax.swing.JFrame {
                     "Erro ao carregar vendas: " + e.getMessage(),
                     "Erro",
                     JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    /**
-     * Adiciona uma venda à tabela.
-     *
-     * @param sale A venda a ser adicionada
-     */
-    private void addSaleToTable(Sale sale) {
-        try {
-            Object[] rowData = {
-                sale.getId(),
-                sale.getCustomer().getName(),
-                TableFormatter.formatDate(sale.getDate()),
-                sale.getPaymentMethodSafe(), // Use the safe method
-                sale.getPaymentDate() != null ? TableFormatter.formatDate(
-                sale.getPaymentDate()) : "",
-                TableFormatter.formatCurrency(sale.getTotalAmount()),
-                "Editar" // Texto para o botão de edição
-            };
-            TableFormatter.addRow((DefaultTableModel) salesTable.getModel(),
-                    rowData);
-        } catch (Exception e) {
-            System.err.println(
-                    "Erro ao adicionar venda à tabela: " + e.getMessage());
         }
     }
 
@@ -129,32 +122,27 @@ public class SalesForm extends javax.swing.JFrame {
             false, false, false, false, false, false, true
         };
         // Configurar o modelo da tabela
-        TableFormatter.setupTableModel(salesTable,
+        TableManager.setupTableModel(salesTable,
                 columnNames,
                 columnClasses,
                 editableColumns);
-        
         // Configurar o botão de edição na coluna de ações
         setupEditButton();
-        
         // Configurar o comportamento de seleção da tabela
         configureTableSelectionBehavior();
-        
-        // Adicionar listener de clique duplo para editar a venda
-        TableFormatter.addDoubleClickListener(salesTable,
-                this::handleRowSelection);
     }
-    
+
     /**
-     * Configura o comportamento de seleção da tabela para melhorar a experiência do usuário
+     * Configura o comportamento de seleção da tabela para melhorar a
+     * experiência do usuário
      */
     private void configureTableSelectionBehavior() {
         // Permitir seleção de apenas uma linha por vez
-        salesTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        
+        salesTable.setSelectionMode(
+                javax.swing.ListSelectionModel.SINGLE_SELECTION);
         // Configurar para que o clique na célula do botão inicie a edição imediatamente
-        salesTable.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
-        
+        salesTable.putClientProperty("terminateEditOnFocusLost",
+                Boolean.TRUE);
         // Permitir que a célula do botão seja editável com um único clique
         salesTable.setEditingColumn(6);
     }
@@ -165,27 +153,14 @@ public class SalesForm extends javax.swing.JFrame {
     private void setupEditButton() {
         // Obter a coluna de ações (última coluna)
         TableColumn actionColumn = salesTable.getColumnModel().getColumn(6);
-        
         // Configurar o renderizador e o editor para a coluna de ações
         actionColumn.setCellRenderer(new TableEditButtonRenderer("Editar"));
         actionColumn.setCellEditor(new TableEditButtonEditor("Editar",
                 row -> editSale(row)));
-        
         // Definir largura preferencial para a coluna de ações
         actionColumn.setPreferredWidth(80);
         actionColumn.setMaxWidth(100);
         actionColumn.setMinWidth(80);
-    }
-
-    /**
-     * Manipula a seleção de uma linha na tabela.
-     *
-     * @param selectedRow O índice da linha selecionada
-     */
-    private void handleRowSelection(int selectedRow) {
-        if (selectedRow >= 0) {
-            editSale(selectedRow);
-        }
     }
 
     /**
@@ -196,14 +171,14 @@ public class SalesForm extends javax.swing.JFrame {
     private void editSale(int selectedRow) {
         try {
             // Obter o ID da venda selecionada
-            Integer saleId = (Integer) salesTable.getValueAt(selectedRow,
-                    0);
-            // Obter a venda pelo ID
-            Sale sale = saleController.findSaleById(saleId);
+            Integer saleId = (Integer) salesTable.getValueAt(selectedRow, 0);
+            // Obter a venda pelo ID com todos os itens carregados
+            Sale sale = saleController.findSaleByIdForEdit(saleId);
             if (sale != null) {
                 // Redirecionar para o painel de nova venda com os dados da venda selecionada
-                MainAppView.redirectToPanel(MainAppView.EDIT_SALE_PANEL,
-                        sale);
+                MainAppView.redirectToPanel(MainAppView.EDIT_SALE_PANEL, sale);
+                // Atualizar a tabela após a edição
+                refreshTable();
             }
         } catch (Exception e) {
             System.err.println("Erro ao editar venda: " + e.getMessage());
@@ -267,6 +242,12 @@ public class SalesForm extends javax.swing.JFrame {
         deleteSaleButton.setText("Excluir Venda");
         deleteSaleButton.setPreferredSize(new java.awt.Dimension(150, 40));
         ViewComponentStyle.standardCornerRadius(deleteSaleButton);
+        deleteSaleButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteSaleButtonActionPerformed(evt);
+            }
+        });
 
         filterPanel.setPreferredSize(new java.awt.Dimension(917, 50));
         ViewComponentStyle.standardCornerRadius(filterPanel);
@@ -405,11 +386,54 @@ public class SalesForm extends javax.swing.JFrame {
 
     private void newSaleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newSaleButtonActionPerformed
         // Abrir o formulário de nova venda
-        MainAppView.redirectToPanel(MainAppView.NEW_SALE_PANEL);
+        MainAppView.redirectToPanel(MainAppView.NEW_SALE_PANEL,
+                null);
         // Atualizar a tabela após o fechamento do formulário
         refreshTable();
     }//GEN-LAST:event_newSaleButtonActionPerformed
-    // new SalesForm().setVisible(true);
+
+    private void deleteSaleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteSaleButtonActionPerformed
+        // Get selected row
+        int selectedRow = salesTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Selecione uma venda para excluir",
+                    "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        // Confirmar exclusão
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Tem certeza que deseja excluir esta venda?",
+                "Confirmar Exclusão",
+                JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            // Get the sale ID before any operations
+            Integer saleId = (Integer) salesTable.getValueAt(selectedRow,
+                    0);
+            // Store the table model before deletion
+            DefaultTableModel model = (DefaultTableModel) salesTable.getModel();
+            boolean success = saleController.deleteSale(saleId);
+            if (success) {
+                // Log the activity before removing the row
+                MainAppView.getInstance().registerUserActivity(
+                        "Excluiu a venda ID:" + saleId);
+                // Remove the row directly from the model
+                model.removeRow(selectedRow);
+                JOptionPane.showMessageDialog(this,
+                        "Venda excluída com sucesso!",
+                        "Sucesso",
+                        JOptionPane.INFORMATION_MESSAGE);
+                // Refresh the table if needed
+                refreshTable();
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Erro ao excluir a venda",
+                        "Erro",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_deleteSaleButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField customerField;

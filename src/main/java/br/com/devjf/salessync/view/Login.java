@@ -282,7 +282,7 @@ public class Login extends javax.swing.JFrame {
                                 mainView);
                                 
                         // Registrar atividade de login após a inicialização completa
-                        mainView.registerUserActivity("Login realizado com sucesso");
+                        mainView.registerUserActivity("Logou no sistema");
                         
                         // Tornar a tela visível após toda a configuração
                         mainView.setVisible(true);

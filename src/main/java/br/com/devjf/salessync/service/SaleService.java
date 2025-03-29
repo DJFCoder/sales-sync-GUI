@@ -1,17 +1,17 @@
 package br.com.devjf.salessync.service;
 
-import java.time.LocalDate;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import br.com.devjf.salessync.dao.SaleDAO;
 import br.com.devjf.salessync.dao.SaleItemDAO;
-import br.com.devjf.salessync.model.PaymentMethod;
 import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.model.SaleItem;
-import br.com.devjf.salessync.model.User;
-import br.com.devjf.salessync.model.UserType;
 
 public class SaleService {
     private final SaleDAO saleDAO;
@@ -22,240 +22,381 @@ public class SaleService {
         this.saleItemDAO = new SaleItemDAO();
     }
 
-    public boolean registerSale(Sale sale) {
-        // Calculate total amount before saving
-        sale.calculateTotal();
-        // Garantir que cada item da venda tenha referência para a venda
-        for (SaleItem item : sale.getItems()) {
-            item.setSale(sale);
+    /**
+     * Creates a new sale with its items
+     *
+     * @param sale The sale to be created
+     * @return The created sale with ID, or null if creation failed
+     */
+    public Sale createSale(Sale sale) {
+        if (!validateSale(sale)) {
+            return null;
         }
-        // Salvar a venda com cascade para os itens
-        boolean success = saleDAO.save(sale);
-        if (success && sale.getUser() != null) {
-            logSaleOperation(sale,
-                    "REGISTER",
-                    sale.getUser());
+        // Create a new sale object to avoid detached entity issues
+        Sale newSale = new Sale();
+        newSale.setDate(sale.getDate());
+        newSale.setCustomer(sale.getCustomer());
+        newSale.setUser(sale.getUser());
+        newSale.setPaymentMethod(sale.getPaymentMethod());
+        newSale.setPaymentDate(sale.getPaymentDate());
+        newSale.setSubtotalAmount(sale.getSubtotalAmount());
+        newSale.setDiscountAmount(sale.getDiscountAmount());
+        newSale.setTotalAmount(sale.getTotalAmount());
+        // Save the sale first
+        boolean saleSuccess = saleDAO.save(newSale);
+        if (!saleSuccess) {
+            return null;
         }
-        return success;
+        // Create and save each sale item as a new object
+        for (SaleItem originalItem : sale.getItems()) {
+            SaleItem newItem = new SaleItem();
+            newItem.setDescription(originalItem.getDescription());
+            newItem.setQuantity(originalItem.getQuantity());
+            newItem.setUnitPrice(originalItem.getUnitPrice());
+            newItem.setSale(newSale);
+            boolean itemSuccess = saleItemDAO.save(newItem);
+            if (!itemSuccess) {
+                // If any item fails, consider the whole operation failed
+                return null;
+            }
+            // Add to the collection
+            newSale.getItems().add(newItem);
+        }
+        return newSale;
     }
 
-    public boolean updateSale(Sale sale) {
-        Sale existingSale = saleDAO.findById(sale.getId());
-        if (existingSale == null) {
-            return false;
+    /**
+     * Updates an existing sale with its items
+     *
+     * @param sale The sale to be updated
+     * @return The updated sale, or null if update failed
+     */
+    public Sale updateSale(Sale sale) {
+        try {
+            // First, find the existing sale with its items
+            Sale existingSale = findSaleByIdWithRelationships(sale.getId());
+            if (existingSale == null) {
+                return null;
+            }
+            // Update the basic sale properties
+            existingSale.setCustomer(sale.getCustomer());
+            existingSale.setPaymentMethod(sale.getPaymentMethod());
+            existingSale.setPaymentDate(sale.getPaymentDate());
+            existingSale.setSubtotalAmount(sale.getSubtotalAmount());
+            existingSale.setDiscountAmount(sale.getDiscountAmount());
+            existingSale.setTotalAmount(sale.getTotalAmount());
+            // First, delete all existing items
+            for (SaleItem item : new ArrayList<>(existingSale.getItems())) {
+                boolean deleteSuccess = saleItemDAO.delete(item.getId());
+                if (!deleteSuccess) {
+                    return null;
+                }
+            }
+            existingSale.getItems().clear();
+            // Update the sale
+            boolean updateSuccess = saleDAO.update(existingSale);
+            if (!updateSuccess) {
+                return null;
+            }
+            // Now add new items
+            for (SaleItem item : sale.getItems()) {
+                SaleItem newItem = new SaleItem();
+                newItem.setDescription(item.getDescription());
+                newItem.setQuantity(item.getQuantity());
+                newItem.setUnitPrice(item.getUnitPrice());
+                newItem.setSale(existingSale);
+                // Save the new item
+                boolean itemSuccess = saleItemDAO.save(newItem);
+                if (!itemSuccess) {
+                    return null;
+                }
+                // Add to the collection
+                existingSale.getItems().add(newItem);
+            }
+            return existingSale;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        // Calculate total amount before updating
-        sale.calculateTotal();
-        boolean success = saleDAO.update(sale);
-        if (success && sale.getUser() != null) {
-            logSaleOperation(sale,
-                    "UPDATE",
-                    sale.getUser());
-        }
-        return success;
     }
 
-    public boolean cancelSale(Integer id) {
-        // In a real application, you might want to keep the sale record
-        // and just mark it as canceled instead of deleting it
-        Sale sale = saleDAO.findById(id);
+    /**
+     * Cancels a sale by setting its canceled flag to true
+     *
+     * @param saleId The ID of the sale to cancel
+     * @return true if the sale was successfully canceled, false otherwise
+     */
+    public boolean cancelSale(Integer saleId) {
+        Sale sale = saleDAO.findById(saleId);
         if (sale == null) {
             return false;
         }
-        // Implementação de soft delete conforme as boas práticas
-        // Adicionar um campo 'canceled' na entidade Sale e marcar como true
         sale.setCanceled(true);
-        boolean success = saleDAO.update(sale);
-        if (success && sale.getUser() != null) {
-            logSaleOperation(sale,
-                    "CANCEL",
-                    sale.getUser());
-        }
-        return success;
+        return saleDAO.update(sale);
     }
 
+    /**
+     * Finds a sale by its ID
+     *
+     * @param id The ID of the sale to find
+     * @return The sale if found, null otherwise
+     */
     public Sale findSaleById(Integer id) {
         return saleDAO.findById(id);
     }
 
     /**
-     * Busca uma venda pelo ID com todas as suas relações carregadas.
-     * 
-     * @param id O ID da venda a ser buscada
-     * @return A venda encontrada com seus itens, cliente e usuário ou null se não existir
+     * Finds a sale by its ID with all relationships loaded (customer, items,
+     * user)
+     *
+     * @param id The ID of the sale to find
+     * @return The sale with relationships if found, null otherwise
      */
     public Sale findSaleByIdWithRelationships(Integer id) {
         return saleDAO.findByIdWithRelationships(id);
     }
 
-    public List<Sale> listSales(Map<String, Object> filters) {
-        if (filters == null || filters.isEmpty()) {
-            return saleDAO.findAll();
-        }
-        // Handle different filter types
-        if (filters.containsKey("customerId")) {
-            Integer customerId = (Integer) filters.get("customerId");
-            return saleDAO.findByCustomer(
-                    saleDAO.findById(customerId).getCustomer());
-        } else if (filters.containsKey("startDate") && filters.containsKey(
-                "endDate")) {
-            LocalDateTime startDate = (LocalDateTime) filters.get("startDate");
-            LocalDateTime endDate = (LocalDateTime) filters.get("endDate");
-            return saleDAO.findByDateRange(startDate,
-                    endDate);
-        }
+    /**
+     * Lists all sales
+     *
+     * @return A list of all sales
+     */
+    public List<Sale> listAllSales() {
         return saleDAO.findAll();
     }
 
-    public Map<String, Double> calculateCommissions(Sale sale, User user) {
-        Map<String, Double> commissions = new HashMap<>();
-        // Only calculate commissions for employees
-        // Corrigido para usar UserType.EMPLOYEE conforme a documentação
-        if (user.getType() != UserType.EMPLOYEE) {
-            commissions.put("commission",
-                    0.0);
-            return commissions;
-        }
-        // Simple commission calculation (5% of total)
-        double commissionRate = 0.05;
-        double commissionAmount = sale.getTotalAmount() * commissionRate;
-        commissions.put("rate",
-                commissionRate);
-        commissions.put("amount",
-                commissionAmount);
-        return commissions;
-    }
-
-    public Sale applyDiscounts(Sale sale, double discountPercentage) {
-        if (discountPercentage <= 0 || discountPercentage > 100) {
-            return sale;
-        }
-        double discountFactor = 1 - (discountPercentage / 100);
-        // Apply discount to each item
-        for (SaleItem item : sale.getItems()) {
-            double discountedPrice = item.getUnitPrice() * discountFactor;
-            item.setUnitPrice(discountedPrice);
-        }
-        // Recalculate total
-        sale.calculateTotal();
-        return sale;
-    }
-
-    public double calculateProfitMargin(Sale sale) {
-        // In a real application, this would consider the cost of goods sold
-        // For simplicity, assuming a fixed cost of 70% of the sale price
-        double costFactor = 0.7;
-        double totalCost = sale.getTotalAmount() * costFactor;
-        double profit = sale.getTotalAmount() - totalCost;
-        // Return profit as a percentage of total revenue
-        return (profit / sale.getTotalAmount()) * 100;
-    }
-
-    // Método adicional para atender ao requisito de histórico de compras do cliente
-    public List<Sale> getCustomerPurchaseHistory(Integer customerId) {
+    /**
+     * Lists all sales for a specific customer
+     *
+     * @param customerId The ID of the customer
+     * @return A list of sales for the customer
+     */
+    public List<Sale> listSalesByCustomer(Integer customerId) {
         return saleDAO.findByCustomerId(customerId);
     }
 
     /**
-     * Verifica se o usuário tem permissão para cancelar uma venda Apenas
-     * usuários do tipo OWNER podem cancelar vendas
+     * Lists all sales within a date range
+     *
+     * @param startDate The start date of the range
+     * @param endDate The end date of the range
+     * @return A list of sales within the date range
      */
-    public boolean canCancelSale(User user) {
-        return user != null && user.getType() == UserType.OWNER;
-    }
-
-    /**
-     * Busca vendas por período
-     */
-    public List<Sale> getSalesByPeriod(LocalDate startDate, LocalDate endDate) {
-        LocalDateTime startDateTime = startDate.atStartOfDay();
-        LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay().minusNanos(
-                1);
-        return saleDAO.findByDateRange(startDateTime,
-                endDateTime);
-    }
-
-    /**
-     * Calcula o total de vendas por período
-     */
-    public double calculateTotalSalesByPeriod(LocalDate startDate, LocalDate endDate) {
-        List<Sale> sales = getSalesByPeriod(startDate,
+    public List<Sale> listSalesByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        return saleDAO.findByDateRange(startDate,
                 endDate);
-        return sales.stream().mapToDouble(Sale::getTotalAmount).sum();
     }
 
     /**
-     * Processa o pagamento da venda
-     */
-    public boolean processSalePayment(Sale sale, PaymentMethod paymentMethod) {
-        if (sale == null || paymentMethod == null) {
-            return false;
-        }
-        sale.setPaymentMethod(paymentMethod);
-        sale.setPaymentDate(LocalDateTime.now());
-        boolean success = saleDAO.update(sale);
-        if (success && sale.getUser() != null) {
-            logSaleOperation(sale,
-                    "PAYMENT",
-                    sale.getUser());
-        }
-        return success;
-    }
-
-    /**
-     * Valida os dados da venda antes de salvar
+     * Validates a sale object before saving or updating
+     *
+     * @param sale The sale to validate
+     * @return true if the sale is valid, false otherwise
      */
     public boolean validateSale(Sale sale) {
-        return sale != null
-                && sale.getCustomer() != null
-                && sale.getItems() != null
-                && !sale.getItems().isEmpty()
-                && sale.getItems().stream().allMatch(item
-                        -> item.getQuantity() > 0 && item.getUnitPrice() > 0);
-    }
-
-    /**
-     * Gera relatório resumido de vendas
-     */
-    public Map<String, Object> generateSalesSummary(LocalDate startDate, LocalDate endDate) {
-        Map<String, Object> summary = new HashMap<>();
-        List<Sale> sales = getSalesByPeriod(startDate,
-                endDate);
-        double totalRevenue = sales.stream().mapToDouble(Sale::getTotalAmount).sum();
-        int totalSales = sales.size();
-        double averageTicket = totalSales > 0 ? totalRevenue / totalSales : 0;
-        // Agrupamento por método de pagamento
-        Map<PaymentMethod, Double> revenueByPaymentMethod = new HashMap<>();
-        for (Sale sale : sales) {
-            PaymentMethod method = sale.getPaymentMethod();
-            revenueByPaymentMethod.merge(method,
-                    sale.getTotalAmount(),
-                    Double::sum);
+        // Check if sale is null
+        if (sale == null) {
+            return false;
         }
-        summary.put("startDate",
-                startDate);
-        summary.put("endDate",
-                endDate);
-        summary.put("totalRevenue",
-                totalRevenue);
-        summary.put("totalSales",
-                totalSales);
-        summary.put("averageTicket",
-                averageTicket);
-        summary.put("revenueByPaymentMethod",
-                revenueByPaymentMethod);
-        return summary;
+        // Check if customer is set
+        if (sale.getCustomer() == null || sale.getCustomer().getId() == null) {
+            return false;
+        }
+        // Check if user is set
+        if (sale.getUser() == null || sale.getUser().getId() == null) {
+            return false;
+        }
+        // Check if date is set
+        if (sale.getDate() == null) {
+            sale.setDate(LocalDateTime.now());
+        }
+        // Check if payment method is set
+        if (sale.getPaymentMethod() == null) {
+            return false;
+        }
+        // Check if there are items
+        if (sale.getItems() == null || sale.getItems().isEmpty()) {
+            return false;
+        }
+        // Validate each item
+        for (SaleItem item : sale.getItems()) {
+            if (item.getDescription() == null || item.getDescription().trim().isEmpty()) {
+                return false;
+            }
+            if (item.getQuantity() == null || item.getQuantity() <= 0) {
+                return false;
+            }
+            if (item.getUnitPrice() == null || item.getUnitPrice() < 0) {
+                return false;
+            }
+        }
+        // Calculate and set totals if not already set
+        double subtotal = 0.0;
+        for (SaleItem item : sale.getItems()) {
+            subtotal += item.getQuantity() * item.getUnitPrice();
+        }
+        sale.setSubtotalAmount(subtotal);
+        // If discount not set, default to 0
+        if (sale.getDiscountAmount() == null) {
+            sale.setDiscountAmount(0.0);
+        }
+        // Calculate total amount
+        double totalAmount = subtotal - sale.getDiscountAmount();
+        sale.setTotalAmount(totalAmount);
+        return true;
     }
 
     /**
-     * Registra log da venda
+     * Lists sales with optional filters
+     *
+     * @param filters Map containing filter criteria (customerName, date,
+     * paymentMethod)
+     * @return A filtered list of sales
      */
-    private void logSaleOperation(Sale sale, String operation, User user) {
-        // Usando os métodos existentes na classe SystemLog
-        String details = "Sale " + operation + " - Total: " + sale.getTotalAmount();
-        LogService logService = new LogService();
-        logService.recordLog(user,
-                operation,
-                details);
+    public List<Sale> listSalesWithFilters(Map<String, Object> filters) {
+        if (filters == null || filters.isEmpty()) {
+            return listAllSales();
+        }
+        List<Sale> allSales = listAllSales();
+        List<Sale> filteredSales = new ArrayList<>(allSales);
+        // Filter by customer name if provided
+        if (filters.containsKey("customerName") && filters.get("customerName") != null) {
+            String customerName = ((String) filters.get("customerName")).toLowerCase();
+            if (!customerName.isEmpty()) {
+                filteredSales.removeIf(sale -> sale.getCustomer() == null
+                        || !sale.getCustomer().getName().toLowerCase().contains(
+                                customerName));
+            }
+        }
+        // Filter by date if provided
+        if (filters.containsKey("date") && filters.get("date") != null) {
+            String dateStr = (String) filters.get("date");
+            if (!dateStr.isEmpty()) {
+                try {
+                    // Parse date string in format dd/MM/yyyy
+                    SimpleDateFormat dateFormat = new SimpleDateFormat(
+                            "dd/MM/yyyy");
+                    Date filterDate = dateFormat.parse(dateStr);
+                    LocalDateTime filterDateTime = filterDate.toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDateTime();
+                    // Keep only sales on the specified date
+                    filteredSales.removeIf(sale -> {
+                        if (sale.getDate() == null) {
+                            return true;
+                        }
+                        LocalDateTime saleDate = sale.getDate();
+                        return saleDate.getYear() != filterDateTime.getYear()
+                                || saleDate.getMonthValue() != filterDateTime.getMonthValue()
+                                || saleDate.getDayOfMonth() != filterDateTime.getDayOfMonth();
+                    });
+                } catch (ParseException e) {
+                    // If date parsing fails, ignore this filter
+                    System.err.println(
+                            "Error parsing date filter: " + e.getMessage());
+                }
+            }
+        }
+        // Filter by payment method if provided
+        if (filters.containsKey("paymentMethod") && filters.get("paymentMethod") != null) {
+            String paymentMethod = ((String) filters.get("paymentMethod")).toUpperCase();
+            if (!paymentMethod.isEmpty()) {
+                filteredSales.removeIf(
+                        sale -> sale.getPaymentMethod() == null
+                        || !sale.getPaymentMethod().toString().contains(
+                                paymentMethod));
+            }
+        }
+        return filteredSales;
+    }
+
+    /**
+     * Gets the customer name for a specific sale
+     *
+     * @param saleId The ID of the sale
+     * @return The customer name or empty string if not found
+     */
+    public String getCustomerName(Integer saleId) {
+        Sale sale = findSaleByIdWithRelationships(saleId);
+        if (sale != null && sale.getCustomer() != null) {
+            return sale.getCustomer().getName();
+        }
+        return "";
+    }
+
+    /**
+     * Gets the sale date for a specific sale
+     *
+     * @param saleId The ID of the sale
+     * @return The sale date or null if not found
+     */
+    public LocalDateTime getSaleDate(Integer saleId) {
+        Sale sale = findSaleById(saleId);
+        if (sale != null) {
+            return sale.getDate();
+        }
+        return null;
+    }
+
+    /**
+     * Gets the payment method for a specific sale in a safe way
+     *
+     * @param saleId The ID of the sale
+     * @return The payment method as string or empty string if not found
+     */
+    public String getPaymentMethodSafe(Integer saleId) {
+        Sale sale = findSaleById(saleId);
+        if (sale != null && sale.getPaymentMethod() != null) {
+            return sale.getPaymentMethod().toString();
+        }
+        return "";
+    }
+
+    /**
+     * Gets the payment date for a specific sale
+     *
+     * @param saleId The ID of the sale
+     * @return The payment date or null if not found
+     */
+    public LocalDateTime getPaymentDate(Integer saleId) {
+        Sale sale = findSaleById(saleId);
+        if (sale != null) {
+            return sale.getPaymentDate();
+        }
+        return null;
+    }
+
+    /**
+     * Gets the total amount for a specific sale
+     *
+     * @param saleId The ID of the sale
+     * @return The total amount or 0.0 if not found
+     */
+    public Double getTotalAmount(Integer saleId) {
+        Sale sale = findSaleById(saleId);
+        if (sale != null) {
+            return sale.getTotalAmount();
+        }
+        return 0.0;
+    }
+
+    /**
+     * Deletes a sale by its ID
+     *
+     * @param saleId The ID of the sale to delete
+     * @return true if the sale was successfully deleted, false otherwise
+     */
+    public boolean deleteSale(Integer saleId) {
+        // Use findSaleByIdWithRelationships to ensure items are loaded
+        Sale sale = findSaleByIdWithRelationships(saleId);
+        if (sale == null) {
+            return false;
+        }
+        // Delete all related items first
+        for (SaleItem item : new ArrayList<>(sale.getItems())) {
+            saleItemDAO.delete(item.getId());
+        }
+        // Then delete the sale
+        return saleDAO.delete(saleId);
     }
 }

@@ -1,23 +1,31 @@
 package br.com.devjf.salessync.view.forms;
 
+import java.util.List;
+
 import br.com.devjf.salessync.controller.UserController;
 import br.com.devjf.salessync.model.User;
 import br.com.devjf.salessync.model.UserActivity;
 import br.com.devjf.salessync.service.auth.UserSessionManager;
-import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.Login;
 import br.com.devjf.salessync.view.MainAppView;
-import java.util.List;
+import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 
-public class DashboardForm extends javax.swing.JFrame {
+public final class DashboardForm extends javax.swing.JFrame {
     private final UserController userController;
     private User loggedUser;
+    private static DashboardForm instance;
 
     public DashboardForm() {
         initComponents();
+        instance = this;
+        updateUserInfo();
         userController = new UserController();
         loggedUser = UserSessionManager.getInstance().getLoggedUser();
         initUserData();
+    }
+    
+    public static DashboardForm getInstance() {
+        return instance;
     }
 
     /**
@@ -500,9 +508,8 @@ public class DashboardForm extends javax.swing.JFrame {
         User loggedUser = UserSessionManager.getInstance().getLoggedUser();
         // Registrar a atividade de logout
         if (loggedUser != null) {
-            UserController userController = new UserController();
-            userController.registerActivity(loggedUser,
-                    "Logout do sistema");
+            MainAppView.getInstance().registerUserActivity(
+                        "Deslogou do sistema");
         }
         // Limpar a sessão do usuário
         UserSessionManager.getInstance().clearSession();

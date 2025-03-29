@@ -3,11 +3,15 @@ package br.com.devjf.salessync.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
 import br.com.devjf.salessync.model.User;
 import br.com.devjf.salessync.model.UserActivity;
 import br.com.devjf.salessync.model.UserType;
 import br.com.devjf.salessync.service.UserActivityService;
 import br.com.devjf.salessync.service.UserService;
+import br.com.devjf.salessync.service.activity.UserActivityServiceImpl;
+import br.com.devjf.salessync.service.permission.UserPermissionService;
+import br.com.devjf.salessync.service.permission.UserPermissionServiceImpl;
 
 /**
  * Controller class for managing user-related operations.
@@ -16,6 +20,8 @@ import br.com.devjf.salessync.service.UserService;
 public class UserController {
     private final UserService userService;
     private final UserActivityService activityService;
+    private final UserActivityServiceImpl userActivityService;
+    private final UserPermissionService permissionService;
 
     /**
      * Constructs a new UserController with UserService and UserActivityService instances.
@@ -23,6 +29,8 @@ public class UserController {
     public UserController() {
         this.userService = new UserService();
         this.activityService = new UserActivityService();
+        this.userActivityService = new UserActivityServiceImpl(this);
+        this.permissionService = new UserPermissionServiceImpl();
     }
 
     /**
@@ -205,5 +213,36 @@ public class UserController {
             default:
                 return "Desconhecido";
         }
+    }
+    
+    /**
+     * Checks if a user has access to a specific panel.
+     * 
+     * @param user The user to check permissions for
+     * @param panelName The name of the panel to check access for
+     * @return true if the user has access, false otherwise
+     */
+    public boolean hasAccessToPanel(User user, String panelName) {
+        return permissionService.hasAccessToPanel(user, panelName);
+    }
+    
+    /**
+     * Gets the permission label for a user.
+     * 
+     * @param user The user to get the permission label for
+     * @return The permission label string
+     */
+    public String getPermissionLabel(User user) {
+        return permissionService.getPermissionLabel(user);
+    }
+    
+    /**
+     * Registers a user activity through the activity service.
+     * 
+     * @param user The user who performed the activity
+     * @param description Description of the activity
+     */
+    public void registerUserActivity(User user, String description) {
+        userActivityService.registerActivity(user, description);
     }
 }

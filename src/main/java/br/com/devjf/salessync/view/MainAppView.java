@@ -2,23 +2,18 @@ package br.com.devjf.salessync.view;
 
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
-
 import br.com.devjf.salessync.controller.UserController;
 import br.com.devjf.salessync.controller.navigation.PanelFactory;
 import br.com.devjf.salessync.controller.navigation.PanelNavigationController;
 import br.com.devjf.salessync.model.User;
-import br.com.devjf.salessync.service.activity.UserActivityService;
-import br.com.devjf.salessync.service.activity.UserActivityServiceImpl;
 import br.com.devjf.salessync.service.auth.UserSessionManager;
 import br.com.devjf.salessync.service.navigation.PanelNavigationService;
 import br.com.devjf.salessync.service.navigation.PanelNavigationServiceImpl;
-import br.com.devjf.salessync.service.permission.UserPermissionService;
-import br.com.devjf.salessync.service.permission.UserPermissionServiceImpl;
+import br.com.devjf.salessync.view.forms.DashboardForm;
 
 public final class MainAppView extends javax.swing.JFrame {
     // Singleton instance
     private static MainAppView instance;
-    
     // Panel keys
     public static final String DASHBOARD_PANEL = "Dashboard";
     public static final String SALES_PANEL = "Vendas";
@@ -38,29 +33,23 @@ public final class MainAppView extends javax.swing.JFrame {
     public static final String EDIT_EXPENSE_PANEL = "Editar Despesa";
     public static final String NEW_USER_PANEL = "Cadastrar Usuário";
     public static final String EDIT_USER_PANEL = "Editar Usuário";
-
     // Services and controllers
     private final PanelNavigationController navigationController;
-    private final UserPermissionService permissionService;
-    private final UserActivityService activityService;
+    private final UserController userController;
 
     public MainAppView() {
         initComponents();
-        
         // Set this instance as the singleton instance
         instance = this;
-        
-        // Initialize services
-        UserController userController = new UserController();
-        PanelNavigationService navigationService = new PanelNavigationServiceImpl(selectedPanel);
+        // Initialize controllers and services
+        this.userController = new UserController();
+        PanelNavigationService navigationService = new PanelNavigationServiceImpl(
+                selectedPanel);
         PanelFactory panelFactory = new PanelFactory();
-        
-        this.navigationController = new PanelNavigationController(navigationService, panelFactory);
-        this.permissionService = new UserPermissionServiceImpl();
-        this.activityService = new UserActivityServiceImpl(userController);
-        
+        this.navigationController = new PanelNavigationController(
+                navigationService,
+                panelFactory);
         initializePermissionLabel();
-        
         initPanels();
         setupListeners();
     }
@@ -73,7 +62,7 @@ public final class MainAppView extends javax.swing.JFrame {
     public void updateTitle(String panelKey) {
         titleLbl.setText(panelKey);
     }
-    
+
     /**
      * Get the singleton instance of MainAppView
      *
@@ -94,23 +83,53 @@ public final class MainAppView extends javax.swing.JFrame {
             if (!e.getValueIsAdjusting()) {
                 String selectedItem = selectionList.getSelectedValue();
                 updateTitle(selectedItem);
-                
                 // Check if user has permission to access this panel
                 User loggedUser = UserSessionManager.getInstance().getLoggedUser();
-                if (permissionService.hasAccessToPanel(loggedUser, selectedItem)) {
-                    // Register user activity
-                    activityService.registerActivity(loggedUser, "Acessou " + selectedItem);
-                    
+                if (userController.hasAccessToPanel(loggedUser,
+                        selectedItem)) {
                     // Navigate to the panel
-                    navigationController.navigateToPanel(getPanelKeyFromName(selectedItem));
+                    navigationController.navigateToPanel(getPanelKeyFromName(
+                            selectedItem));
                 } else {
-                    JOptionPane.showMessageDialog(this, 
-                            "Você não tem permissão para acessar este painel", 
-                            "Acesso Negado", 
+                    JOptionPane.showMessageDialog(this,
+                            "Você não tem permissão para acessar este painel",
+                            "Acesso Negado",
                             JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
+    }
+
+    /**
+     * This method to initialize permission label should be called after all
+     * services are initialized
+     */
+    public void initializePermissionLabel() {
+        if (permitionLabel != null && userController != null) {
+            User loggedUser = UserSessionManager.getInstance().getLoggedUser();
+            permitionLabel.setText(userController.getPermissionLabel(loggedUser));
+        }
+    }
+
+    /**
+     * Updates the permission label after user login
+     */
+    public void updatePermissionLabel() {
+        if (permitionLabel != null && userController != null) {
+            User loggedUser = UserSessionManager.getInstance().getLoggedUser();
+            permitionLabel.setText(userController.getPermissionLabel(loggedUser));
+        }
+    }
+
+    /**
+     * Registra uma atividade do usuário logado
+     *
+     * @param description Descrição da atividade
+     */
+    public void registerUserActivity(String description) {
+        User loggedUser = UserSessionManager.getInstance().getLoggedUser();
+        userController.registerUserActivity(loggedUser,
+                description);
     }
 
     /**
@@ -126,13 +145,12 @@ public final class MainAppView extends javax.swing.JFrame {
             System.err.println("Erro: Instância do MainAppView não encontrada");
             return;
         }
-        
         if (object != null) {
-            instance.navigationController.navigateToPanel(panelKey, object);
+            instance.navigationController.navigateToPanel(panelKey,
+                    object);
         } else {
             instance.navigationController.navigateToPanel(panelKey);
         }
-        
         // Update the title
         instance.updateTitle(panelKey);
     }
@@ -140,6 +158,7 @@ public final class MainAppView extends javax.swing.JFrame {
     private String getPanelKeyFromName(String panelName) {
         switch (panelName) {
             case "Dashboard":
+                DashboardForm.getInstance().updateUserInfo();
                 return DASHBOARD_PANEL;
             case "Vendas":
                 return SALES_PANEL;
@@ -158,37 +177,6 @@ public final class MainAppView extends javax.swing.JFrame {
             default:
                 return DASHBOARD_PANEL;
         }
-    }
-
-    /**
-     * This method to initialize permition label should be called after all 
-     * services are initialized
-     */
-    public void initializePermissionLabel() {
-        if (permitionLabel != null && permissionService != null) {
-            User loggedUser = UserSessionManager.getInstance().getLoggedUser();
-            permitionLabel.setText(permissionService.getPermissionLabel(loggedUser));
-        }
-    }
-
-    /**
-     * Updates the permission label after user login
-     */
-    public void updatePermissionLabel() {
-        if (permitionLabel != null && permissionService != null) {
-            User loggedUser = UserSessionManager.getInstance().getLoggedUser();
-            permitionLabel.setText(permissionService.getPermissionLabel(loggedUser));
-        }
-    }
-
-    /**
-     * Registra uma atividade do usuário logado
-     *
-     * @param description Descrição da atividade
-     */
-    public void registerUserActivity(String description) {
-        User loggedUser = UserSessionManager.getInstance().getLoggedUser();
-        activityService.registerActivity(loggedUser, description);
     }
 
     /**

@@ -2,7 +2,6 @@ package br.com.devjf.salessync.view.forms.newobjectforms;
 
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.HeadlessException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
+
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -20,18 +20,20 @@ import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+
+import br.com.devjf.salessync.controller.CustomerController;
 import br.com.devjf.salessync.controller.SaleController;
+import br.com.devjf.salessync.controller.UserController;
 import br.com.devjf.salessync.model.Customer;
 import br.com.devjf.salessync.model.PaymentMethod;
 import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.model.SaleItem;
-import br.com.devjf.salessync.model.User;
+import br.com.devjf.salessync.service.auth.UserSessionManager;
+import br.com.devjf.salessync.view.MainAppView;
 import br.com.devjf.salessync.view.components.CustomerSelectionDialog;
+import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.components.table.TableDeleteButtonEditor;
 import br.com.devjf.salessync.view.components.table.TableDeleteButtonRenderer;
-import br.com.devjf.salessync.service.auth.UserSessionManager;
-import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
-import br.com.devjf.salessync.view.MainAppView;
 import br.com.devjf.salessync.view.forms.SalesForm;
 
 public class NewSaleForm extends javax.swing.JFrame {
@@ -39,16 +41,20 @@ public class NewSaleForm extends javax.swing.JFrame {
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(
             new Locale("pt",
                     "BR"));
-    // Sale object attributes
     private Sale saleToCreate;
     private Customer selectedCustomer;
     private final List<SaleItem> saleItems = new ArrayList<>();
-    private User currentUser;
+    private int currentUser;
+    // Add controllers as class fields
+    private final SaleController saleController;
+    private final CustomerController customerController;
+    private final UserController userController;
 
-    /**
-     * Construtor padrão para criar uma nova venda.
-     */
     public NewSaleForm() {
+        // Initialize controllers
+        this.saleController = new SaleController();
+        this.customerController = new CustomerController();
+        this.userController = new UserController();
         initComponents();
         setupTable();
         initializeSale();
@@ -80,12 +86,16 @@ public class NewSaleForm extends javax.swing.JFrame {
      * @param sale A venda a ser editada
      */
     public NewSaleForm(Sale sale) {
+        // Initialize controllers
+        this.saleController = new SaleController();
+        this.customerController = new CustomerController();
+        this.userController = new UserController();
         initComponents();
         setupTable();
         // Configurar o formulário para edição
         this.saleToCreate = sale;
         this.selectedCustomer = sale.getCustomer();
-        this.currentUser = UserSessionManager.getInstance().getLoggedUser();
+        currentUser = UserSessionManager.getInstance().getLoggedUser().getId();
         // Preencher os campos do formulário com os dados da venda
         loadSaleData(sale);
         // Adicionar listener para o campo de desconto
@@ -108,6 +118,46 @@ public class NewSaleForm extends javax.swing.JFrame {
         });
         // Alterar o texto do botão para "Atualizar Venda"
         newSaleBtn.setText("Atualizar Venda");
+    }
+
+    /**
+     * Inicializa o formulário para uma nova venda
+     */
+    public void initForNewSale() {
+        // Limpar o objeto saleToCreate para garantir que estamos criando uma nova venda
+        saleToCreate = new Sale();
+        
+        // Limpar campos do formulário
+        nameField.setText("");
+        selectedCustomer = null;
+        paymentMethodCmb.setSelectedIndex(0);
+        paymentMethodField.setText("");
+        discountField.setText("0.00");
+        
+        // Limpar tabela de itens
+        clearTable();
+        
+        // Adicionar uma linha vazia para o primeiro item
+        addNewRow();
+        
+        // Atualizar os totais
+        updateTotals();
+        
+        // Atualizar o título do botão para "Registrar Venda"
+        newSaleBtn.setText("Registrar Venda");
+    }
+    
+    /**
+     * Limpa a tabela de itens
+     */
+    private void clearTable() {
+        // Remover todas as linhas da tabela
+        while (tableModel.getRowCount() > 0) {
+            tableModel.removeRow(0);
+        }
+        
+        // Limpar a lista de itens
+        saleItems.clear();
     }
 
     // This method set the current date at paymentDate field
@@ -133,8 +183,8 @@ public class NewSaleForm extends javax.swing.JFrame {
         saleToCreate.setTotalAmount(0.0);
         // Get current logged-in user
         try {
-            currentUser = UserSessionManager.getInstance().getLoggedUser();
-            saleToCreate.setUser(currentUser);
+            currentUser = UserSessionManager.getInstance().getLoggedUser().getId();
+            saleToCreate.setUser(userController.findUserById(currentUser));
         } catch (Exception e) {
             System.err.println("Error getting current user: " + e.getMessage());
         }
@@ -146,105 +196,84 @@ public class NewSaleForm extends javax.swing.JFrame {
      * @return Sale object ready to be sent to controller
      */
     private Sale prepareSaleObject() {
-        // Make sure we have a sale object
-        if (saleToCreate == null) {
-            initializeSale();
-        }
-        // Set customer
-        if (selectedCustomer != null) {
-            saleToCreate.setCustomer(selectedCustomer);
-        } else {
-            // Handle case where customer is not selected
-            throw new IllegalStateException(
-                    "Cliente deve ser selecionado para criar uma venda");
-        }
-        // Set payment method
-        String selectedPaymentMethodStr = paymentMethodCmb.getSelectedItem().toString();
-        if (!"Selecione".equals(selectedPaymentMethodStr)) {
-            PaymentMethod paymentMethod = PaymentMethod.valueOf(
-                    selectedPaymentMethodStr);
-            saleToCreate.setPaymentMethod(paymentMethod);
-        } else {
-            JOptionPane.showMessageDialog(null,
-                    "Forma de Pagamento inválida.",
-                    "Pagamento não selecionado",
+        try {
+            // Validate customer selection
+            if (selectedCustomer == null) {
+                throw new IllegalStateException(
+                        "É necessário selecionar um cliente para a venda.");
+            }
+            // Validate payment method
+            String selectedPaymentMethodStr = paymentMethodCmb.getSelectedItem().toString();
+            if ("Selecione".equals(selectedPaymentMethodStr)) {
+                throw new IllegalStateException(
+                        "É necessário selecionar uma forma de pagamento.");
+            }
+            // Get payment date
+            String paymentDateStr = paymentMethodField.getText();
+            if (paymentDateStr == null || paymentDateStr.trim().isEmpty()
+                    || paymentDateStr.contains("_")) {
+                throw new IllegalStateException(
+                        "É necessário informar uma data de pagamento válida.");
+            }
+            // Collect all sale items from the table
+            saleItems.clear();
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+                String description = (String) tableModel.getValueAt(i, 0);
+                // Skip empty rows
+                if (description == null || description.trim().isEmpty()) {
+                    continue;
+                }
+                Object quantityObj = tableModel.getValueAt(i, 1);
+                Object priceObj = tableModel.getValueAt(i, 2);
+                try {
+                    SaleItem item = saleController.createSaleItem(description,
+                            quantityObj,
+                            priceObj);
+                    saleItems.add(item);
+                } catch (IllegalArgumentException e) {
+                    JOptionPane.showMessageDialog(this,
+                            "Erro no item " + (i + 1) + ": " + e.getMessage(),
+                            "Erro de validação",
+                            JOptionPane.WARNING_MESSAGE);
+                    return null;
+                }
+            }
+            // Validate items
+            if (saleItems.isEmpty()) {
+                throw new IllegalStateException(
+                        "É necessário adicionar pelo menos um item à venda.");
+            }
+            // Calculate totals
+            double subtotal = calculateSubtotal();
+            double discount = getDiscount();
+            
+            // Verificar se estamos editando uma venda existente ou criando uma nova
+            boolean isNewSale = (saleToCreate == null || saleToCreate.getId() == null);
+            
+            // Use the controller to prepare the sale object
+            Sale preparedSale = saleController.prepareSaleObject(
+                    selectedCustomer,
+                    selectedPaymentMethodStr,
+                    paymentDateStr,
+                    saleItems,
+                    subtotal,
+                    discount,
+                    userController.findUserById(currentUser)
+            );
+            
+            // Se estamos editando, definir o ID da venda existente
+            if (!isNewSale) {
+                preparedSale.setId(saleToCreate.getId());
+            }
+            
+            return preparedSale;
+        } catch (IllegalStateException | ParseException e) {
+            JOptionPane.showMessageDialog(this,
+                    e.getMessage(),
+                    "Erro de validação",
                     JOptionPane.WARNING_MESSAGE);
+            return null;
         }
-        // Set payment date if available
-        String paymentDateStr = paymentMethodField.getText();
-        if (paymentDateStr != null && !paymentDateStr.trim().isEmpty()) {
-            try {
-                // Parse the date string in format dd/MM/yyyy
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-                Date paymentDate = dateFormat.parse(paymentDateStr);
-                // Convert to LocalDateTime
-                saleToCreate.setPaymentDate(paymentDate.toInstant()
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDateTime());
-            } catch (ParseException e) {
-                System.err.println(
-                        "Error converting payment date: " + e.getMessage());
-                // You might want to show an error message to the user here
-            }
-        }
-        // Create sale items from table data
-        saleItems.clear();
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
-            String description = (String) tableModel.getValueAt(i,
-                    0);
-            // Skip empty rows
-            if (description == null || description.trim().isEmpty()) {
-                continue;
-            }
-            // Get quantity
-            Integer quantity = 1;
-            Object quantityObj = tableModel.getValueAt(i,
-                    1);
-            if (quantityObj instanceof Integer) {
-                quantity = (Integer) quantityObj;
-            } else if (quantityObj instanceof String) {
-                try {
-                    quantity = Integer.valueOf(quantityObj.toString().trim());
-                } catch (NumberFormatException e) {
-                    // Use default quantity of 1
-                }
-            }
-            // Get unit price
-            Double unitPrice = 0.0;
-            Object priceObj = tableModel.getValueAt(i,
-                    2);
-            if (priceObj instanceof Double) {
-                unitPrice = (Double) priceObj;
-            } else if (priceObj instanceof String) {
-                try {
-                    String priceStr = priceObj.toString().replaceAll("[^\\d,.]",
-                            "").replace(",",
-                                    ".");
-                    unitPrice = Double.valueOf(priceStr);
-                } catch (NumberFormatException e) {
-                    // Use default price of 0.0
-                }
-            }
-            // Create and add the sale item
-            SaleItem item = new SaleItem();
-            item.setDescription(description.trim());
-            item.setQuantity(quantity);
-            item.setUnitPrice(unitPrice);
-            saleItems.add(item);
-        }
-        // Add all items to the sale
-        saleToCreate.getItems().clear();
-        for (SaleItem item : saleItems) {
-            saleToCreate.addItem(item);
-        }
-        // Set subtotal, discount, and total amounts
-        double subtotal = calculateSubtotal();
-        double discount = getDiscount();
-        double total = subtotal - discount;
-        saleToCreate.setSubtotalAmount(subtotal);
-        saleToCreate.setDiscountAmount(discount);
-        saleToCreate.setTotalAmount(total);
-        return saleToCreate;
     }
 
     // Método para calcular e atualizar todos os totais
@@ -318,8 +347,6 @@ public class NewSaleForm extends javax.swing.JFrame {
                 true, true, true, false, true
             };
 
-            @Override
-            @SuppressWarnings("unchecked")
             public Class getColumnClass(int columnIndex) {
                 return types[columnIndex];
             }
@@ -551,6 +578,7 @@ public class NewSaleForm extends javax.swing.JFrame {
         newSaleBtn.setPreferredSize(new java.awt.Dimension(150, 40));
         ViewComponentStyle.standardCornerRadius(newSaleBtn);
         newSaleBtn.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newSaleBtnActionPerformed(evt);
             }
@@ -581,6 +609,7 @@ public class NewSaleForm extends javax.swing.JFrame {
         findCustomerBtn.setPreferredSize(new java.awt.Dimension(85, 30));
         ViewComponentStyle.standardCornerRadius(findCustomerBtn);
         findCustomerBtn.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 findCustomerBtnActionPerformed(evt);
             }
@@ -659,6 +688,7 @@ public class NewSaleForm extends javax.swing.JFrame {
         addItemBtn.setToolTipText("");
         addItemBtn.setPreferredSize(new java.awt.Dimension(170, 40));
         addItemBtn.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addItemBtnActionPerformed(evt);
             }
@@ -672,6 +702,7 @@ public class NewSaleForm extends javax.swing.JFrame {
         cancelSaleBtn.setPreferredSize(new java.awt.Dimension(150, 40));
         ViewComponentStyle.standardCornerRadius(cancelSaleBtn);
         cancelSaleBtn.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelSaleBtnActionPerformed(evt);
             }
@@ -779,79 +810,94 @@ public class NewSaleForm extends javax.swing.JFrame {
     }//GEN-LAST:event_addItemBtnActionPerformed
 
     private void newSaleBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newSaleBtnActionPerformed
-        try {
-            // Validate form data
-            if (selectedCustomer == null) {
-                JOptionPane.showMessageDialog(this,
-                        "Por favor, selecione um cliente para a venda.",
-                        "Cliente não selecionado",
-                        JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            // Validate payment method
-            String selectedPaymentMethodStr = paymentMethodCmb.getSelectedItem().toString();
-            if (!"Selecione".equals(selectedPaymentMethodStr)) {
-                PaymentMethod paymentMethod = PaymentMethod.valueOf(
-                        selectedPaymentMethodStr);
-                saleToCreate.setPaymentMethod(paymentMethod);
-            } else {
-                JOptionPane.showMessageDialog(null,
-                        "Forma de Pagamento inválida.",
-                        "Pagamento não selecionado",
-                        JOptionPane.WARNING_MESSAGE);
-            }
-            // Check if there are valid items in the table
-            boolean hasValidItems = false;
-            for (int i = 0; i < tableModel.getRowCount(); i++) {
-                String description = (String) tableModel.getValueAt(i,
-                        0);
-                if (description != null && !description.trim().isEmpty()) {
-                    hasValidItems = true;
-                    break;
+        // Show a wait cursor while processing
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        // Use SwingWorker to avoid freezing the UI
+        new SwingWorker<Sale, Void>() {
+            private String errorMessage = null;
+            private boolean isNewSale = false; // Flag para controlar se é nova venda ou atualização
+
+            @Override
+            protected Sale doInBackground() throws Exception {
+                try {
+                    // Prepare the sale object
+                    Sale sale = prepareSaleObject();
+                    if (sale == null) {
+                        return null;
+                    }
+                    // Determinar se é uma nova venda ou atualização
+                    isNewSale = (sale.getId() == null);
+                    Sale result;
+                    if (isNewSale) {
+                        // Create new sale
+                        result = saleController.registerSale(sale);
+                        if (result == null) {
+                            errorMessage = "Não foi possível registrar a venda. Verifique os dados e tente novamente.";
+                        }
+                    } else {
+                        // Update existing sale
+                        result = saleController.updateSale(sale);
+                        if (result == null) {
+                            errorMessage = "Não foi possível atualizar a venda. Verifique os dados e tente novamente.";
+                        }
+                    }
+                    return result;
+                } catch (Exception e) {
+                    errorMessage = "Erro ao processar venda: " + e.getMessage();
+                    return null;
                 }
             }
-            if (!hasValidItems) {
-                JOptionPane.showMessageDialog(this,
-                        "Por favor, adicione pelo menos um item à venda.",
-                        "Itens não adicionados",
-                        JOptionPane.WARNING_MESSAGE);
-                return;
+
+            @Override
+            protected void done() {
+                try {
+                    Sale result = get();
+                    if (result != null) {
+                        // Guardar temporariamente o ID para o log
+                        Integer saleId = result.getId();
+                        
+                        // Atualizar o objeto saleToCreate com o resultado da operação
+                        saleToCreate = result;
+                        
+                        // Usar a flag isNewSale em vez de verificar o ID novamente
+                        String operationType = isNewSale ? "registrada" : "atualizada";
+                        JOptionPane.showMessageDialog(NewSaleForm.this,
+                                "Venda " + operationType + " com sucesso!",
+                                "Sucesso",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        
+                        // Refresh the sales table in SalesForm
+                        refreshSalesTable();
+                        
+                        // Log the activity
+                        MainAppView.getInstance().registerUserActivity(
+                                (isNewSale ? "Registrou" : "Atualizou") + " a venda ID: " + saleId);
+                        
+                        // Limpar o objeto saleToCreate para a próxima operação
+                        saleToCreate = null;
+                        
+                        // Close this form
+                        dispose();
+                        
+                        // Return to the SalesForm panel in MainAppView
+                        MainAppView.redirectToPanel(MainAppView.SALES_PANEL);
+                    } else if (errorMessage != null) {
+                        JOptionPane.showMessageDialog(NewSaleForm.this,
+                                errorMessage,
+                                "Erro",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    JOptionPane.showMessageDialog(NewSaleForm.this,
+                            "Erro ao processar venda: " + e.getMessage(),
+                            "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                } finally {
+                    // Restore the default cursor
+                    setCursor(Cursor.getDefaultCursor());
+                }
             }
-            // Prepare the sale object
-            Sale sale = prepareSaleObject();
-            SaleController controller = new SaleController();
-            // Verificar se é uma edição ou uma nova venda
-            boolean success;
-            if (saleToCreate.getId() != null) {
-                // É uma edição, então atualizar a venda existente
-                sale.setId(saleToCreate.getId()); // Garantir que o ID seja mantido
-                success = controller.updateSale(sale);
-                MainAppView.getInstance().registerUserActivity(
-                        "Editou a venda ID: " + sale.getId());
-                JOptionPane.showMessageDialog(this,
-                        "Venda atualizada com sucesso!",
-                        "Sucesso",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                // É uma nova venda, então criar uma nova
-                success = controller.createSale(sale);
-                MainAppView.getInstance().registerUserActivity(
-                        "Registrou uma venda ID: " + sale.getId());
-                JOptionPane.showMessageDialog(this,
-                        "Venda registrada com sucesso!",
-                        "Sucesso",
-                        JOptionPane.INFORMATION_MESSAGE);
-            }
-            // Return to the SalesForm panel in MainAppView and refresh the table
-            MainAppView.redirectToPanel(MainAppView.SALES_PANEL);
-            // Atualizar a tabela de vendas no SalesForm
-            refreshSalesTable();
-        } catch (HeadlessException e) {
-            JOptionPane.showMessageDialog(this,
-                    "Erro ao processar a venda:\n" + e.getMessage(),
-                    "Erro",
-                    JOptionPane.ERROR_MESSAGE);
-        }
+        }.execute();
     }//GEN-LAST:event_newSaleBtnActionPerformed
 
     private void cancelSaleBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelSaleBtnActionPerformed
@@ -860,44 +906,49 @@ public class NewSaleForm extends javax.swing.JFrame {
     }//GEN-LAST:event_cancelSaleBtnActionPerformed
 
     private void findCustomerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findCustomerBtnActionPerformed
-        // Disable the button and show wait cursor to indicate processing
-        findCustomerBtn.setEnabled(false);
-        setCursor(Cursor.getPredefinedCursor(
-                Cursor.WAIT_CURSOR));
-        // Use SwingWorker to perform database operation in background
+        // Show loading cursor
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        // Use SwingWorker to perform customer selection in background
         SwingWorker<Customer, Void> worker = new SwingWorker<Customer, Void>() {
             @Override
             protected Customer doInBackground() throws Exception {
-                // Use the utility class to select a customer
-                return CustomerSelectionDialog.selectCustomer(NewSaleForm.this);
+                // Use CustomerSelectionDialog to select a customer
+                Customer selected = CustomerSelectionDialog.selectCustomer(
+                        NewSaleForm.this);
+                // If a customer was selected, use the controller to get the full customer data
+                if (selected != null && selected.getId() != null) {
+                    return customerController.findCustomerById(selected.getId());
+                }
+                return selected;
             }
 
             @Override
             protected void done() {
                 try {
-                    // Get the selected customer from the background task
+                    // Get the selected customer
                     Customer customer = get();
-                    // Update the form if a customer was selected
                     if (customer != null) {
+                        // Set the selected customer
                         selectedCustomer = customer;
-                        nameField.setText(selectedCustomer.getName());
+                        // Update the name field with formatted customer info
+                        nameField.setText(
+                                customerController.getCustomerDisplayString(
+                                        customer));
                     }
                 } catch (InterruptedException | ExecutionException e) {
                     JOptionPane.showMessageDialog(NewSaleForm.this,
-                            "Erro ao buscar cliente: " + e.getMessage(),
+                            "Erro ao selecionar cliente: " + e.getMessage(),
                             "Erro",
                             JOptionPane.ERROR_MESSAGE);
                 } finally {
-                    // Restore cursor and enable button regardless of outcome
-                    setCursor(java.awt.Cursor.getDefaultCursor());
-                    findCustomerBtn.setEnabled(true);
+                    // Restore cursor
+                    setCursor(Cursor.getDefaultCursor());
                 }
             }
         };
-        // Start the background task
+        // Execute the worker
         worker.execute();
     }//GEN-LAST:event_findCustomerBtnActionPerformed
-    // new NewSaleForm().setVisible(true);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addItemBtn;

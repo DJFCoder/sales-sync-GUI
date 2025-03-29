@@ -1,7 +1,6 @@
 package br.com.devjf.salessync.service.navigation;
 
 import java.awt.CardLayout;
-import java.awt.Component;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JPanel;

@@ -7,6 +7,8 @@ public class CustomersForm extends javax.swing.JFrame {
     public CustomersForm() {
         initComponents();
     }
+    
+    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
