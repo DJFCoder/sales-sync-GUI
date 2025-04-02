@@ -3,11 +3,9 @@ package br.com.devjf.salessync.view.forms;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-
 import br.com.devjf.salessync.controller.SaleController;
 import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.view.MainAppView;
@@ -174,25 +172,22 @@ public class SalesForm extends javax.swing.JFrame {
     private void editSale(int selectedRow) {
         try {
             // Obter o ID da venda selecionada
-            Integer saleId = (Integer) salesTable.getValueAt(selectedRow, 0);
+            Integer saleId = (Integer) salesTable.getValueAt(selectedRow,
+                    0);
             System.out.println("Editando venda com ID: " + saleId);
-            
             // Obter a venda pelo ID com todos os itens carregados
             Sale sale = saleController.findSaleByIdForEdit(saleId);
-            if (sale != null) {
-                System.out.println("Venda carregada com sucesso. Redirecionando para: " + MainAppView.EDIT_SALE_PANEL);
-                // Redirecionar para o painel de edição de venda com os dados da venda selecionada
-                MainAppView.redirectToPanel(MainAppView.EDIT_SALE_PANEL, sale);
-                // Não atualizar a tabela aqui, pois a venda ainda não foi salva
-            } else {
-                System.err.println("Erro: Venda não encontrada com ID: " + saleId);
+            if (sale == null) {
                 JOptionPane.showMessageDialog(this,
-                        "Erro: Venda não encontrada",
+                        "Venda não encontrada",
                         "Erro",
                         JOptionPane.ERROR_MESSAGE);
             }
+            // Redirecionar para o painel de edição de venda com os dados da venda selecionada
+            MainAppView.redirectToPanel(MainAppView.EDIT_SALE_PANEL,
+                    sale);
+            // Não atualizar a tabela aqui, pois a venda ainda não foi salva
         } catch (HeadlessException e) {
-            System.err.println("Erro ao editar venda: " + e.getMessage());
             e.printStackTrace();
             JOptionPane.showMessageDialog(this,
                     "Erro ao abrir formulário de edição: " + e.getMessage(),
@@ -398,11 +393,8 @@ public class SalesForm extends javax.swing.JFrame {
 
     private void newSaleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newSaleButtonActionPerformed
         try {
-            // Abrir o formulário de nova venda
-            System.out.println("Redirecionando para o painel de nova venda: " + MainAppView.NEW_SALE_PANEL);
             MainAppView.redirectToPanel(MainAppView.NEW_SALE_PANEL);
         } catch (Exception e) {
-            System.err.println("Erro ao abrir formulário de nova venda: " + e.getMessage());
             e.printStackTrace();
             JOptionPane.showMessageDialog(this,
                     "Erro ao abrir formulário de nova venda: " + e.getMessage(),
@@ -433,24 +425,23 @@ public class SalesForm extends javax.swing.JFrame {
             // Store the table model before deletion
             DefaultTableModel model = (DefaultTableModel) salesTable.getModel();
             boolean success = saleController.deleteSale(saleId);
-            if (success) {
-                // Log the activity before removing the row
-                MainAppView.getInstance().registerUserActivity(
-                        "Excluiu a venda ID:" + saleId);
-                // Remove the row directly from the model
-                model.removeRow(selectedRow);
-                JOptionPane.showMessageDialog(this,
-                        "Venda excluída com sucesso!",
-                        "Sucesso",
-                        JOptionPane.INFORMATION_MESSAGE);
-                // Refresh the table if needed
-                refreshTable();
-            } else {
+            if (!success) {
                 JOptionPane.showMessageDialog(this,
                         "Erro ao excluir a venda",
                         "Erro",
                         JOptionPane.ERROR_MESSAGE);
             }
+            // Log the activity before removing the row
+            MainAppView.getInstance().registerUserActivity(
+                    "Excluiu a venda ID:" + saleId);
+            // Remove the row directly from the model
+            model.removeRow(selectedRow);
+            JOptionPane.showMessageDialog(this,
+                    "Venda excluída com sucesso!",
+                    "Sucesso",
+                    JOptionPane.INFORMATION_MESSAGE);
+            // Refresh the table if needed
+            refreshTable();
         }
     }//GEN-LAST:event_deleteSaleButtonActionPerformed
 

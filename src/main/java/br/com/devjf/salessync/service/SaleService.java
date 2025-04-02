@@ -36,6 +36,11 @@ public class SaleService {
         if (!validateSale(sale)) {
             return null;
         }
+        // Log the incoming sale values for debugging
+        System.out.println("Creating sale with subtotal: " + sale.getSubtotalAmount() + 
+                           ", discount: " + sale.getDiscountAmount() + 
+                           ", total: " + sale.getTotalAmount());
+        
         // Create a new sale object to avoid detached entity issues
         Sale newSale = new Sale();
         newSale.setDate(sale.getDate());
@@ -43,9 +48,12 @@ public class SaleService {
         newSale.setUser(sale.getUser());
         newSale.setPaymentMethod(sale.getPaymentMethod());
         newSale.setPaymentDate(sale.getPaymentDate());
+        
+        // Ensure these values are explicitly set
         newSale.setSubtotalAmount(sale.getSubtotalAmount());
         newSale.setDiscountAmount(sale.getDiscountAmount());
         newSale.setTotalAmount(sale.getTotalAmount());
+        
         // Save the sale first
         boolean saleSuccess = saleDAO.save(newSale);
         if (!saleSuccess) {

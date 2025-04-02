@@ -11,11 +11,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
-
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
-
 import br.com.devjf.salessync.controller.CustomerController;
 import br.com.devjf.salessync.controller.SaleController;
 import br.com.devjf.salessync.controller.UserController;
@@ -62,16 +60,13 @@ public class NewSaleForm extends javax.swing.JFrame {
         this.customerController = new CustomerController();
         this.userController = new UserController();
         initComponents();
-
         // Initialize table manager
         ensureTableManagerInitialized();
         // Configurar o formulário para uma nova venda
         this.tableManager = new SaleTableManager(newSaleTable,
                 this::updateTotalsWithoutCheck);
-        
         initializeSale();
         setCurrentDateInPaymentField();
-
         // Adicionar listener para o campo de desconto
         discountField.getDocument().addDocumentListener(
                 new javax.swing.event.DocumentListener() {
@@ -79,12 +74,12 @@ public class NewSaleForm extends javax.swing.JFrame {
             public void insertUpdate(javax.swing.event.DocumentEvent e) {
                 updateTotals();
             }
-            
+
             @Override
             public void removeUpdate(javax.swing.event.DocumentEvent e) {
                 updateTotals();
             }
-            
+
             @Override
             public void changedUpdate(javax.swing.event.DocumentEvent e) {
                 updateTotals();
@@ -105,11 +100,9 @@ public class NewSaleForm extends javax.swing.JFrame {
         this.customerController = new CustomerController();
         this.userController = new UserController();
         initComponents();
-
         // Initialize table manager - only once
         this.tableManager = new SaleTableManager(newSaleTable,
                 this::updateTotalsWithoutCheck);
-
         // Configurar o formulário para edição
         this.saleToCreate = sale;
         this.selectedCustomer = sale.getCustomer();
@@ -123,12 +116,12 @@ public class NewSaleForm extends javax.swing.JFrame {
             public void insertUpdate(javax.swing.event.DocumentEvent e) {
                 updateTotals();
             }
-            
+
             @Override
             public void removeUpdate(javax.swing.event.DocumentEvent e) {
                 updateTotals();
             }
-            
+
             @Override
             public void changedUpdate(javax.swing.event.DocumentEvent e) {
                 updateTotals();
@@ -147,16 +140,13 @@ public class NewSaleForm extends javax.swing.JFrame {
             if (tableManager == null) {
                 return; // Skip if tableManager is not initialized yet
             }
-
             // Calculate subtotal
             double subtotal = tableManager.calculateSubtotal();
             double discount = getDiscount();
             double total = subtotal - discount;
-
             // Atualizar os labels
             subtotalLbl.setText("Subtotal: " + currencyFormat.format(subtotal));
             totalLbl.setText("Total: " + currencyFormat.format(total));
-
             // Update sale object if it exists
             if (saleToCreate != null) {
                 saleToCreate.setSubtotalAmount(subtotal);
@@ -192,8 +182,8 @@ public class NewSaleForm extends javax.swing.JFrame {
         nameField.setText("");
         selectedCustomer = null;
         paymentMethodCmb.setSelectedIndex(0);
-        paymentMethodField.setText("");
-        discountField.setText("0.00");
+        setCurrentDateInPaymentField();
+        discountField.setText("");
         // Limpar tabela de itens
         clearTable();
         // Adicionar uma linha vazia para o primeiro item
@@ -201,7 +191,7 @@ public class NewSaleForm extends javax.swing.JFrame {
         // Atualizar os totais
         updateTotals();
         // Atualizar o título do botão para "Registrar Venda"
-        newSaleBtn.setText("Registrar Venda");
+        newSaleBtn.setText("Salvar");
     }
 
     /**
@@ -264,9 +254,14 @@ public class NewSaleForm extends javax.swing.JFrame {
             Customer customer = selectedCustomer;
             String selectedPaymentMethodStr = (String) paymentMethodCmb.getSelectedItem();
             String paymentDateStr = paymentMethodField.getText();
+            // Calculate values directly here to ensure they're accurate
             double subtotal = tableManager.calculateSubtotal();
             double discount = getDiscount();
-
+            double total = subtotal - discount; // Calculate total correctly
+            // Log the values to verify they're correct
+            System.out.println("Preparing sale with subtotal: " + subtotal
+                    + ", discount: " + discount
+                    + ", total: " + total);
             // Collect items data from the table
             List<SaleItemDTO> itemsData = new ArrayList<>();
             DefaultTableModel tableModel = tableManager.getTableModel();
@@ -281,17 +276,20 @@ public class NewSaleForm extends javax.swing.JFrame {
                         1);
                 Object priceObj = tableModel.getValueAt(i,
                         2);
-
                 // Create a simple DTO to transfer the data
                 SaleItemDTO itemData = new SaleItemDTO(description,
                         quantityObj,
                         priceObj);
                 itemsData.add(itemData);
             }
-
             // Determine if we're creating or updating
             boolean isNewSale = (saleToCreate == null || saleToCreate.getId() == null);
-
+            // Ensure the current sale object has the correct values
+            if (saleToCreate != null) {
+                saleToCreate.setSubtotalAmount(subtotal);
+                saleToCreate.setDiscountAmount(discount);
+                saleToCreate.setTotalAmount(total);
+            }
             // Delegate validation and creation to controller
             Sale preparedSale;
             if (!isNewSale) {
@@ -318,7 +316,6 @@ public class NewSaleForm extends javax.swing.JFrame {
                         discount,
                         currentUser);
             }
-            
             return preparedSale;
         } catch (IllegalStateException | IllegalArgumentException | ParseException e) {
             JOptionPane.showMessageDialog(this,
@@ -334,7 +331,28 @@ public class NewSaleForm extends javax.swing.JFrame {
      */
     private void updateTotals() {
         ensureTableManagerInitialized();
-        updateTotalsWithoutCheck();
+        try {
+            // Calculate subtotal
+            double subtotal = tableManager.calculateSubtotal();
+            double discount = getDiscount();
+            double total = subtotal - discount; // Consistent calculation
+            // Log the values for debugging
+            System.out.println("Updating totals - Subtotal: " + subtotal
+                    + ", Discount: " + discount
+                    + ", Total: " + total);
+            // Update the labels
+            subtotalLbl.setText("Subtotal: " + currencyFormat.format(subtotal));
+            totalLbl.setText("Total: " + currencyFormat.format(total));
+            // Update sale object if it exists
+            if (saleToCreate != null) {
+                saleToCreate.setSubtotalAmount(subtotal);
+                saleToCreate.setDiscountAmount(discount);
+                saleToCreate.setTotalAmount(total);
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao atualizar totais: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -408,7 +426,6 @@ public class NewSaleForm extends javax.swing.JFrame {
                 discountField.setText(String.format("%.2f",
                         sale.getDiscountAmount()));
             }
-            // Atualizar os totais
             updateTotals();
         } catch (Exception e) {
             System.err.println(
@@ -427,7 +444,6 @@ public class NewSaleForm extends javax.swing.JFrame {
      * @return The string representation for display
      */
     private String mapPaymentMethodToDisplay(PaymentMethod method) {
-        // Reurn enum name
         return method.name();
     }
 
@@ -436,16 +452,14 @@ public class NewSaleForm extends javax.swing.JFrame {
      */
     private void loadSaleItems(Sale sale) {
         ensureTableManagerInitialized();
-        // Clear any existing items first
         tableManager.clearTable();
-        // Load the items from the sale
         tableManager.loadSaleItems(sale.getItems());
         // Add items to our tracking list
         for (SaleItem item : sale.getItems()) {
             saleItems.add(item);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -732,25 +746,21 @@ public class NewSaleForm extends javax.swing.JFrame {
         // Show a wait cursor while processing
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         newSaleBtn.setEnabled(false);
-
         // Add a small delay to ensure any previous transactions are complete
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-
         // Prepare the sale object on the EDT before starting the background task
         final Sale preparedSale = prepareSaleObject();
         if (preparedSale == null) {
             setCursor(Cursor.getDefaultCursor());
             return;
         }
-
         // Debug information
         System.out.println("Prepared sale ID: " + preparedSale.getId());
         System.out.println("Number of items: " + preparedSale.getItems().size());
-
         // Use SwingWorker to avoid freezing the UI
         new SwingWorker<Sale, Void>() {
             private String errorMessage = null;
@@ -762,7 +772,6 @@ public class NewSaleForm extends javax.swing.JFrame {
                     // Determinar se é uma nova venda ou atualização
                     isNewSale = (preparedSale.getId() == null);
                     System.out.println("Is new sale: " + isNewSale);
-                    
                     Sale result;
                     if (isNewSale) {
                         // Create new sale
@@ -790,7 +799,7 @@ public class NewSaleForm extends javax.swing.JFrame {
                     return null;
                 }
             }
-            
+
             @Override
             protected void done() {
                 try {
@@ -800,7 +809,6 @@ public class NewSaleForm extends javax.swing.JFrame {
                         Integer saleId = result.getId();
                         System.out.println(
                                 "Operation successful. Sale ID: " + saleId);
-
                         // Atualizar o objeto saleToCreate com o resultado da operação
                         saleToCreate = result;
                         // Usar a flag isNewSale em vez de verificar o ID novamente
@@ -816,6 +824,7 @@ public class NewSaleForm extends javax.swing.JFrame {
                                 (isNewSale ? "Registrou" : "Atualizou") + " a venda ID: " + saleId);
                         // Limpar o objeto saleToCreate para a próxima operação
                         saleToCreate = null;
+                        System.out.println("apagou a venda.");
                         // Close this form
                         dispose();
                         // Return to the SalesForm panel in MainAppView
@@ -838,6 +847,8 @@ public class NewSaleForm extends javax.swing.JFrame {
                 } finally {
                     // Restore the default cursor
                     setCursor(Cursor.getDefaultCursor());
+                    newSaleBtn.setEnabled(true);
+                    initForNewSale();
                 }
             }
         }.execute();
@@ -864,7 +875,7 @@ public class NewSaleForm extends javax.swing.JFrame {
     private void findCustomerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findCustomerBtnActionPerformed
         // Show loading cursor
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        // Use SwingWorker to perform customer selection in background
+        // Using SwingWorker to perform customer selection in background
         SwingWorker<Customer, Void> worker = new SwingWorker<Customer, Void>() {
             @Override
             protected Customer doInBackground() throws Exception {
@@ -877,7 +888,7 @@ public class NewSaleForm extends javax.swing.JFrame {
                 }
                 return selected;
             }
-            
+
             @Override
             protected void done() {
                 try {
