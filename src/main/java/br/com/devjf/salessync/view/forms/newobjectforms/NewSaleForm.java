@@ -27,6 +27,7 @@ import br.com.devjf.salessync.view.MainAppView;
 import br.com.devjf.salessync.view.components.CustomerSelectionDialog;
 import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.components.table.SaleTableManager;
+import br.com.devjf.salessync.view.forms.CustomersForm;
 import br.com.devjf.salessync.view.forms.SalesForm;
 
 /**
@@ -65,7 +66,7 @@ public class NewSaleForm extends javax.swing.JFrame {
         // Configurar o formulário para uma nova venda
         this.tableManager = new SaleTableManager(newSaleTable,
                 this::updateTotalsWithoutCheck);
-        initializeSale();
+        initForNewSale();
         setCurrentDateInPaymentField();
         // Adicionar listener para o campo de desconto
         discountField.getDocument().addDocumentListener(
@@ -128,7 +129,7 @@ public class NewSaleForm extends javax.swing.JFrame {
             }
         });
         // Alterar o texto do botão para "Atualizar Venda"
-        newSaleBtn.setText("Atualizar Venda");
+        newSaleBtn.setText("Atualizar");
     }
 
     /**
@@ -218,27 +219,6 @@ public class NewSaleForm extends javax.swing.JFrame {
         String formattedDate = dateFormat.format(currentDate);
         // Set the formatted date in the payment date field
         paymentMethodField.setText(formattedDate);
-    }
-
-    /**
-     * Initializes a new Sale object with default values. Sets the current date,
-     * initializes amounts to zero, and associates the current user.
-     */
-    private void initializeSale() {
-        // Reset the sale object
-        saleToCreate = new Sale();
-        // Set default values
-        saleToCreate.setDate(LocalDateTime.now());
-        saleToCreate.setSubtotalAmount(0.0);
-        saleToCreate.setDiscountAmount(0.0);
-        saleToCreate.setTotalAmount(0.0);
-        // Get current logged-in user
-        try {
-            currentUser = UserSessionManager.getInstance().getLoggedUser().getId();
-            saleToCreate.setUser(userController.findUserById(currentUser));
-        } catch (Exception e) {
-            System.err.println("Error getting current user: " + e.getMessage());
-        }
     }
 
     /**

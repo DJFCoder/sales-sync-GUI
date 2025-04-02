@@ -12,10 +12,12 @@ import br.com.devjf.salessync.view.MainAppView;
 import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.components.table.TableEditButtonEditor;
 import br.com.devjf.salessync.view.components.table.TableEditButtonRenderer;
+import br.com.devjf.salessync.view.components.table.TableFormInterface;
 import br.com.devjf.salessync.view.components.table.TableManager;
 import java.awt.HeadlessException;
+import javax.swing.JTable;
 
-public class SalesForm extends javax.swing.JFrame {
+public class SalesForm extends javax.swing.JFrame implements TableFormInterface {
     private static SalesForm instance;
     private final SaleController saleController;
 
@@ -43,7 +45,8 @@ public class SalesForm extends javax.swing.JFrame {
      *
      * @param saleId O ID da venda a ser adicionada
      */
-    public void addSaleToTable(Integer saleId) {
+    @Override
+    public void setObjectToTable(Integer saleId) {
         try {
             // Get sale data
             Object[] rowData = {
@@ -65,7 +68,8 @@ public class SalesForm extends javax.swing.JFrame {
         }
     }
 
-    private void loadTableData() {
+    @Override
+    public void loadTableData() {
         try {
             // Clear table
             TableManager.clearTable((DefaultTableModel) salesTable.getModel());
@@ -91,7 +95,7 @@ public class SalesForm extends javax.swing.JFrame {
             List<Sale> sales = saleController.listSales(filters);
             // Add sales to table
             for (Sale sale : sales) {
-                addSaleToTable(sale.getId());
+                setObjectToTable(sale.getId());
             }
             // Adjust column widths
             TableManager.adjustColumnWidths(salesTable,
@@ -109,7 +113,8 @@ public class SalesForm extends javax.swing.JFrame {
     /**
      * Configura as colunas da tabela de vendas.
      */
-    private void setupTableColumns() {
+    @Override
+    public void setupTableColumns() {
         // Definir nomes das colunas
         String[] columnNames = {
             "Código", "Cliente", "Data Venda", "Forma de Pagamento", "Data Pagamento", "Valor Total", "Ações"
@@ -200,6 +205,7 @@ public class SalesForm extends javax.swing.JFrame {
      * Método público para atualizar a tabela de vendas. Pode ser chamado de
      * outras classes para atualizar a exibição após alterações.
      */
+    @Override
     public void refreshTable() {
         loadTableData();
     }

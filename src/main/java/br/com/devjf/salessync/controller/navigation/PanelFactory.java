@@ -102,13 +102,12 @@ public class PanelFactory {
                     form = new NewCustomerForm();
                     break;
                 case MainAppView.EDIT_CUSTOMER_PANEL:
-                    if (customer != null) {
-                        form = new NewCustomerForm(customer);
-                    } else {
+                    if (customer == null) {
                         System.err.println(
                                 "Erro: Tentativa de editar cliente sem fornecer objeto Customer");
                         return null;
                     }
+                    form = new NewCustomerForm(customer.getId());
                     break;
                 case MainAppView.NEW_SO_PANEL:
                     form = new NewServiceOrderForm();
