@@ -4,14 +4,11 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.HeadlessException;
 import java.util.concurrent.ExecutionException;
-
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
-
 import com.formdev.flatlaf.FlatClientProperties;
-
 import br.com.devjf.salessync.controller.UserController;
 import br.com.devjf.salessync.model.User;
 import br.com.devjf.salessync.model.UserType;
@@ -24,6 +21,7 @@ public class Login extends javax.swing.JFrame {
     public Login() {
         initComponents();
         setupLoadingBar();
+        setupKeyListeners();
     }
 
     private void setupLoadingBar() {
@@ -44,6 +42,32 @@ public class Login extends javax.swing.JFrame {
     }
 
     /**
+     * Configura os listeners de teclas para navegação entre campos com Enter
+     */
+    private void setupKeyListeners() {
+        // Adicionar key listener ao campo de login
+        loginField.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+                    passwordField.requestFocus();
+                }
+            }
+        });
+        // Adicionar key listener ao campo de senha
+        passwordField.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+                    loginBtn.requestFocus();
+                    // Simular o clique no botão de login
+                    loginBtn.doClick();
+                }
+            }
+        });
+    }
+
+    /**
      * Configura o acesso às funcionalidades com base no tipo de usuário
      *
      * @param userType Tipo do usuário autenticado
@@ -54,7 +78,6 @@ public class Login extends javax.swing.JFrame {
             // Não modificamos o modelo da lista, apenas configuramos a visibilidade dos itens
             // com base no tipo de usuário
             JList<String> selectionList = mainView.getSelectionList();
-            
             // Garantir que o Dashboard seja selecionado por padrão
             selectionList.setSelectedIndex(0);
         } catch (Exception e) {
@@ -276,17 +299,13 @@ public class Login extends javax.swing.JFrame {
                                 authenticatedUser);
                         // Abrir a tela principal
                         MainAppView mainView = new MainAppView();
-                        
                         // Configurar acesso baseado no tipo de usuário
                         configureAccessByUserType(authenticatedUser.getType(),
                                 mainView);
-                                
                         // Registrar atividade de login após a inicialização completa
                         mainView.registerUserActivity("Logou no sistema");
-                        
                         // Tornar a tela visível após toda a configuração
                         mainView.setVisible(true);
-                        
                         // Fechar a tela de login
                         dispose();
                     } else {

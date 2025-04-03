@@ -1,7 +1,6 @@
 package br.com.devjf.salessync.service;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,19 +34,20 @@ public class ServiceOrderService {
             return false;
         }
         
-        order.setStatus(status);
+        // Use the updateStatus method to ensure completion date is set properly
+        order.updateStatus(status);
         return serviceOrderDAO.update(order);
     }
     
-    public double calculateExecutionTime(ServiceOrder order) {
-        if (order.getStatus() != ServiceStatus.COMPLETED) {
-            return -1; // Not completed yet
+    public boolean completeServiceOrder(Integer id) {
+        ServiceOrder order = serviceOrderDAO.findById(id);
+        if (order == null) {
+            return false;
         }
         
-        LocalDate requestDate = order.getRequestDate();
-        LocalDate completionDate = LocalDate.now(); // In a real app, this would be stored in the order
-        
-        return ChronoUnit.DAYS.between(requestDate, completionDate);
+        // Set status to COMPLETED which will automatically set the completion date
+        order.updateStatus(ServiceStatus.COMPLETED);
+        return serviceOrderDAO.update(order);
     }
     
     // Add a method to find service orders by sale
@@ -93,29 +93,6 @@ public class ServiceOrderService {
         }
         
         return serviceOrderDAO.findAll();
-    }
-    
-    public List<ServiceOrder> checkDelays() {
-        List<ServiceOrder> allOrders = serviceOrderDAO.findAll();
-        List<ServiceOrder> delayedOrders = new ArrayList<>();
-        
-        LocalDate today = LocalDate.now();
-        
-        for (ServiceOrder order : allOrders) {
-            // Skip completed or canceled orders
-            if (order.getStatus() == ServiceStatus.COMPLETED || 
-                order.getStatus() == ServiceStatus.CANCELED) {
-                continue;
-            }
-            
-            // Check if estimated delivery date is past
-            if (order.getEstimatedDeliveryDate() != null && 
-                order.getEstimatedDeliveryDate().isBefore(today)) {
-                delayedOrders.add(order);
-            }
-        }
-        
-        return delayedOrders;
     }
     
     public boolean notifyCustomer(Integer orderId, String message) {

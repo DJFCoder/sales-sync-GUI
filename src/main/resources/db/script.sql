@@ -103,11 +103,10 @@ CREATE TABLE sale_items (
 );
 
 -- Create service_orders table
--- Modificar a tabela service_orders para usar valores em português no ENUM
 CREATE TABLE service_orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     customer_id INT NOT NULL,
-    sale_id INT,  -- Opcional
+    sale_id INT NOT NULL,
     description TEXT NOT NULL,
     creation_date DATE NOT NULL,
     completion_date DATE,

@@ -12,79 +12,27 @@ import br.com.devjf.salessync.model.Customer;
 import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.model.ServiceOrder;
 import br.com.devjf.salessync.model.ServiceStatus;
+import br.com.devjf.salessync.view.MainAppView;
 import br.com.devjf.salessync.view.components.CustomerSelectionDialog;
 import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
-import br.com.devjf.salessync.view.MainAppView;
+import br.com.devjf.salessync.view.forms.validators.ServiceOrderFormValidator;
 
 public class NewServiceOrderForm extends javax.swing.JFrame {
     private Customer selectedCustomer;
-    private ServiceOrder serviceOrder;
+    private ServiceOrder serviceOrderToCreate;
     private boolean isEditMode = false;
     private final ServiceOrderController serviceOrderController;
     private final CustomerController customerController;
     private final SaleController saleController;
-
+    
     public NewServiceOrderForm() {
         initComponents();
         this.serviceOrderController = new ServiceOrderController();
         this.customerController = new CustomerController();
         this.saleController = new SaleController();
-        this.isEditMode = false;
-        this.titleField.setText("Cadastrar Ordem de Serviço");
         // Initialize the sale combo box
         saleIdCmb.addItem("Selecione");
-    }
-
-    /**
-     * Construtor para edição de ordem de serviço existente
-     *
-     * @param serviceOrder A ordem de serviço a ser editada
-     */
-    public NewServiceOrderForm(ServiceOrder serviceOrder) {
-        initComponents();
-        this.serviceOrderController = new ServiceOrderController();
-        this.customerController = new CustomerController();
-        this.saleController = new SaleController();
-        // Initialize the sale combo box
-        saleIdCmb.addItem("Selecione");
-        // Se a ordem de serviço for fornecida diretamente, usá-la
-        if (serviceOrder != null) {
-            this.serviceOrder = serviceOrder;
-        } else {
-            this.serviceOrder = null;
-        }
-        this.isEditMode = (this.serviceOrder != null);
-        this.titleField.setText(
-                isEditMode ? "Editar Ordem de Serviço" : "Cadastrar Ordem de Serviço");
-        // Preencher os campos com os dados da ordem de serviço
-        if (this.serviceOrder != null) {
-            idField.setText(String.valueOf(this.serviceOrder.getId()));
-            // Configurar o cliente selecionado
-            this.selectedCustomer = this.serviceOrder.getCustomer();
-            if (selectedCustomer != null) {
-                customerField.setText(selectedCustomer.getName());
-                // Carregar as vendas do cliente
-                loadCustomerSales(selectedCustomer.getId());
-            }
-            // Configurar o status
-            if (this.serviceOrder.getStatus() != null) {
-                for (int i = 0; i < statusCmb.getItemCount(); i++) {
-                    if (statusCmb.getItemAt(i).equals(
-                            this.serviceOrder.getStatus().toString())) {
-                        statusCmb.setSelectedIndex(i);
-                        break;
-                    }
-                }
-            }
-            // Configurar a venda associada, se houver
-            if (this.serviceOrder.getSale() != null) {
-                // Selecionar a venda no combobox
-                saleIdCmb.setSelectedItem(String.valueOf(
-                        this.serviceOrder.getSale().getId()));
-            }
-            // Configurar a descrição
-            descriptionField.setText(this.serviceOrder.getDescription());
-        }
+        initForNewOs();
     }
 
     /**
@@ -97,49 +45,9 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
         this.serviceOrderController = new ServiceOrderController();
         this.customerController = new CustomerController();
         this.saleController = new SaleController();
-        // Initialize the sale combo box
-        saleIdCmb.addItem("Selecione");
-        // Carregar a ordem de serviço do banco de dados usando o controller
-        if (serviceOrderId != null) {
-            this.serviceOrder = serviceOrderController.findServiceOrderById(
-                    serviceOrderId);
-        } else {
-            this.serviceOrder = null;
-        }
-        this.isEditMode = (this.serviceOrder != null);
-        this.titleField.setText(
-                isEditMode ? "Editar Ordem de Serviço" : "Cadastrar Ordem de Serviço");
-        // Preencher os campos com os dados da ordem de serviço
-        if (this.serviceOrder != null) {
-            idField.setText(String.valueOf(this.serviceOrder.getId()));
-            // Configurar o cliente selecionado
-            this.selectedCustomer = this.serviceOrder.getCustomer();
-            if (selectedCustomer != null) {
-                customerField.setText(selectedCustomer.getName());
-                // Carregar as vendas do cliente
-                loadCustomerSales(selectedCustomer.getId());
-            }
-            // Configurar o status
-            if (this.serviceOrder.getStatus() != null) {
-                for (int i = 0; i < statusCmb.getItemCount(); i++) {
-                    if (statusCmb.getItemAt(i).equals(
-                            this.serviceOrder.getStatus().toString())) {
-                        statusCmb.setSelectedIndex(i);
-                        break;
-                    }
-                }
-            }
-            // Configurar a venda associada, se houver
-            if (this.serviceOrder.getSale() != null) {
-                // Selecionar a venda no combobox
-                saleIdCmb.setSelectedItem(String.valueOf(
-                        this.serviceOrder.getSale().getId()));
-            }
-            // Configurar a descrição
-            descriptionField.setText(this.serviceOrder.getDescription());
-        }
+        loadOsFromDb(serviceOrderId);
     }
-
+    
     private void findCustomerBtnActionPerformed(java.awt.event.ActionEvent evt) {
         // Disable the button and show wait cursor to indicate processing
         findCustomerBtn.setEnabled(false);
@@ -152,7 +60,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
                 return CustomerSelectionDialog.selectCustomer(
                         NewServiceOrderForm.this);
             }
-
+            
             @Override
             protected void done() {
                 try {
@@ -195,13 +103,184 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
             // Buscar as vendas do cliente
             List<Sale> sales = serviceOrderController.findSalesByCustomerId(
                     customerId);
+            // Check if the list is empty (not null)
+            if (sales == null || sales.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Cliente não possui vendas cadastradas",
+                        "Informação",
+                        JOptionPane.INFORMATION_MESSAGE);
+                customerField.setText("");
+                return;
+            }
             // Adicionar as vendas ao combobox
             for (Sale sale : sales) {
                 saleIdCmb.addItem(String.valueOf(sale.getId()));
             }
         }
     }
+    
+    private void loadStatusEnum() {
+        // Carregar o status - Mapeando enum em inglês para strings em português
+        if (serviceOrderToCreate.getStatus() != null) {
+            String statusStr;
+            switch (serviceOrderToCreate.getStatus()) {
+                case PENDING:
+                    statusStr = "PENDENTE";
+                    break;
+                case IN_PROGRESS:
+                    statusStr = "EM ANDAMENTO";
+                    break;
+                case CANCELED:
+                    statusStr = "CANCELADA";
+                    break;
+                case COMPLETED:
+                    statusStr = "FINALIZADA";
+                    break;
+                default:
+                    statusStr = "Selecione";
+            }
+            for (int i = 0; i < statusCmb.getItemCount(); i++) {
+                if (statusCmb.getItemAt(i).equals(statusStr)) {
+                    statusCmb.setSelectedIndex(i);
+                    break;
+                }
+            }
+        }
+        // Configurar as vendas associadas no combobox
+        if (serviceOrderToCreate.getSale() != null) {
+            saleIdCmb.setSelectedItem(String.valueOf(
+                    serviceOrderToCreate.getSale().getId()));
+        }
+    }
+    
+    private ServiceStatus getStatusEnum() {
+        // Configurar o status - Mapeando strings em português para enum em inglês
+        String statusStr = statusCmb.getSelectedItem().toString();
+        switch (statusStr) {
+            case "PENDENTE":
+                return ServiceStatus.PENDING;
+            case "EM ANDAMENTO":
+                return ServiceStatus.IN_PROGRESS;
+            case "CANCELADA":
+                return ServiceStatus.CANCELED;
+            case "FINALIZADA":
+                return ServiceStatus.COMPLETED;
+            default:
+                throw new IllegalArgumentException(
+                        "Status inválido: " + statusStr);
+        }
+    }
+    
+    private void loadOsFromDb(Integer serviceOrderId) {
+        // Carregar a ordem de serviço do banco de dados usando o controller
+        if (serviceOrderId == null) {
+            serviceOrderToCreate = null;
+            return;
+        }
+        isEditMode = true;
+        serviceOrderToCreate = serviceOrderController.findServiceOrderById(
+                serviceOrderId);
+        titleField.setText(
+                isEditMode ? "Atualizar" : "Salvar");
+        // Preencher os campos com os dados da ordem de serviço
+        idField.setText(String.valueOf(serviceOrderToCreate.getId()));
+        // Configurar o cliente selecionado
+        selectedCustomer = serviceOrderToCreate.getCustomer();
+        if (selectedCustomer != null) {
+            customerField.setText(selectedCustomer.getName());
+            // Carregar as vendas do cliente
+            loadCustomerSales(selectedCustomer.getId());
+            // Carregar o status usando o método helper
+            loadStatusEnum();
+            // Preencher a descrição
+            descriptionField.setText(serviceOrderToCreate.getDescription());
+        }
+    }
+    
+    private void initForNewOs() {
+        isEditMode = false;
+        serviceOrderToCreate = new ServiceOrder();
+        idField.setText("");
+        customerField.setText("");
+        statusCmb.setSelectedIndex(0);
+        saleIdCmb.setSelectedIndex(0);
+        descriptionField.setText("");
+        saveBtn.setText("Salvar");
+    }
 
+    /**
+     * Handles the completion of a service order, setting its status to
+     * COMPLETED and automatically recording the completion date.
+     *
+     * @param serviceOrderId The ID of the service order to complete
+     * @param customerName The name of the customer for logging purposes
+     */
+    private void handleServiceOrderCompletion(Integer serviceOrderId, String customerName) {
+        // Show a wait cursor while processing
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        saveBtn.setEnabled(false);
+        // Use SwingWorker to avoid freezing the UI
+        new SwingWorker<Boolean, Void>() {
+            private String errorMessage = null;
+            
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                try {
+                    // Complete the service order
+                    return serviceOrderController.completeServiceOrder(
+                            serviceOrderId);
+                } catch (Exception e) {
+                    errorMessage = "Erro ao finalizar ordem de serviço: " + e.getMessage();
+                    System.err.println(
+                            "Exception during service order completion: " + e.getMessage());
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+            
+            @Override
+            protected void done() {
+                try {
+                    Boolean success = get();
+                    if (success) {
+                        // Log the activity if MainAppView has an instance method
+                        if (MainAppView.getInstance() != null) {
+                            MainAppView.getInstance().registerUserActivity(
+                                    "Finalizou a ordem de serviço para o cliente: " + customerName);
+                        }
+                        JOptionPane.showMessageDialog(
+                                NewServiceOrderForm.this,
+                                "Ordem de serviço finalizada com sucesso!",
+                                "Sucesso",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        // Redirect to service orders panel
+                        MainAppView.redirectToPanel(
+                                MainAppView.SERVICE_ORDERS_PANEL);
+                    } else if (errorMessage != null) {
+                        System.err.println("Error message: " + errorMessage);
+                        JOptionPane.showMessageDialog(
+                                NewServiceOrderForm.this,
+                                errorMessage,
+                                "Erro",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    System.err.println(
+                            "Exception in done(): " + e.getMessage());
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(NewServiceOrderForm.this,
+                            "Erro ao finalizar ordem de serviço: " + e.getMessage(),
+                            "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                } finally {
+                    // Restore the default cursor
+                    setCursor(Cursor.getDefaultCursor());
+                    saveBtn.setEnabled(true);
+                }
+            }
+        }.execute();
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -408,67 +487,148 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
+        initForNewOs();
         MainAppView.redirectToPanel(MainAppView.SERVICE_ORDERS_PANEL);
     }//GEN-LAST:event_cancelBtnActionPerformed
 
     private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
-        // Verificar se um cliente foi selecionado
-        if (selectedCustomer == null) {
-            JOptionPane.showMessageDialog(this,
-                    "Por favor, selecione um cliente.",
+        // Show a wait cursor while processing
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        saveBtn.setEnabled(false);
+        try {
+            // Validate all required fields
+            ServiceOrderFormValidator.validateAllFields(
+                    selectedCustomer,
+                    statusCmb,
+                    descriptionField);
+            // If validation passes, add a small delay to ensure any previous transactions are complete
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            // Make sure we have a service order object to work with
+            if (serviceOrderToCreate == null) {
+                serviceOrderToCreate = new ServiceOrder();
+            }
+            // Update service order information from form fields BEFORE starting the SwingWorker
+            serviceOrderToCreate.setCustomer(selectedCustomer);
+            serviceOrderToCreate.setStatus(getStatusEnum());
+            // Configure the sale if selected
+            if (saleIdCmb.getSelectedIndex() > 0) {
+                String saleIdStr = saleIdCmb.getSelectedItem().toString();
+                Integer saleId = Integer.valueOf(saleIdStr);
+                Sale sale = saleController.findSaleById(saleId);
+                serviceOrderToCreate.setSale(sale);
+            } else {
+                serviceOrderToCreate.setSale(null);
+            }
+            // Configure the description
+            serviceOrderToCreate.setDescription(descriptionField.getText());
+            // Prepare the service order object on the EDT before starting the background task
+            final ServiceOrder preparedServiceOrder = serviceOrderToCreate;
+            final boolean finalIsEditMode = isEditMode;
+            // Use SwingWorker to avoid freezing the UI
+            new SwingWorker<Boolean, Void>() {
+                private String errorMessage = null;
+                
+                @Override
+                protected Boolean doInBackground() throws Exception {
+                    try {
+                        Boolean result;
+                        if (finalIsEditMode) {
+                            // Update existing service order
+                            result = serviceOrderController.updateServiceOrder(
+                                    preparedServiceOrder);
+                            if (!result) {
+                                errorMessage = "Não foi possível atualizar a ordem de serviço. Verifique os dados e tente novamente.";
+                                System.err.println(
+                                        "Failed to update service order");
+                            }
+                            return result;
+                        }
+                        // Create new service order
+                        result = serviceOrderController.createServiceOrder(
+                                preparedServiceOrder);
+                        if (!result) {
+                            errorMessage = "Não foi possível registrar a ordem de serviço. Verifique os dados e tente novamente.";
+                            System.err.println(
+                                    "Failed to register service order");
+                        }
+                        return result;
+                    } catch (Exception e) {
+                        errorMessage = "Erro ao processar ordem de serviço: " + e.getMessage();
+                        System.err.println(
+                                "Exception during service order processing: " + e.getMessage());
+                        e.printStackTrace();
+                        return false;
+                    }
+                }
+                
+                @Override
+                protected void done() {
+                    try {
+                        Boolean success = get();
+                        if (success) {
+                            // If the status is COMPLETED and this is an edit operation, handle completion
+                            if (preparedServiceOrder.getStatus() == ServiceStatus.COMPLETED
+                                    && preparedServiceOrder.getId() != null) {
+                                // Call the handleServiceOrderCompletion method
+                                handleServiceOrderCompletion(
+                                        preparedServiceOrder.getId(),
+                                        preparedServiceOrder.getCustomer().getName());
+                            } else {
+                                // Log the activity if MainAppView has an instance method
+                                if (MainAppView.getInstance() != null) {
+                                    MainAppView.getInstance().registerUserActivity(
+                                            (finalIsEditMode ? "Atualizou" : "Registrou") + " a ordem de serviço para o cliente: "
+                                            + preparedServiceOrder.getCustomer().getName());
+                                }
+                                JOptionPane.showMessageDialog(
+                                        NewServiceOrderForm.this,
+                                        "Ordem de serviço " + (finalIsEditMode ? "atualizada" : "salva") + " com sucesso!",
+                                        "Sucesso",
+                                        JOptionPane.INFORMATION_MESSAGE);
+                                // Redirect to service orders panel
+                                MainAppView.redirectToPanel(
+                                        MainAppView.SERVICE_ORDERS_PANEL);
+                            }
+                        } else if (errorMessage != null) {
+                            System.err.println(
+                                    "Error message: " + errorMessage);
+                            JOptionPane.showMessageDialog(
+                                    NewServiceOrderForm.this,
+                                    errorMessage,
+                                    "Erro",
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (InterruptedException | ExecutionException e) {
+                        System.err.println(
+                                "Exception in done(): " + e.getMessage());
+                        e.printStackTrace();
+                        JOptionPane.showMessageDialog(NewServiceOrderForm.this,
+                                "Erro ao processar ordem de serviço: " + e.getMessage(),
+                                "Erro",
+                                JOptionPane.ERROR_MESSAGE);
+                    } finally {
+                        // Restore the default cursor
+                        setCursor(Cursor.getDefaultCursor());
+                        saveBtn.setEnabled(true);
+                    }
+                }
+            }.execute();
+        } catch (IllegalStateException e) {
+            // Handle validation errors
+            System.err.println("Validation error: " + e.getMessage());
+            JOptionPane.showMessageDialog(NewServiceOrderForm.this,
+                    e.getMessage(),
                     "Erro de Validação",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        // Verificar se um status foi selecionado
-        if (statusCmb.getSelectedIndex() == 0) {
-            JOptionPane.showMessageDialog(this,
-                    "Por favor, selecione um status.",
-                    "Erro de Validação",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        // Criar ou atualizar a ordem de serviço
-        if (serviceOrder == null) {
-            serviceOrder = new ServiceOrder();
-        }
-        // Configurar o cliente
-        serviceOrder.setCustomer(selectedCustomer);
-        // Configurar o status
-        String statusStr = statusCmb.getSelectedItem().toString();
-        serviceOrder.setStatus(ServiceStatus.valueOf(statusStr));
-        // Configurar a venda, se selecionada
-        if (saleIdCmb.getSelectedIndex() > 0) {
-            String saleIdStr = saleIdCmb.getSelectedItem().toString();
-            Integer saleId = Integer.parseInt(saleIdStr);
-            Sale sale = saleController.findSaleById(saleId);
-            serviceOrder.setSale(sale);
-        } else {
-            serviceOrder.setSale(null);
-        }
-        // Configurar a descrição
-        serviceOrder.setDescription(descriptionField.getText());
-        // Salvar a ordem de serviço
-        boolean success;
-        if (isEditMode) {
-            success = serviceOrderController.updateServiceOrder(serviceOrder);
-        } else {
-            success = serviceOrderController.createServiceOrder(serviceOrder);
-        }
-        if (success) {
-            JOptionPane.showMessageDialog(this,
-                    "Ordem de serviço " + (isEditMode ? "atualizada" : "cadastrada") + " com sucesso!",
-                    "Sucesso",
-                    JOptionPane.INFORMATION_MESSAGE);
-            MainAppView.redirectToPanel(MainAppView.SERVICE_ORDERS_PANEL);
-        } else {
-            JOptionPane.showMessageDialog(this,
-                    "Erro ao " + (isEditMode ? "atualizar" : "cadastrar") + " ordem de serviço.",
-                    "Erro",
-                    JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.WARNING_MESSAGE);
+            // Restore the default cursor and re-enable the save button
+            setCursor(Cursor.getDefaultCursor());
+            saveBtn.setEnabled(true);
         }
     }//GEN-LAST:event_saveBtnActionPerformed
-    // new NewServiceOrderForm().setVisible(true);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelBtn;

@@ -91,7 +91,7 @@ public class PanelFactory {
                     break;
                 case MainAppView.EDIT_SALE_PANEL:
                     if (sale != null) {
-                        form = new NewSaleForm(sale);
+                        form = new NewSaleForm(sale.getId());
                     } else {
                         System.err.println(
                                 "Erro: Tentativa de editar venda sem fornecer objeto Sale");
@@ -114,7 +114,7 @@ public class PanelFactory {
                     break;
                 case MainAppView.EDIT_SO_PANEL:
                     if (serviceOrder != null) {
-                        form = new NewServiceOrderForm(serviceOrder);
+                        form = new NewServiceOrderForm(serviceOrder.getId());
                     } else {
                         System.err.println(
                                 "Erro: Tentativa de editar ordem de serviço sem fornecer objeto ServiceOrder");
@@ -126,7 +126,7 @@ public class PanelFactory {
                     break;
                 case MainAppView.EDIT_EXPENSE_PANEL:
                     if (expense != null) {
-                        form = new NewExpenseForm(expense);
+                        form = new NewExpenseForm(expense.getId());
                     } else {
                         System.err.println(
                                 "Erro: Tentativa de editar despesa sem fornecer objeto Expense");
@@ -138,7 +138,7 @@ public class PanelFactory {
                     break;
                 case MainAppView.EDIT_USER_PANEL:
                     if (user != null) {
-                        form = new NewUserForm(user);
+                        form = new NewUserForm(user.getId());
                     } else {
                         System.err.println(
                                 "Erro: Tentativa de editar usuário sem fornecer objeto User");

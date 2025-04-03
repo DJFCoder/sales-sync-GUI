@@ -22,18 +22,16 @@ public class NewUserForm extends javax.swing.JFrame {
     /**
      * Constructor for editing an existing user
      *
-     * @param user The user to edit
+     * @param userId The user to edit
      */
-    public NewUserForm(User user) {
+    public NewUserForm(Integer userId) {
         initComponents();
-        this.userToEdit = user;
-        this.userController = new UserController();
+        userController = new UserController();
+        userToEdit = userController.findUserById(userId);
         this.isEditMode = true;
         // Setup the form for editing
         setupUserTypeComboBox();
         loadUserData();
-        // Change the title and button text
-        titleField.setText("Editar Usuário");
         saveBtn.setText("Atualizar");
         // Password fields should be empty when editing
         passwordField.setText("");

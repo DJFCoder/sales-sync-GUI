@@ -2,12 +2,25 @@ package br.com.devjf.salessync.view.forms;
 
 import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.MainAppView;
+import br.com.devjf.salessync.view.components.table.TableFormInterface;
 
-public class ServiceOrdersForm extends javax.swing.JFrame {
+public class ServiceOrdersForm extends javax.swing.JFrame implements TableFormInterface{
     public ServiceOrdersForm() {
         initComponents();
     }
 
+    @Override
+    public void setupTableColumns() {}
+
+    @Override
+    public void loadTableData() {}
+
+    @Override
+    public void refreshTable() {}
+
+    @Override
+    public void setObjectToTable(Integer id) {}
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

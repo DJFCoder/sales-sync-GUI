@@ -1,28 +1,26 @@
 package br.com.devjf.salessync.view.forms.newobjectforms;
 
 import java.awt.Cursor;
+import java.awt.HeadlessException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
+import java.util.concurrent.ExecutionException;
 import br.com.devjf.salessync.controller.CustomerController;
-import br.com.devjf.salessync.controller.UserController;
 import br.com.devjf.salessync.model.Customer;
 import br.com.devjf.salessync.view.MainAppView;
 import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.forms.CustomersForm;
-import java.awt.HeadlessException;
-import java.util.concurrent.ExecutionException;
+import br.com.devjf.salessync.view.forms.validators.CustomerFormValidator;
 
 public class NewCustomerForm extends javax.swing.JFrame {
     private Customer customerToCreate;
     private boolean isEditMode = false;
     // Controllers
     private final CustomerController customerController;
-    private final UserController userController;
 
     public NewCustomerForm() {
         initComponents();
         this.customerController = new CustomerController();
-        this.userController = new UserController();
         initForNewCustomer();
     }
 
@@ -34,7 +32,6 @@ public class NewCustomerForm extends javax.swing.JFrame {
     public NewCustomerForm(Integer customerId) {
         initComponents();
         this.customerController = new CustomerController();
-        this.userController = new UserController();
         // Carregar o cliente do banco de dados usando o controller
         if (customerId == null) {
             this.customerToCreate = null;
@@ -56,9 +53,11 @@ public class NewCustomerForm extends javax.swing.JFrame {
 
     private void setCustomerInformations() {
         customerToCreate.setName(nameField.getText());
-        customerToCreate.setTaxId(customerController.formatTaxId(taxIdField.getText()));
+        customerToCreate.setTaxId(customerController.formatTaxId(
+                taxIdField.getText()));
         customerToCreate.setEmail(emailField.getText());
-        customerToCreate.setPhone(customerController.formatPhone(phoneField.getText()));
+        customerToCreate.setPhone(customerController.formatPhone(
+                phoneField.getText()));
         customerToCreate.setAddress(adressField.getText());
         customerToCreate.setNotes(observationField.getText());
     }
@@ -291,97 +290,118 @@ public class NewCustomerForm extends javax.swing.JFrame {
         // Show a wait cursor while processing
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         saveBtn.setEnabled(false);
-        // Add a small delay to ensure any previous transactions are complete
         try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        // Make sure we have a customer object to work with
-        if (customerToCreate == null) {
-            customerToCreate = new Customer();
-        }
-        // Update customer information from form fields BEFORE starting the SwingWorker
-        setCustomerInformations();
-        // Prepare the customer object on the EDT before starting the background task
-        final Customer preparedCustomer = customerToCreate;
-        // Use SwingWorker to avoid freezing the UI
-        new SwingWorker<Boolean, Void>() {
-            private String errorMessage = null;
+            // Validate all fields before proceeding
+            CustomerFormValidator.validateAllFields(
+                    nameField,
+                    taxIdField,
+                    emailField,
+                    phoneField);
+            // If validation passes, add a small delay to ensure any previous transactions are complete
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            // Make sure we have a customer object to work with
+            if (customerToCreate == null) {
+                customerToCreate = new Customer();
+            }
+            // Update customer information from form fields BEFORE starting the SwingWorker
+            setCustomerInformations();
+            // Prepare the customer object on the EDT before starting the background task
+            final Customer preparedCustomer = customerToCreate;
+            // Use SwingWorker to avoid freezing the UI
+            new SwingWorker<Boolean, Void>() {
+                private String errorMessage = null;
 
-            @Override
-            protected Boolean doInBackground() throws Exception {
-                try {
-                    Boolean result;
-                    if (isEditMode) {
-                        // Update existing customer
-                        result = customerController.updateCustomer(
+                @Override
+                protected Boolean doInBackground() throws Exception {
+                    try {
+                        Boolean result;
+                        if (isEditMode) {
+                            // Update existing customer
+                            result = customerController.updateCustomer(
+                                    preparedCustomer);
+                            if (!result) {
+                                errorMessage = "Não foi possível atualizar o(a) cliente. Verifique os dados e tente novamente.";
+                                System.err.println("Failed to update customer");
+                            }
+                            return result;
+                        }
+                        // Create new customer
+                        result = customerController.createCustomer(
                                 preparedCustomer);
                         if (!result) {
-                            errorMessage = "Não foi possível atualizar o(a) cliente. Verifique os dados e tente novamente.";
-                            System.err.println("Failed to update customer");
+                            errorMessage = "Não foi possível registrar o(a) cliente. Verifique os dados e tente novamente.";
+                            System.err.println("Failed to register customer");
                         }
                         return result;
+                    } catch (Exception e) {
+                        errorMessage = "Erro ao processar cliente: " + e.getMessage();
+                        System.err.println(
+                                "Exception during customer processing: " + e.getMessage());
+                        e.printStackTrace();
+                        return false;
                     }
-                    // Create new customer
-                    result = customerController.createCustomer(preparedCustomer);
-                    if (!result) {
-                        errorMessage = "Não foi possível registrar o(a) cliente. Verifique os dados e tente novamente.";
-                        System.err.println("Failed to register customer");
-                    }
-                    return result;
-                } catch (Exception e) {
-                    errorMessage = "Erro ao processar cliente: " + e.getMessage();
-                    System.err.println(
-                            "Exception during customer processing: " + e.getMessage());
-                    e.printStackTrace();
-                    return false;
                 }
-            }
 
-            @Override
-            protected void done() {
-                try {
-                    Boolean success = get();
-                    if (success) {
-                        // Log the activity
-                        MainAppView.getInstance().registerUserActivity(
-                                (isEditMode ? "Atualizou" : "Registrou") + " o cliente: " + preparedCustomer.getName());
+                @Override
+                protected void done() {
+                    try {
+                        Boolean success = get();
+                        if (success) {
+                            // Log the activity
+                            MainAppView.getInstance().registerUserActivity(
+                                    (isEditMode ? "Atualizou" : "Registrou") + " o cliente: " + preparedCustomer.getName());
+                            JOptionPane.showMessageDialog(NewCustomerForm.this,
+                                    "Cliente " + (isEditMode ? "atualizado" : "registrado") + " com sucesso!",
+                                    "Sucesso",
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            // Close this form
+                            dispose();
+                            // Refresh the customers table
+                            CustomersForm.getInstance().refreshTable();
+                            // Redirect to customers panel
+                            MainAppView.redirectToPanel(
+                                    MainAppView.CUSTOMERS_PANEL);
+                        } else if (errorMessage != null) {
+                            System.err.println("Error message: " + errorMessage);
+                            JOptionPane.showMessageDialog(NewCustomerForm.this,
+                                    errorMessage,
+                                    "Erro",
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (HeadlessException | InterruptedException | ExecutionException e) {
+                        System.err.println(
+                                "Exception in done(): " + e.getMessage());
+                        e.printStackTrace();
                         JOptionPane.showMessageDialog(NewCustomerForm.this,
-                                "Cliente " + (isEditMode ? "atualizado" : "registrado") + " com sucesso!",
-                                "Sucesso",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        // Close this form
-                        dispose();
-                        // Refresh the customers table
-                        CustomersForm.getInstance().refreshTable();
-                        // Redirect to customers panel
-                        MainAppView.redirectToPanel(MainAppView.CUSTOMERS_PANEL);
-                    } else if (errorMessage != null) {
-                        System.err.println("Error message: " + errorMessage);
-                        JOptionPane.showMessageDialog(NewCustomerForm.this,
-                                errorMessage,
+                                "Erro ao processar cliente: " + e.getMessage(),
                                 "Erro",
                                 JOptionPane.ERROR_MESSAGE);
+                    } finally {
+                        // Restore the default cursor
+                        setCursor(Cursor.getDefaultCursor());
+                        saveBtn.setEnabled(true);
                     }
-                } catch (HeadlessException | InterruptedException | ExecutionException e) {
-                    System.err.println("Exception in done(): " + e.getMessage());
-                    e.printStackTrace();
-                    JOptionPane.showMessageDialog(NewCustomerForm.this,
-                            "Erro ao processar cliente: " + e.getMessage(),
-                            "Erro",
-                            JOptionPane.ERROR_MESSAGE);
-                } finally {
-                    // Restore the default cursor
-                    setCursor(Cursor.getDefaultCursor());
-                    saveBtn.setEnabled(true);
-                    initForNewCustomer();
                 }
-            }
-        }.execute();
+            }.execute();
+        } catch (IllegalStateException e) {
+            // Handle validation errors
+            System.err.println("Validation error: " + e.getMessage());
+            JOptionPane.showMessageDialog(NewCustomerForm.this,
+                    e.getMessage(),
+                    "Erro de Validação",
+                    JOptionPane.WARNING_MESSAGE);
+            // Restore the default cursor and re-enable the save button
+            setCursor(Cursor.getDefaultCursor());
+            saveBtn.setEnabled(true);
+        }
     }//GEN-LAST:event_saveBtnActionPerformed
 
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
+        initForNewCustomer();
         MainAppView.redirectToPanel(MainAppView.CUSTOMERS_PANEL);
     }//GEN-LAST:event_cancelBtnActionPerformed
 

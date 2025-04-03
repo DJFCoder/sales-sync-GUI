@@ -3,7 +3,6 @@ package br.com.devjf.salessync.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
 import br.com.devjf.salessync.model.User;
 import br.com.devjf.salessync.model.UserActivity;
 import br.com.devjf.salessync.model.UserType;
@@ -14,8 +13,8 @@ import br.com.devjf.salessync.service.permission.UserPermissionService;
 import br.com.devjf.salessync.service.permission.UserPermissionServiceImpl;
 
 /**
- * Controller class for managing user-related operations.
- * Provides methods for user authentication, creation, updates, and activity tracking.
+ * Controller class for managing user-related operations. Provides methods for
+ * user authentication, creation, updates, and activity tracking.
  */
 public class UserController {
     private final UserService userService;
@@ -24,7 +23,8 @@ public class UserController {
     private final UserPermissionService permissionService;
 
     /**
-     * Constructs a new UserController with UserService and UserActivityService instances.
+     * Constructs a new UserController with UserService and UserActivityService
+     * instances.
      */
     public UserController() {
         this.userService = new UserService();
@@ -41,7 +41,8 @@ public class UserController {
      * @return The name of the logged-in user, or null if authentication fails
      */
     public String showUserLogged(String login, String password) {
-        User getUserLogged = userService.authenticateUser(login, password);
+        User getUserLogged = userService.authenticateUser(login,
+                password);
         if (getUserLogged != null) {
             System.out.println("Usuário logado: " + getUserLogged.getName());
             System.out.println("Tipo: " + getUserLogged.getType().name());
@@ -51,7 +52,7 @@ public class UserController {
         }
         return null;
     }
-    
+
     /**
      * Creates a new user in the system.
      *
@@ -62,9 +63,12 @@ public class UserController {
      * @return true if the user was successfully created, false otherwise
      */
     public boolean createUser(String name, String login, String password, UserType type) {
-        return userService.createUser(name, login, password, type);
+        return userService.createUser(name,
+                login,
+                password,
+                type);
     }
-    
+
     /**
      * Updates an existing user's information.
      *
@@ -74,9 +78,11 @@ public class UserController {
      * @return true if the user was successfully updated, false otherwise
      */
     public boolean updateUser(Integer userId, String name, UserType type) {
-        return userService.updateUser(userId, name, type);
+        return userService.updateUser(userId,
+                name,
+                type);
     }
-    
+
     /**
      * Changes a user's password.
      *
@@ -86,9 +92,11 @@ public class UserController {
      * @return true if the password was successfully changed, false otherwise
      */
     public boolean changePassword(Integer userId, String currentPassword, String newPassword) {
-        return userService.changePassword(userId, currentPassword, newPassword);
+        return userService.changePassword(userId,
+                currentPassword,
+                newPassword);
     }
-    
+
     /**
      * Deactivates a user account.
      *
@@ -98,7 +106,7 @@ public class UserController {
     public boolean deactivateUser(Integer userId) {
         return userService.deactivateUser(userId);
     }
-    
+
     /**
      * Reactivates a previously deactivated user account.
      *
@@ -108,7 +116,7 @@ public class UserController {
     public boolean reactivateUser(Integer userId) {
         return userService.reactivateUser(userId);
     }
-    
+
     /**
      * Lists all users in the system.
      *
@@ -117,7 +125,7 @@ public class UserController {
     public List<User> listAllUsers() {
         return userService.getAllUsers();
     }
-    
+
     /**
      * Finds a user by their ID.
      *
@@ -127,7 +135,7 @@ public class UserController {
     public User findUserById(Integer id) {
         return userService.getUserById(id);
     }
-    
+
     /**
      * Finds a user by their login (username).
      *
@@ -137,7 +145,7 @@ public class UserController {
     public User findUserByLogin(String login) {
         return userService.getUserByLogin(login);
     }
-    
+
     /**
      * Authenticates a user and records the login activity.
      *
@@ -146,55 +154,55 @@ public class UserController {
      * @return The authenticated user object if successful, null otherwise
      */
     public User authenticateUser(String login, String password) {
-        User user = userService.authenticateUser(login, password);
-        if (user != null) {
-            // Registrar atividade de login
-            activityService.registerActivity(user, "Login no sistema");
-        }
+        User user = userService.authenticateUser(login,
+                password);
         return user;
     }
-    
+
     /**
      * Registers a new activity for the user.
-     * 
+     *
      * @param user User who performed the activity
      * @param description Description of the activity
      * @return true if the activity was successfully registered
      */
     public boolean registerActivity(User user, String description) {
-        return activityService.registerActivity(user, description);
+        return activityService.registerActivity(user,
+                description);
     }
-    
+
     /**
      * Gets the recent activities of a user.
-     * 
+     *
      * @param user User to get activities for
      * @param limit Maximum number of activities to return
      * @return List of recent user activities
      */
     public List<UserActivity> getRecentActivities(User user, int limit) {
-        return activityService.getRecentActivities(user, limit);
+        return activityService.getRecentActivities(user,
+                limit);
     }
-    
+
     /**
      * Gets the formatted last access time of a user.
-     * 
+     *
      * @param user User to get the last access for
-     * @return Formatted string with date and time of last access or "Primeiro acesso" if no record exists
+     * @return Formatted string with date and time of last access or "Primeiro
+     * acesso" if no record exists
      */
     public String getLastAccessFormatted(User user) {
         LocalDateTime lastAccess = activityService.getLastAccess(user);
         if (lastAccess == null) {
             return "Primeiro acesso";
         }
-        
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
+                "dd/MM/yyyy HH:mm");
         return lastAccess.format(formatter);
     }
-    
+
     /**
      * Translates the user type to Portuguese.
-     * 
+     *
      * @param type User type
      * @return Name of the user type in Portuguese
      */
@@ -202,7 +210,6 @@ public class UserController {
         if (type == null) {
             return "Desconhecido";
         }
-        
         switch (type) {
             case ADMIN:
                 return "Administrador";
@@ -214,35 +221,37 @@ public class UserController {
                 return "Desconhecido";
         }
     }
-    
+
     /**
      * Checks if a user has access to a specific panel.
-     * 
+     *
      * @param user The user to check permissions for
      * @param panelName The name of the panel to check access for
      * @return true if the user has access, false otherwise
      */
     public boolean hasAccessToPanel(User user, String panelName) {
-        return permissionService.hasAccessToPanel(user, panelName);
+        return permissionService.hasAccessToPanel(user,
+                panelName);
     }
-    
+
     /**
      * Gets the permission label for a user.
-     * 
+     *
      * @param user The user to get the permission label for
      * @return The permission label string
      */
     public String getPermissionLabel(User user) {
         return permissionService.getPermissionLabel(user);
     }
-    
+
     /**
      * Registers a user activity through the activity service.
-     * 
+     *
      * @param user The user who performed the activity
      * @param description Description of the activity
      */
     public void registerUserActivity(User user, String description) {
-        userActivityService.registerActivity(user, description);
+        userActivityService.registerActivity(user,
+                description);
     }
 }

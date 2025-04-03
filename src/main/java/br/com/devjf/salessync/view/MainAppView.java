@@ -52,6 +52,13 @@ public final class MainAppView extends javax.swing.JFrame {
         initializePermissionLabel();
         initPanels();
         setupListeners();
+        // Add window listener to detect when the application is closing
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                registerUserLogoff();
+            }
+        });
     }
 
     /**
@@ -217,6 +224,20 @@ public final class MainAppView extends javax.swing.JFrame {
      */
     public javax.swing.JList<String> getSelectionList() {
         return this.selectionList;
+    }
+
+    /**
+     * Registra o logout do usuário quando a aplicação é fechada
+     */
+    private void registerUserLogoff() {
+        registerUserActivity("Deslogou do sistema");
+    }
+
+    @Override
+    public void dispose() {
+        // Register user logoff before disposing the window
+        registerUserLogoff();
+        super.dispose();
     }
 
     @SuppressWarnings("unchecked")

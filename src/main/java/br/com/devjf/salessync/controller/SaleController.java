@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -522,5 +523,17 @@ public class SaleController {
             }
         }
         return sale;
+    }
+
+    /**
+     * Finds all sales for a specific customer
+     * 
+     * @param customerId The ID of the customer
+     * @return List of sales for the customer
+     */
+    public List<Sale> findSalesByCustomerId(Integer customerId) {
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("customerId", customerId);
+        return saleService.listSalesWithFilters(filters);
     }
 }

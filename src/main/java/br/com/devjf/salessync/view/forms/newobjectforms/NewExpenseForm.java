@@ -22,19 +22,17 @@ public class NewExpenseForm extends javax.swing.JFrame {
     /**
      * Construtor para editar uma despesa existente.
      *
-     * @param expense A despesa a ser editada
+     * @param expenseId A despesa a ser editada
      */
-    public NewExpenseForm(Expense expense) {
+    public NewExpenseForm(Integer expenseId) {
         initComponents();
-        this.expenseToEdit = expense;
-        this.expenseController = new ExpenseController();
-        this.isEditMode = true;
+        expenseToEdit = expenseController.findExpenseById(expenseId);
+        expenseController = new ExpenseController();
+        isEditMode = true;
         // Carregar categorias no combobox
         loadCategories();
         // Preencher os campos com os dados da despesa
         loadExpenseData();
-        // Alterar o título do formulário
-        titleField.setText("Editar Despesa");
         // Alterar o texto do botão para "Atualizar"
         saveBtn.setText("Atualizar");
     }

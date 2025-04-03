@@ -180,17 +180,9 @@ public class SalesForm extends javax.swing.JFrame implements TableFormInterface 
             Integer saleId = (Integer) salesTable.getValueAt(selectedRow,
                     0);
             System.out.println("Editando venda com ID: " + saleId);
-            // Obter a venda pelo ID com todos os itens carregados
-            Sale sale = saleController.findSaleByIdForEdit(saleId);
-            if (sale == null) {
-                JOptionPane.showMessageDialog(this,
-                        "Venda não encontrada",
-                        "Erro",
-                        JOptionPane.ERROR_MESSAGE);
-            }
             // Redirecionar para o painel de edição de venda com os dados da venda selecionada
             MainAppView.redirectToPanel(MainAppView.EDIT_SALE_PANEL,
-                    sale);
+                    saleId);
             // Não atualizar a tabela aqui, pois a venda ainda não foi salva
         } catch (HeadlessException e) {
             e.printStackTrace();

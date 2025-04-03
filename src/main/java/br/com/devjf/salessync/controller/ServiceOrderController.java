@@ -1,8 +1,10 @@
 package br.com.devjf.salessync.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import br.com.devjf.salessync.model.Customer;
 import br.com.devjf.salessync.model.Sale;
 import br.com.devjf.salessync.model.ServiceOrder;
@@ -112,6 +114,16 @@ public class ServiceOrderController {
     }
     
     /**
+     * Completes a service order, setting its status to COMPLETED and recording the completion date.
+     *
+     * @param id The ID of the service order to complete
+     * @return true if the service order was successfully completed, false otherwise
+     */
+    public boolean completeServiceOrder(Integer id) {
+        return serviceOrderService.completeServiceOrder(id);
+    }
+
+    /**
      * Finds service orders for a specific customer.
      *
      * @param customerId The ID of the customer to find service orders for
@@ -128,25 +140,6 @@ public class ServiceOrderController {
         Map<String, Object> filters = new HashMap<>();
         filters.put("customer", customer);
         return serviceOrderService.listServiceOrders(filters);
-    }
-    
-    /**
-     * Checks for delayed service orders.
-     *
-     * @return A list of service orders that are delayed
-     */
-    public List<ServiceOrder> checkDelays() {
-        return serviceOrderService.checkDelays();
-    }
-    
-    /**
-     * Calculates the execution time for a service order.
-     *
-     * @param order The service order to calculate execution time for
-     * @return The execution time in hours
-     */
-    public double calculateExecutionTime(ServiceOrder order) {
-        return serviceOrderService.calculateExecutionTime(order);
     }
     
     /**
@@ -173,6 +166,15 @@ public class ServiceOrderController {
      * @return A list of sales for the specified customer
      */
     public List<Sale> findSalesByCustomerId(Integer customerId) {
-        return (List<Sale>) saleService.findSaleByIdWithRelationships(customerId);
+        // This was incorrectly using findSaleByIdWithRelationships which is for finding a single sale
+        // Instead, we should use a method that finds all sales for a customer
+        try {
+            SaleController saleController = new SaleController();
+            return saleController.findSalesByCustomerId(customerId);
+        } catch (Exception e) {
+            System.err.println("Error finding sales by customer ID: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>(); // Return empty list instead of null
+        }
     }
 }

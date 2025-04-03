@@ -4,16 +4,17 @@ import java.awt.Cursor;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
+
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
+
 import br.com.devjf.salessync.controller.CustomerController;
 import br.com.devjf.salessync.controller.SaleController;
 import br.com.devjf.salessync.controller.UserController;
@@ -27,7 +28,6 @@ import br.com.devjf.salessync.view.MainAppView;
 import br.com.devjf.salessync.view.components.CustomerSelectionDialog;
 import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.components.table.SaleTableManager;
-import br.com.devjf.salessync.view.forms.CustomersForm;
 import br.com.devjf.salessync.view.forms.SalesForm;
 
 /**
@@ -50,6 +50,8 @@ public class NewSaleForm extends javax.swing.JFrame {
     private final UserController userController;
     // Table manager
     private SaleTableManager tableManager;
+    // Flag to track if we're editing an existing sale
+    private boolean isEditMode = false;
 
     /**
      * Creates a new form for registering a sale. Initializes controllers, sets
@@ -93,9 +95,9 @@ public class NewSaleForm extends javax.swing.JFrame {
      * Creates a new form for editing a sale. Initializes controllers, sets up
      * the table, and prepares the form for a existing sale.
      *
-     * @param sale a sale to edit
+     * @param saleId a sale to edit
      */
-    public NewSaleForm(Sale sale) {
+    public NewSaleForm(Integer saleId) {
         // Initialize controllers
         this.saleController = new SaleController();
         this.customerController = new CustomerController();
@@ -104,12 +106,14 @@ public class NewSaleForm extends javax.swing.JFrame {
         // Initialize table manager - only once
         this.tableManager = new SaleTableManager(newSaleTable,
                 this::updateTotalsWithoutCheck);
+
+                this.isEditMode = true;
         // Configurar o formulário para edição
-        this.saleToCreate = sale;
-        this.selectedCustomer = sale.getCustomer();
+        saleToCreate = saleController.findSaleById(saleId);
+        selectedCustomer = saleToCreate.getCustomer();
         currentUser = UserSessionManager.getInstance().getLoggedUser().getId();
         // Preencher os campos do formulário com os dados da venda
-        loadSaleData(sale);
+        loadSaleData(saleToCreate);
         // Adicionar listener para o campo de desconto
         discountField.getDocument().addDocumentListener(
                 new javax.swing.event.DocumentListener() {
@@ -177,6 +181,8 @@ public class NewSaleForm extends javax.swing.JFrame {
      * object, and prepares the form for data entry.
      */
     public void initForNewSale() {
+        // Set edit mode to false
+        isEditMode = false;
         // Limpar o objeto saleToCreate para garantir que estamos criando uma nova venda
         saleToCreate = new Sale();
         // Limpar campos do formulário
@@ -228,6 +234,7 @@ public class NewSaleForm extends javax.swing.JFrame {
      * @return The prepared Sale object, or null if validation fails
      */
     private Sale prepareSaleObject() {
+        saleToCreate.setCustomer(selectedCustomer);
         ensureTableManagerInitialized();
         try {
             // Collect form data
@@ -740,27 +747,17 @@ public class NewSaleForm extends javax.swing.JFrame {
         }
         // Debug information
         System.out.println("Prepared sale ID: " + preparedSale.getId());
-        System.out.println("Number of items: " + preparedSale.getItems().size());
         // Use SwingWorker to avoid freezing the UI
         new SwingWorker<Sale, Void>() {
             private String errorMessage = null;
-            private boolean isNewSale = false; // Flag para controlar se é nova venda ou atualização
+            private final boolean finalIsEditMode = isEditMode; // Capture the current value of isEditMode
 
             @Override
             protected Sale doInBackground() throws Exception {
                 try {
-                    // Determinar se é uma nova venda ou atualização
-                    isNewSale = (preparedSale.getId() == null);
-                    System.out.println("Is new sale: " + isNewSale);
+                    System.out.println("Is edit mode: " + finalIsEditMode);
                     Sale result;
-                    if (isNewSale) {
-                        // Create new sale
-                        result = saleController.registerSale(preparedSale);
-                        if (result == null) {
-                            errorMessage = "Não foi possível registrar a venda. Verifique os dados e tente novamente.";
-                            System.err.println("Failed to register sale");
-                        }
-                    } else {
+                    if (finalIsEditMode) {
                         // Update existing sale
                         System.out.println(
                                 "Updating sale with ID: " + preparedSale.getId());
@@ -768,6 +765,13 @@ public class NewSaleForm extends javax.swing.JFrame {
                         if (result == null) {
                             errorMessage = "Não foi possível atualizar a venda. Verifique os dados e tente novamente.";
                             System.err.println("Failed to update sale");
+                        }
+                    } else {
+                        // Create new sale
+                        result = saleController.registerSale(preparedSale);
+                        if (result == null) {
+                            errorMessage = "Não foi possível registrar a venda. Verifique os dados e tente novamente.";
+                            System.err.println("Failed to register sale");
                         }
                     }
                     return result;
@@ -789,26 +793,27 @@ public class NewSaleForm extends javax.swing.JFrame {
                         Integer saleId = result.getId();
                         System.out.println(
                                 "Operation successful. Sale ID: " + saleId);
-                        // Atualizar o objeto saleToCreate com o resultado da operação
-                        saleToCreate = result;
-                        // Usar a flag isNewSale em vez de verificar o ID novamente
-                        String operationType = isNewSale ? "registrada" : "atualizada";
+                        
+                        // Usar a flag finalIsEditMode em vez de verificar o ID
+                        String operationType = finalIsEditMode ? "atualizada" : "registrada";
                         JOptionPane.showMessageDialog(NewSaleForm.this,
                                 "Venda " + operationType + " com sucesso!",
                                 "Sucesso",
                                 JOptionPane.INFORMATION_MESSAGE);
+                        
                         // Refresh the sales table in SalesForm
                         refreshSalesTable();
+                        
                         // Log the activity
-                        MainAppView.getInstance().registerUserActivity(
-                                (isNewSale ? "Registrou" : "Atualizou") + " a venda ID: " + saleId);
-                        // Limpar o objeto saleToCreate para a próxima operação
-                        saleToCreate = null;
-                        System.out.println("apagou a venda.");
+                        if (MainAppView.getInstance() != null) {
+                            MainAppView.getInstance().registerUserActivity(
+                                    (finalIsEditMode ? "Atualizou" : "Registrou") + " a venda ID: " + saleId);
+                        }
+                        
                         // Close this form
                         dispose();
+                        
                         // Return to the SalesForm panel in MainAppView
-                        SalesForm.getInstance().refreshTable();
                         MainAppView.redirectToPanel(MainAppView.SALES_PANEL);
                     } else if (errorMessage != null) {
                         System.err.println("Error message: " + errorMessage);
@@ -828,7 +833,6 @@ public class NewSaleForm extends javax.swing.JFrame {
                     // Restore the default cursor
                     setCursor(Cursor.getDefaultCursor());
                     newSaleBtn.setEnabled(true);
-                    initForNewSale();
                 }
             }
         }.execute();
@@ -842,6 +846,7 @@ public class NewSaleForm extends javax.swing.JFrame {
      */
     private void cancelSaleBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelSaleBtnActionPerformed
         // Return to the SalesForm panel in MainAppView
+        initForNewSale();
         MainAppView.redirectToPanel(MainAppView.SALES_PANEL);
     }//GEN-LAST:event_cancelSaleBtnActionPerformed
 

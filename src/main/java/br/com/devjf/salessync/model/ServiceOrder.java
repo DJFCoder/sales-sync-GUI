@@ -8,89 +8,80 @@ import java.time.temporal.ChronoUnit;
 @Entity
 @Table(name = "service_orders")
 public class ServiceOrder {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
-    
-    // Adicionar relação com Sale
     @ManyToOne
-    @JoinColumn(name = "sale_id")
+    @JoinColumn(name = "sale_id", nullable = false)
     private Sale sale;
-    
     @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
-    
-    @Column(name = "request_date", nullable = false)
-    private LocalDate requestDate;
-    
-    @Column(name = "estimated_delivery_date")
-    private LocalDate estimatedDeliveryDate;
-    
-    @Column
-    private Double amount;
-    
+    @Column(name = "creation_date", nullable = false)
+    private LocalDate creationDate;
+    @Column(name = "completion_date")
+    private LocalDate completionDate;
     @Enumerated(EnumType.STRING)
-    @Column(name = "status_id", nullable = false)
+    @Column(name = "status", nullable = false)
     private ServiceStatus status;
-    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-    
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        if (this.requestDate == null) {
-            this.requestDate = LocalDate.now();
+        if (this.creationDate == null) {
+            this.creationDate = LocalDate.now();
         }
         if (this.status == null) {
             this.status = ServiceStatus.PENDING;
         }
     }
-    
+
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+        // Set completion date when status changes to COMPLETED
+        if (this.status == ServiceStatus.COMPLETED && this.completionDate == null) {
+            this.completionDate = LocalDate.now();
+        }
     }
-    
+
     // Constructors
     public ServiceOrder() {
     }
-    
-    public ServiceOrder(Customer customer, String description, LocalDate estimatedDeliveryDate, Double amount) {
+
+    public ServiceOrder(Customer customer, Sale sale, String description, LocalDate estimatedDeliveryDate) {
         this.customer = customer;
+        this.sale = sale;
         this.description = description;
-        this.requestDate = LocalDate.now();
-        this.estimatedDeliveryDate = estimatedDeliveryDate;
-        this.amount = amount;
+        this.creationDate = LocalDate.now();
         this.status = ServiceStatus.PENDING;
     }
-    
+
     // Methods
     public void updateStatus(ServiceStatus newStatus) {
+        ServiceStatus oldStatus = this.status;
         this.status = newStatus;
+        // Set completion date when status changes to COMPLETED
+        if (newStatus == ServiceStatus.COMPLETED && oldStatus != ServiceStatus.COMPLETED) {
+            this.completionDate = LocalDate.now();
+        }
     }
-    
+
     public Integer calculateDelay() {
-        if (estimatedDeliveryDate == null || status == ServiceStatus.COMPLETED) {
+        if (this.completionDate == null || status != ServiceStatus.COMPLETED) {
             return 0;
         }
-        LocalDate compareDate = status == ServiceStatus.COMPLETED ? updatedAt.toLocalDate() : LocalDate.now();
-        return (int) ChronoUnit.DAYS.between(estimatedDeliveryDate, compareDate);
+        return (int) ChronoUnit.DAYS.between(this.creationDate,
+                this.completionDate);
     }
-    
-    public void print() {
-        // Implementação da impressão será feita na camada de serviço
-    }
-    
+
     // Getters and Setters
     public Integer getId() {
         return id;
@@ -108,6 +99,14 @@ public class ServiceOrder {
         this.customer = customer;
     }
 
+    public Sale getSale() {
+        return sale;
+    }
+
+    public void setSale(Sale sale) {
+        this.sale = sale;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -116,28 +115,20 @@ public class ServiceOrder {
         this.description = description;
     }
 
-    public LocalDate getRequestDate() {
-        return requestDate;
+    public LocalDate getCreationDate() {
+        return creationDate;
     }
 
-    public void setRequestDate(LocalDate requestDate) {
-        this.requestDate = requestDate;
+    public void setCreationDate(LocalDate creationDate) {
+        this.creationDate = creationDate;
     }
 
-    public LocalDate getEstimatedDeliveryDate() {
-        return estimatedDeliveryDate;
+    public LocalDate getCompletionDate() {
+        return completionDate;
     }
 
-    public void setEstimatedDeliveryDate(LocalDate estimatedDeliveryDate) {
-        this.estimatedDeliveryDate = estimatedDeliveryDate;
-    }
-
-    public Double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Double amount) {
-        this.amount = amount;
+    public void setCompletionDate(LocalDate completionDate) {
+        this.completionDate = completionDate;
     }
 
     public ServiceStatus getStatus() {
@@ -145,22 +136,23 @@ public class ServiceOrder {
     }
 
     public void setStatus(ServiceStatus status) {
-        this.status = status;
+        // Use the updateStatus method to ensure completion date is set properly
+        updateStatus(status);
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-    
-    public Sale getSale() {
-        return sale;
-    }
-    
-    public void setSale(Sale sale) {
-        this.sale = sale;
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
