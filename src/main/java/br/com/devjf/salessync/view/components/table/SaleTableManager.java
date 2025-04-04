@@ -1,11 +1,15 @@
 package br.com.devjf.salessync.view.components.table;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+
+import br.com.devjf.salessync.dto.SaleItemDTO;
 import br.com.devjf.salessync.model.SaleItem;
 import br.com.devjf.salessync.view.components.renderers.CurrencyRenderer;
 
@@ -157,9 +161,35 @@ public class SaleTableManager {
                 item.getQuantity(),
                 item.getUnitPrice(),
                 item.getQuantity() * item.getUnitPrice(), // Subtotal
-                "Excluir Item" // Delete button
+                "Remover" // Delete button
             };
             model.addRow(rowData);
+        }
+    }
+
+    /**
+     * Adds an item to the sale table with the specified details.
+     * 
+     * @param description The description of the item
+     * @param quantity The quantity of the item
+     * @param unitPrice The unit price of the item
+     */
+    public void addItem(String description, Integer quantity, Double unitPrice) {
+        // Calculate the subtotal for this item
+        double subtotal = quantity * unitPrice;
+        
+        // Add a new row with the item details
+        tableModel.addRow(new Object[]{
+            description,
+            quantity,
+            unitPrice,
+            subtotal,
+            "Remover"
+        });
+        
+        // Call the update totals callback to recalculate totals
+        if (updateTotalsCallback != null) {
+            updateTotalsCallback.run();
         }
     }
 
@@ -209,5 +239,56 @@ public class SaleTableManager {
      */
     public DefaultTableModel getTableModel() {
         return tableModel;
+    }
+
+    /**
+     * Gets all sale items from the table as DTOs.
+     *
+     * @return List of SaleItemDTO objects representing the table data
+     */
+    public List<SaleItemDTO> getSaleItemsFromTable() {
+        List<SaleItemDTO> items = new ArrayList<>();
+        
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            String description = (String) tableModel.getValueAt(i, 0);
+            Object quantityObj = tableModel.getValueAt(i, 1);
+            Object priceObj = tableModel.getValueAt(i, 2);
+            
+            // Skip empty rows
+            if (description == null || description.trim().isEmpty()) {
+                continue;
+            }
+            
+            // Convert quantity to int
+            int quantity = 1; // Default value
+            if (quantityObj instanceof Integer) {
+                quantity = (Integer) quantityObj;
+            } else if (quantityObj instanceof String) {
+                try {
+                    quantity = Integer.parseInt(quantityObj.toString());
+                } catch (NumberFormatException e) {
+                    // Use default quantity
+                }
+            }
+            
+            // Convert price to Double
+            Double price = 0.0; // Default value
+            if (priceObj instanceof Double) {
+                price = (Double) priceObj;
+            } else if (priceObj instanceof String) {
+                try {
+                    String priceStr = priceObj.toString().replaceAll("[^\\d,.]", "").replace(",", ".");
+                    price = Double.parseDouble(priceStr);
+                } catch (NumberFormatException e) {
+                    // Use default price
+                }
+            }
+            
+            // Create a DTO with the converted values
+            SaleItemDTO item = new SaleItemDTO(description, quantity, price);
+            items.add(item);
+        }
+        
+        return items;
     }
 }

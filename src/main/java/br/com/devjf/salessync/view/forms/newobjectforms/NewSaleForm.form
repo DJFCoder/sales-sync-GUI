@@ -117,7 +117,7 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newSaleBtnActionPerformed"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(newSaleBtn);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewComponentStyle.standardCornerRadius(newSaleBtn);"/>
           </AuxValues>
         </Component>
         <Container class="javax.swing.JPanel" name="sellInformationPnl">
@@ -127,7 +127,7 @@
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(sellInformationPnl);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewComponentStyle.standardCornerRadius(sellInformationPnl);"/>
           </AuxValues>
 
           <Layout>
@@ -149,7 +149,7 @@
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="paymentDateLbl" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="paymentMethodField" min="-2" max="-2" attributes="0"/>
+                              <Component id="paymentDateField" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="jLabel1" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
@@ -170,7 +170,7 @@
                           <Component id="paymentMethodLbl" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="paymentMethodCmb" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="paymentDateLbl" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="paymentMethodField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="paymentDateField" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -215,7 +215,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(nameField);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewComponentStyle.standardCornerRadius(nameField);"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JButton" name="findCustomerBtn">
@@ -235,7 +235,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="findCustomerBtnActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(findCustomerBtn);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewComponentStyle.standardCornerRadius(findCustomerBtn);"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JComboBox" name="paymentMethodCmb">
@@ -268,7 +268,7 @@
                 <Property name="text" type="java.lang.String" value="Informa&#xe7;&#xf5;es da Venda"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JFormattedTextField" name="paymentMethodField">
+            <Component class="javax.swing.JFormattedTextField" name="paymentDateField">
               <Properties>
                 <Property name="formatterFactory" type="javax.swing.JFormattedTextField$AbstractFormatterFactory" editor="org.netbeans.modules.form.editors.AbstractFormatterFactoryEditor" preCode="try {" postCode="} catch (java.text.ParseException ex) {&#xa;ex.printStackTrace();&#xa;}">
                   <Format format="##/##/####" subtype="-1" type="5"/>
@@ -279,7 +279,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(paymentMethodField);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewComponentStyle.standardCornerRadius(paymentDateField);"/>
               </AuxValues>
             </Component>
           </SubComponents>
@@ -324,7 +324,7 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addItemBtnActionPerformed"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_ListenersCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(addItemBtn);"/>
+            <AuxValue name="JavaCodeGenerator_ListenersCodePost" type="java.lang.String" value="ViewComponentStyle.standardCornerRadius(addItemBtn);"/>
           </AuxValues>
         </Component>
         <Component class="javax.swing.JButton" name="cancelSaleBtn">
@@ -347,10 +347,13 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cancelSaleBtnActionPerformed"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(cancelSaleBtn);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewComponentStyle.standardCornerRadius(cancelSaleBtn);"/>
           </AuxValues>
         </Component>
         <Container class="javax.swing.JPanel" name="valuesPnl">
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="ViewComponentStyle.standardCornerRadius(valuesPnl);"/>
+          </AuxValues>
 
           <Layout>
             <DimensionLayout dim="0">
@@ -411,7 +414,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(nameField);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewComponentStyle.standardCornerRadius(nameField);"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="totalLbl">

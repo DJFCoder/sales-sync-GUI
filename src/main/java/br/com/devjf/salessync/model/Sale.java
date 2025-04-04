@@ -1,6 +1,7 @@
 package br.com.devjf.salessync.model;
 
 import jakarta.persistence.*;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,19 +98,9 @@ public class Sale {
         calculateTotal();
     }
 
-    /**
-     * Obtém a forma de pagamento como string de forma segura
-     *
-     * @return A forma de pagamento como string ou string vazia se for null
-     */
-    public String getPaymentMethodSafe() {
-        try {
-            return paymentMethod != null ? paymentMethod.toString() : "";
-        } catch (Exception e) {
-            System.err.println(
-                    "Erro ao obter forma de pagamento: " + e.getMessage());
-            return ""; // Return empty string if there's an error
-        }
+    public String formatedDate(LocalDateTime date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        return dateFormat.format(this.date);
     }
 
     // Getters and Setters

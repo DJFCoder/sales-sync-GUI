@@ -273,91 +273,31 @@ public class SaleController {
      * @param paymentMethodStr The payment method as a string
      * @param paymentDateStr The payment date as a string (dd/MM/yyyy)
      * @param items The list of sale items
-     * @param subtotal The subtotal amount
-     * @param discount The discount amount
-     * @param user The user creating the sale
-     * @return A prepared Sale object
-     * @throws ParseException If the payment date cannot be parsed
-     */
-    public Sale prepareSaleObject(Customer customer, String paymentMethodStr,
-            String paymentDateStr, List<SaleItem> items, double subtotal,
-            double discount, User user) throws ParseException {
-        
-        // Parse the payment date
-        LocalDateTime paymentDateTime = null;
-        if (paymentDateStr != null && !paymentDateStr.trim().isEmpty()) {
-            paymentDateTime = convertStringToLocalDateTime(paymentDateStr);
-        }
-        
-        // Convert string payment method to enum
-        PaymentMethod paymentMethod = PaymentMethod.valueOf(paymentMethodStr);
-        
-        // Delegate to the service layer to prepare the new sale
-        return saleService.prepareSaleObject(
-                customer,
-                paymentMethod,
-                paymentDateTime,
-                items,
-                subtotal,
-                discount,
-                user);
-    }
-
-    /**
-     * Prepares a Sale object for update with validation
-     * 
-     * @param saleId The ID of the existing sale
-     * @param createdAt The original creation date
-     * @param saleDate The original sale date
-     * @param customer The customer for the sale
-     * @param paymentMethodStr The payment method as a string
-     * @param paymentDateStr The payment date as a string
-     * @param itemsData The list of sale item DTOs
-     * @param subtotal The subtotal amount
-     * @param discount The discount amount
-     * @param userId The ID of the user associated with the sale
-     * @return A prepared Sale object ready for update
-     * @throws ParseException If there's an error parsing the payment date
-     */
-    public Sale prepareSaleUpdate(
-            Integer saleId,
-            LocalDateTime createdAt,
-            LocalDateTime saleDate,
-            Customer customer,
-            String paymentMethodStr,
-            String paymentDateStr,
-            List<SaleItemDTO> itemsData,
-            double subtotal,
-            double discount,
-            int userId) throws ParseException {
-        
-        // Validate inputs
-        validateSaleInputs(customer, paymentMethodStr, paymentDateStr, itemsData);
-        
-        // Convert items DTOs to SaleItems
-        List<SaleItem> items = convertItemDTOsToEntities(itemsData);
-        
-        // Get user
-        User user = userController.findUserById(userId);
-        
-        // Parse the payment date
-        LocalDateTime paymentDateTime = null;
-        if (paymentDateStr != null && !paymentDateStr.trim().isEmpty()) {
-            paymentDateTime = convertStringToLocalDateTime(paymentDateStr);
-        }
-        
-        // Convert string payment method to enum
-        PaymentMethod paymentMethod = PaymentMethod.valueOf(paymentMethodStr);
-        
-        // Delegate to the service layer to prepare the sale for update
-        return saleService.prepareSaleForUpdate(
-                saleId,
-                createdAt,
-                saleDate,
-                customer,
-                paymentMethod,
-                paymentDateTime,
-                items,
+          * @param subtotal The subtotal amount
+          * @param discount The discount amount
+          * @param user The user creating the sale
+          * @return A prepared Sale object
+          * @throws ParseException If the payment date cannot be parsed
+          */
+         public Sale prepareSaleObject(Customer customer, String paymentMethodStr,
+                 String paymentDateStr, List<SaleItemDTO> items, double subtotal,
+                 double discount, User user) throws ParseException {
+             
+             // Parse the payment date
+             LocalDateTime paymentDateTime = null;
+             if (paymentDateStr != null && !paymentDateStr.trim().isEmpty()) {
+                 paymentDateTime = convertStringToLocalDateTime(paymentDateStr);
+             }
+             
+             // Convert string payment method to enum
+             PaymentMethod paymentMethod = PaymentMethod.valueOf(paymentMethodStr);
+             
+             // Delegate to the service layer to prepare the new sale
+             return saleService.prepareSaleObject(
+                     customer,
+                     paymentMethod,
+                     paymentDateTime,
+                     items,
                 subtotal,
                 discount,
                 user);
@@ -388,15 +328,27 @@ public class SaleController {
         // Validate inputs
         validateSaleInputs(customer, paymentMethodStr, paymentDateStr, itemsData);
         
-        // Convert items DTOs to SaleItems
-        List<SaleItem> items = convertItemDTOsToEntities(itemsData);
-        
         // Get user
         User user = userController.findUserById(userId);
         
-        // Delegate to existing method
-        return prepareSaleObject(customer, paymentMethodStr, paymentDateStr, 
-                items, subtotal, discount, user);
+        // Parse the payment date
+        LocalDateTime paymentDateTime = null;
+        if (paymentDateStr != null && !paymentDateStr.trim().isEmpty()) {
+            paymentDateTime = convertStringToLocalDateTime(paymentDateStr);
+        }
+        
+        // Convert string payment method to enum
+        PaymentMethod paymentMethod = PaymentMethod.valueOf(paymentMethodStr);
+        
+        // Delegate directly to the service layer method with correct parameters
+        return saleService.prepareSaleObject(
+                customer,
+                paymentMethod,
+                paymentDateTime,
+                itemsData,
+                subtotal,
+                discount,
+                user);
     }
     
     /**
@@ -410,7 +362,7 @@ public class SaleController {
         }
         
         // Validate payment method
-        if (paymentMethodStr == null || paymentMethodStr.equals("Selecione")) {
+        if (paymentMethodStr == null || "Selecione".equals(paymentMethodStr)) {
             throw new IllegalArgumentException("É necessário selecionar uma forma de pagamento.");
         }
         
@@ -535,5 +487,53 @@ public class SaleController {
         Map<String, Object> filters = new HashMap<>();
         filters.put("customerId", customerId);
         return saleService.listSalesWithFilters(filters);
+    }
+
+    /**
+     * Finds a sale by ID and eagerly loads its items collection.
+     * 
+     * @param saleId The ID of the sale to find
+     * @return The sale with its items collection loaded, or null if not found
+     */
+    public Sale findSaleByIdWithItems(Integer saleId) {
+        try {
+            System.out.println("Fetching sale with ID: " + saleId);
+            SaleService saleService = new SaleService();
+            Sale sale = saleService.findSaleByIdWithItems(saleId);
+            if (sale != null) {
+                System.out.println("Sale found successfully: " + sale.getId());
+            } else {
+                System.err.println("Sale not found with ID: " + saleId);
+            }
+            return sale;
+        } catch (Exception e) {
+            System.err.println("Error fetching sale with items: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Finds all items for a specific sale
+     * 
+     * @param saleId The ID of the sale
+     * @return List of items for the sale
+     */
+    public List<SaleItem> findItemsBySaleId(Integer saleId) {
+        try {
+            System.out.println("Fetching items for sale with ID: " + saleId);
+            Sale sale = findSaleByIdWithItems(saleId);
+            if (sale != null && sale.getItems() != null) {
+                System.out.println("Found " + sale.getItems().size() + " items for sale ID: " + saleId);
+                return sale.getItems();
+            } else {
+                System.err.println("No items found for sale ID: " + saleId);
+                return new ArrayList<>();
+            }
+        } catch (Exception e) {
+            System.err.println("Error fetching items for sale: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 }

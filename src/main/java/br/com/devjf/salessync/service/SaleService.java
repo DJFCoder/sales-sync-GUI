@@ -11,6 +11,7 @@ import java.util.Map;
 
 import br.com.devjf.salessync.dao.SaleDAO;
 import br.com.devjf.salessync.dao.SaleItemDAO;
+import br.com.devjf.salessync.dto.SaleItemDTO;
 import br.com.devjf.salessync.model.Customer;
 import br.com.devjf.salessync.model.PaymentMethod;
 import br.com.devjf.salessync.model.Sale;
@@ -417,6 +418,23 @@ public class SaleService {
     }
 
     /**
+     * Finds a sale by ID and eagerly loads its items collection.
+     * 
+     * @param saleId The ID of the sale to find
+     * @return The sale with its items collection loaded, or null if not found
+     */
+    public Sale findSaleByIdWithItems(Integer saleId) {
+        try {
+            Sale sale = this.saleDAO.findByIdWithItems(saleId);
+            return sale;
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar venda com itens: " + e.getMessage());
+            e.printStackTrace(); // Add stack trace for better debugging
+            return null;
+        }
+    }
+
+    /**
      * Prepares a new Sale object with the provided data
      *
      * @param customer The customer for the sale
@@ -429,7 +447,7 @@ public class SaleService {
      * @return A prepared Sale object
      */
     public Sale prepareSaleObject(Customer customer, PaymentMethod paymentMethod,
-            LocalDateTime paymentDate, List<SaleItem> items, double subtotal,
+            LocalDateTime paymentDate, List<SaleItemDTO> items, double subtotal,
             double discount, User user) {
         
         // Create a new sale
@@ -457,11 +475,11 @@ public class SaleService {
         
         // Set the items
         List<SaleItem> saleItems = new ArrayList<>();
-        for (SaleItem item : items) {
+        for (SaleItemDTO item : items) {
             SaleItem newItem = new SaleItem();
             newItem.setDescription(item.getDescription());
             newItem.setQuantity(item.getQuantity());
-            newItem.setUnitPrice(item.getUnitPrice());
+            newItem.setUnitPrice(item.getPrice());
             newItem.setSale(sale);
             saleItems.add(newItem);
         }

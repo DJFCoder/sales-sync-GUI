@@ -45,6 +45,7 @@ public class PanelFactory {
             ServiceOrder serviceOrder = null;
             Expense expense = null;
             User user = null;
+            Integer id = null;
             // Check each object and assign to the appropriate variable
             for (Object obj : objects) {
                 if (obj instanceof Sale) {
@@ -57,6 +58,8 @@ public class PanelFactory {
                     expense = (Expense) obj;
                 } else if (obj instanceof User) {
                     user = (User) obj;
+                } else if (obj instanceof Integer) {
+                    id = (Integer) obj;
                 }
             }
             JFrame form = null;
@@ -90,13 +93,11 @@ public class PanelFactory {
                     form = new NewSaleForm();
                     break;
                 case MainAppView.EDIT_SALE_PANEL:
-                    if (sale != null) {
-                        form = new NewSaleForm(sale.getId());
-                    } else {
+                    if(id == null){
                         System.err.println(
-                                "Erro: Tentativa de editar venda sem fornecer objeto Sale");
-                        return null;
+                                "Erro: Tentativa de editar venda sem fornecer o ID correto");
                     }
+                    form = new NewSaleForm(id);
                     break;
                 case MainAppView.NEW_CUSTOMER_PANEL:
                     form = new NewCustomerForm();

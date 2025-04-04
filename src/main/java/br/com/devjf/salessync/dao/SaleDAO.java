@@ -191,4 +191,35 @@ public class SaleDAO implements DAO<Sale> {
             em.close();
         }
     }
+
+    /**
+     * Finds a sale by ID and eagerly loads its items collection.
+     * 
+     * @param saleId The ID of the sale to find
+     * @return The sale with its items collection loaded, or null if not found
+     */
+    public Sale findByIdWithItems(Integer saleId) {
+        EntityManager em = HibernateUtil.getEntityManager();
+        try {
+            // Create a query that eagerly fetches the items collection
+            TypedQuery<Sale> query = em.createQuery(
+                "SELECT s FROM Sale s LEFT JOIN FETCH s.items WHERE s.id = :id", 
+                Sale.class);
+            query.setParameter("id", saleId);
+            
+            try {
+                Sale sale = query.getSingleResult();
+                return sale;
+            } catch (NoResultException e) {
+                System.err.println("Venda não encontrada com ID: " + saleId);
+                return null;
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar venda com itens: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        } finally {
+            em.close();
+        }
+    }
 }
