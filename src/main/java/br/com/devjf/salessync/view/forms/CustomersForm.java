@@ -14,7 +14,6 @@ import br.com.devjf.salessync.view.components.table.TableEditButtonEditor;
 import br.com.devjf.salessync.view.components.table.TableEditButtonRenderer;
 import br.com.devjf.salessync.view.components.table.TableFormInterface;
 import br.com.devjf.salessync.view.components.table.TableManager;
-import br.com.devjf.salessync.view.forms.newobjectforms.NewCustomerForm;
 import java.awt.HeadlessException;
 
 public class CustomersForm extends javax.swing.JFrame implements TableFormInterface {

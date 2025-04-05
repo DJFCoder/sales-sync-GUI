@@ -143,6 +143,9 @@
               <Dimension value="[150, 40]"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cancelServiceOrderButtonActionPerformed"/>
+          </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(cancelServiceOrderButton);"/>
           </AuxValues>

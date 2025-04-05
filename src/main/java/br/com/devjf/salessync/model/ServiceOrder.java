@@ -20,7 +20,7 @@ public class ServiceOrder {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
     @Column(name = "creation_date", nullable = false)
-    private LocalDate creationDate;
+    private LocalDateTime creationDate;
     @Column(name = "completion_date")
     private LocalDate completionDate;
     @Enumerated(EnumType.STRING)
@@ -36,7 +36,7 @@ public class ServiceOrder {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         if (this.creationDate == null) {
-            this.creationDate = LocalDate.now();
+            this.creationDate = LocalDateTime.now();
         }
         if (this.status == null) {
             this.status = ServiceStatus.PENDING;
@@ -60,7 +60,7 @@ public class ServiceOrder {
         this.customer = customer;
         this.sale = sale;
         this.description = description;
-        this.creationDate = LocalDate.now();
+        this.creationDate = LocalDateTime.now();
         this.status = ServiceStatus.PENDING;
     }
 
@@ -115,11 +115,11 @@ public class ServiceOrder {
         this.description = description;
     }
 
-    public LocalDate getCreationDate() {
+    public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(LocalDate creationDate) {
+    public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
 

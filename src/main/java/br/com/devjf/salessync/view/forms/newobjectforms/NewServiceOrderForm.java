@@ -33,8 +33,6 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
         this.serviceOrderController = new ServiceOrderController();
         this.customerController = new CustomerController();
         this.saleController = new SaleController();
-        // Initialize the sale combo box
-        saleIdCmb.addItem("Selecione");
         initForNewOs();
     }
 
@@ -45,7 +43,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
      */
     public NewServiceOrderForm(Integer serviceOrderId) {
         initComponents();
-        setupStatusComboBox();
+        isEditMode = true;
         this.serviceOrderController = new ServiceOrderController();
         this.customerController = new CustomerController();
         this.saleController = new SaleController();
@@ -76,13 +74,9 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
                     if (sale.getCustomer() != null && sale.getCustomer().getId().equals(
                             customerId)) {
                         filteredSales.add(sale);
+                        // Adicionar log para debug
                         System.out.println(
-                                "Venda ID: " + sale.getId() + " pertence ao cliente ID: " + sale.getCustomer().getId());
-                    } else {
-                        System.out.println(
-                                "Venda ID: " + sale.getId() + " NÃO pertence ao cliente ID: "
-                                + (sale.getCustomer() != null ? sale.getCustomer().getId() : "null")
-                                + " - Ignorando");
+                                "Adicionando venda ID: " + sale.getId() + " para cliente ID: " + customerId);
                     }
                 }
                 // Usar a lista filtrada
@@ -102,6 +96,38 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
                 }
                 System.out.println(
                         "Carregadas " + filteredSales.size() + " vendas filtradas para o cliente ID: " + customerId);
+                // Se estiver em modo de edição e tiver uma venda associada, selecionar a venda no combobox
+                if (isEditMode && serviceOrderToCreate != null && serviceOrderToCreate.getSale() != null) {
+                    String saleId = String.valueOf(
+                            serviceOrderToCreate.getSale().getId());
+                    System.out.println(
+                            "Tentando selecionar venda ID: " + saleId + " no combobox");
+                    boolean found = false;
+                    for (int i = 0; i < saleIdCmb.getItemCount(); i++) {
+                        String item = saleIdCmb.getItemAt(i);
+                        System.out.println("Item " + i + " no combobox: " + item);
+                        if (item.equals(saleId)) {
+                            saleIdCmb.setSelectedIndex(i);
+                            System.out.println(
+                                    "Venda ID: " + saleId + " selecionada no índice " + i);
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        System.out.println(
+                                "AVISO: Venda ID " + saleId + " não encontrada no combobox!");
+                        // Se a venda não estiver no combobox, adicione-a
+                        Sale sale = serviceOrderToCreate.getSale();
+                        if (sale != null) {
+                            saleIdCmb.addItem(String.valueOf(sale.getId()));
+                            saleIdCmb.setSelectedItem(String.valueOf(
+                                    sale.getId()));
+                            System.out.println(
+                                    "Venda ID: " + sale.getId() + " adicionada e selecionada no combobox");
+                        }
+                    }
+                }
             } else {
                 JOptionPane.showMessageDialog(this,
                         "Cliente não possui vendas cadastradas",
@@ -156,23 +182,29 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
             serviceOrderToCreate = null;
             return;
         }
-        isEditMode = true;
         serviceOrderToCreate = serviceOrderController.findServiceOrderById(
                 serviceOrderId);
-        titleField.setText(
-                isEditMode ? "Atualizar" : "Salvar");
+        saveBtn.setText("Atualizar");
         // Preencher os campos com os dados da ordem de serviço
         idField.setText(String.valueOf(serviceOrderToCreate.getId()));
         // Configurar o cliente selecionado
         selectedCustomer = serviceOrderToCreate.getCustomer();
         if (selectedCustomer != null) {
             customerField.setText(selectedCustomer.getName());
-            // Carregar as vendas do cliente
-            loadCustomerSales(selectedCustomer.getId());
-            // Carregar o status usando o método helper
-            loadStatusEnum();
             // Preencher a descrição
             descriptionField.setText(serviceOrderToCreate.getDescription());
+            // Carregar o status usando o método helper
+            loadStatusEnum();
+            // Verificar se a ordem de serviço tem uma venda associada
+            if (serviceOrderToCreate.getSale() != null) {
+                System.out.println("Ordem de serviço tem venda associada ID: "
+                        + serviceOrderToCreate.getSale().getId());
+            } else {
+                System.out.println(
+                        "AVISO: Ordem de serviço não tem venda associada!");
+            }
+            // Carregar as vendas do cliente
+            loadCustomerSales(selectedCustomer.getId());
         }
     }
 
@@ -355,9 +387,10 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
             }
         });
 
+        saleIdCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecione" }));
         saleIdCmb.setPreferredSize(new java.awt.Dimension(180, 40));
 
-        statusCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PENDENTE", "EM ANDAMENTO", "CANCELADA", "FINALIZADA" }));
+        statusCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PENDENTE", "EM ANDAMENTO", "FINALIZADA" }));
         statusCmb.setPreferredSize(new java.awt.Dimension(180, 40));
 
         javax.swing.GroupLayout serviceOrderPnlLayout = new javax.swing.GroupLayout(serviceOrderPnl);
@@ -482,6 +515,12 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         saveBtn.setEnabled(false);
         try {
+            if (isEditMode == true) {
+                String saleIdStr = saleIdCmb.getSelectedItem().toString();
+                Integer saleId = Integer.valueOf(saleIdStr);
+                Sale sale = saleController.findSaleById(saleId);
+                serviceOrderToCreate.setSale(sale);
+            }
             // Validate all required fields
             ServiceOrderFormValidator.validateAllFields(
                     selectedCustomer,
@@ -492,10 +531,6 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-            }
-            // Make sure we have a service order object to work with
-            if (serviceOrderToCreate == null) {
-                serviceOrderToCreate = new ServiceOrder();
             }
             // Update service order information from form fields BEFORE starting the SwingWorker
             serviceOrderToCreate.setCustomer(selectedCustomer);
@@ -578,7 +613,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
                                 // Redirect to service orders panel
                                 MainAppView.redirectToPanel(
                                         MainAppView.SERVICE_ORDERS_PANEL);
-                                ServiceOrdersForm.
+                                ServiceOrdersForm.getInstance().refreshTable();
                             }
                         } else if (errorMessage != null) {
                             System.err.println(
@@ -602,6 +637,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
                         // Restore the default cursor
                         setCursor(Cursor.getDefaultCursor());
                         saveBtn.setEnabled(true);
+                        initForNewOs();
                     }
                 }
             }.execute();

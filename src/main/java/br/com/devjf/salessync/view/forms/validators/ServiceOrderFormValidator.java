@@ -28,9 +28,15 @@ public class ServiceOrderFormValidator {
      * @param saleCombo The status combo box
      * @throws IllegalStateException if no status is selected
      */
-    public static void validateStatus(JComboBox<String> saleCombo) throws IllegalStateException {
-        if (saleCombo.getSelectedIndex() == 0 || "Selecione".equals(saleCombo.getSelectedItem().toString())) {
-            throw new IllegalStateException("É necessário selecionar uma venda.");
+    public static void validateSale(JComboBox<String> saleCombo) throws IllegalStateException {
+        // Check if there's a selected item
+        if (saleCombo.getSelectedItem() == null) {
+            throw new IllegalStateException("É necessário selecionar uma venda. 'null'");
+        }
+        
+        // Check if the selected index is valid and not the default "Selecione" option
+        if (saleCombo.getSelectedIndex() <= 0 || "Selecione".equals(saleCombo.getSelectedItem().toString())) {
+            throw new IllegalStateException("É necessário selecionar uma venda. 'selecione'");
         }
     }
     
@@ -43,8 +49,8 @@ public class ServiceOrderFormValidator {
     public static void validateDescription(JTextArea descriptionField) throws IllegalStateException {
         String description = descriptionField.getText();
         // Description is optional, but if provided, check length
-        if (description != null && description.length() > 1000) {
-            throw new IllegalStateException("A descrição não pode exceder 1000 caracteres.");
+        if (description != null && description.length() > 600) {
+            throw new IllegalStateException("A descrição não pode exceder 600 caracteres.");
         }
     }
     
@@ -61,7 +67,7 @@ public class ServiceOrderFormValidator {
             JComboBox<String> saleCombo,
             JTextArea descriptionField) throws IllegalStateException {
         validateCustomer(customer);
-        validateStatus(saleCombo);
+        validateSale(saleCombo);
         validateDescription(descriptionField);
     }
 }

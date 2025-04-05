@@ -15,7 +15,6 @@ import br.com.devjf.salessync.view.components.table.TableEditButtonRenderer;
 import br.com.devjf.salessync.view.components.table.TableFormInterface;
 import br.com.devjf.salessync.view.components.table.TableManager;
 import java.awt.HeadlessException;
-import javax.swing.JTable;
 
 public class SalesForm extends javax.swing.JFrame implements TableFormInterface {
     private static SalesForm instance;
