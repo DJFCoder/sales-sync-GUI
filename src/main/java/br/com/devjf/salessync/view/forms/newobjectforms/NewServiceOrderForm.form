@@ -88,7 +88,7 @@
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(serviceOrderPnl);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewComponentStyle.standardCornerRadius(serviceOrderPnl);"/>
           </AuxValues>
 
           <Layout>
@@ -199,7 +199,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cancelBtnActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(cancelBtn);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewComponentStyle.standardCornerRadius(cancelBtn);"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JButton" name="saveBtn">
@@ -222,7 +222,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveBtnActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(saveBtn);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewComponentStyle.standardCornerRadius(saveBtn);"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JTextField" name="idField">
@@ -233,7 +233,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(idField);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewComponentStyle.standardCornerRadius(idField);"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="idLbl">
@@ -249,7 +249,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(customerField);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewComponentStyle.standardCornerRadius(customerField);"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="taxIdLbl">
@@ -307,7 +307,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="findCustomerBtnActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="br.com.devjf.salessync.util.ViewComponentStyle.standardCornerRadius(findCustomerBtn);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ViewComponentStyle.standardCornerRadius(findCustomerBtn);"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JComboBox" name="saleIdCmb">
@@ -326,12 +326,11 @@
             <Component class="javax.swing.JComboBox" name="statusCmb">
               <Properties>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="5">
-                    <StringItem index="0" value="Selecione"/>
-                    <StringItem index="1" value="PENDENTE"/>
-                    <StringItem index="2" value="EM ANDAMENTO"/>
-                    <StringItem index="3" value="CANCELADA"/>
-                    <StringItem index="4" value="FINALIZADA"/>
+                  <StringArray count="4">
+                    <StringItem index="0" value="PENDENTE"/>
+                    <StringItem index="1" value="EM ANDAMENTO"/>
+                    <StringItem index="2" value="CANCELADA"/>
+                    <StringItem index="3" value="FINALIZADA"/>
                   </StringArray>
                 </Property>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">

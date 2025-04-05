@@ -18,19 +18,19 @@ public class ServiceOrderFormValidator {
      */
     public static void validateCustomer(Customer customer) throws IllegalStateException {
         if (customer == null) {
-            throw new IllegalStateException("Por favor, selecione um cliente.");
+            throw new IllegalStateException("É necessário selecionar um cliente.");
         }
     }
     
     /**
      * Validates the status selection.
      * 
-     * @param statusCombo The status combo box
+     * @param saleCombo The status combo box
      * @throws IllegalStateException if no status is selected
      */
-    public static void validateStatus(JComboBox<String> statusCombo) throws IllegalStateException {
-        if (statusCombo.getSelectedIndex() == 0) {
-            throw new IllegalStateException("Por favor, selecione um status.");
+    public static void validateStatus(JComboBox<String> saleCombo) throws IllegalStateException {
+        if (saleCombo.getSelectedIndex() == 0 || "Selecione".equals(saleCombo.getSelectedItem().toString())) {
+            throw new IllegalStateException("É necessário selecionar uma venda.");
         }
     }
     
@@ -52,16 +52,16 @@ public class ServiceOrderFormValidator {
      * Validates all service order form fields at once.
      * 
      * @param customer The selected customer
-     * @param statusCombo The status combo box
+     * @param saleCombo The status combo box
      * @param descriptionField The description text area
      * @throws IllegalStateException if any validation fails
      */
     public static void validateAllFields(
             Customer customer,
-            JComboBox<String> statusCombo,
+            JComboBox<String> saleCombo,
             JTextArea descriptionField) throws IllegalStateException {
         validateCustomer(customer);
-        validateStatus(statusCombo);
+        validateStatus(saleCombo);
         validateDescription(descriptionField);
     }
 }

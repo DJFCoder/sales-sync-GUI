@@ -1,6 +1,7 @@
 package br.com.devjf.salessync.view.forms.newobjectforms;
 
 import java.awt.Cursor;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JOptionPane;
@@ -15,6 +16,7 @@ import br.com.devjf.salessync.model.ServiceStatus;
 import br.com.devjf.salessync.view.MainAppView;
 import br.com.devjf.salessync.view.components.CustomerSelectionDialog;
 import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
+import br.com.devjf.salessync.view.forms.ServiceOrdersForm;
 import br.com.devjf.salessync.view.forms.validators.ServiceOrderFormValidator;
 
 public class NewServiceOrderForm extends javax.swing.JFrame {
@@ -24,9 +26,10 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
     private final ServiceOrderController serviceOrderController;
     private final CustomerController customerController;
     private final SaleController saleController;
-    
+
     public NewServiceOrderForm() {
         initComponents();
+        setupStatusComboBox();
         this.serviceOrderController = new ServiceOrderController();
         this.customerController = new CustomerController();
         this.saleController = new SaleController();
@@ -42,51 +45,11 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
      */
     public NewServiceOrderForm(Integer serviceOrderId) {
         initComponents();
+        setupStatusComboBox();
         this.serviceOrderController = new ServiceOrderController();
         this.customerController = new CustomerController();
         this.saleController = new SaleController();
         loadOsFromDb(serviceOrderId);
-    }
-    
-    private void findCustomerBtnActionPerformed(java.awt.event.ActionEvent evt) {
-        // Disable the button and show wait cursor to indicate processing
-        findCustomerBtn.setEnabled(false);
-        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        // Use SwingWorker to perform database operation in background
-        SwingWorker<Customer, Void> worker = new SwingWorker<Customer, Void>() {
-            @Override
-            protected Customer doInBackground() throws Exception {
-                // Use the utility class to select a customer
-                return CustomerSelectionDialog.selectCustomer(
-                        NewServiceOrderForm.this);
-            }
-            
-            @Override
-            protected void done() {
-                try {
-                    // Get the selected customer from the background task
-                    Customer customer = get();
-                    // Update the form if a customer was selected
-                    if (customer != null) {
-                        selectedCustomer = customer;
-                        customerField.setText(selectedCustomer.getName());
-                        // Carregar as vendas do cliente
-                        loadCustomerSales(selectedCustomer.getId());
-                    }
-                } catch (InterruptedException | ExecutionException e) {
-                    JOptionPane.showMessageDialog(NewServiceOrderForm.this,
-                            "Erro ao buscar cliente: " + e.getMessage(),
-                            "Erro",
-                            JOptionPane.ERROR_MESSAGE);
-                } finally {
-                    // Restore cursor and enable button regardless of outcome
-                    setCursor(Cursor.getDefaultCursor());
-                    findCustomerBtn.setEnabled(true);
-                }
-            }
-        };
-        // Start the background task
-        worker.execute();
     }
 
     /**
@@ -100,45 +63,61 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
             saleIdCmb.removeItemAt(1);
         }
         if (customerId != null) {
-            // Buscar as vendas do cliente
-            List<Sale> sales = serviceOrderController.findSalesByCustomerId(
-                    customerId);
-            // Check if the list is empty (not null)
-            if (sales == null || sales.isEmpty()) {
+            System.out.println(
+                    "Buscando vendas para o cliente ID: " + customerId);
+            // Buscar as vendas do cliente usando o saleController
+            List<Sale> sales = saleController.findSalesByCustomerId(customerId);
+            // Verificar se as vendas retornadas pertencem ao cliente correto
+            if (sales != null && !sales.isEmpty()) {
+                System.out.println("Vendas encontradas: " + sales.size());
+                // Filtrar as vendas para garantir que apenas as do cliente selecionado sejam exibidas
+                List<Sale> filteredSales = new ArrayList<>();
+                for (Sale sale : sales) {
+                    if (sale.getCustomer() != null && sale.getCustomer().getId().equals(
+                            customerId)) {
+                        filteredSales.add(sale);
+                        System.out.println(
+                                "Venda ID: " + sale.getId() + " pertence ao cliente ID: " + sale.getCustomer().getId());
+                    } else {
+                        System.out.println(
+                                "Venda ID: " + sale.getId() + " NÃO pertence ao cliente ID: "
+                                + (sale.getCustomer() != null ? sale.getCustomer().getId() : "null")
+                                + " - Ignorando");
+                    }
+                }
+                // Usar a lista filtrada
+                if (filteredSales.isEmpty()) {
+                    JOptionPane.showMessageDialog(this,
+                            "Cliente não possui vendas cadastradas",
+                            "Informação",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    if (!isEditMode) {
+                        customerField.setText("");
+                    }
+                    return;
+                }
+                // Adicionar apenas as vendas filtradas ao combobox
+                for (Sale sale : filteredSales) {
+                    saleIdCmb.addItem(String.valueOf(sale.getId()));
+                }
+                System.out.println(
+                        "Carregadas " + filteredSales.size() + " vendas filtradas para o cliente ID: " + customerId);
+            } else {
                 JOptionPane.showMessageDialog(this,
                         "Cliente não possui vendas cadastradas",
                         "Informação",
                         JOptionPane.INFORMATION_MESSAGE);
-                customerField.setText("");
-                return;
-            }
-            // Adicionar as vendas ao combobox
-            for (Sale sale : sales) {
-                saleIdCmb.addItem(String.valueOf(sale.getId()));
+                if (!isEditMode) {
+                    customerField.setText("");
+                }
             }
         }
     }
-    
+
     private void loadStatusEnum() {
-        // Carregar o status - Mapeando enum em inglês para strings em português
+        // Carregar o status usando o displayName em português
         if (serviceOrderToCreate.getStatus() != null) {
-            String statusStr;
-            switch (serviceOrderToCreate.getStatus()) {
-                case PENDING:
-                    statusStr = "PENDENTE";
-                    break;
-                case IN_PROGRESS:
-                    statusStr = "EM ANDAMENTO";
-                    break;
-                case CANCELED:
-                    statusStr = "CANCELADA";
-                    break;
-                case COMPLETED:
-                    statusStr = "FINALIZADA";
-                    break;
-                default:
-                    statusStr = "Selecione";
-            }
+            String statusStr = serviceOrderToCreate.getStatus().getDisplayName();
             for (int i = 0; i < statusCmb.getItemCount(); i++) {
                 if (statusCmb.getItemAt(i).equals(statusStr)) {
                     statusCmb.setSelectedIndex(i);
@@ -152,7 +131,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
                     serviceOrderToCreate.getSale().getId()));
         }
     }
-    
+
     private ServiceStatus getStatusEnum() {
         // Configurar o status - Mapeando strings em português para enum em inglês
         String statusStr = statusCmb.getSelectedItem().toString();
@@ -170,7 +149,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
                         "Status inválido: " + statusStr);
         }
     }
-    
+
     private void loadOsFromDb(Integer serviceOrderId) {
         // Carregar a ordem de serviço do banco de dados usando o controller
         if (serviceOrderId == null) {
@@ -196,7 +175,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
             descriptionField.setText(serviceOrderToCreate.getDescription());
         }
     }
-    
+
     private void initForNewOs() {
         isEditMode = false;
         serviceOrderToCreate = new ServiceOrder();
@@ -206,6 +185,13 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
         saleIdCmb.setSelectedIndex(0);
         descriptionField.setText("");
         saveBtn.setText("Salvar");
+    }
+
+    private void setupStatusComboBox() {
+        statusCmb.removeAllItems();
+        for (ServiceStatus status : ServiceStatus.values()) {
+            statusCmb.addItem(status.getDisplayName());
+        }
     }
 
     /**
@@ -222,7 +208,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
         // Use SwingWorker to avoid freezing the UI
         new SwingWorker<Boolean, Void>() {
             private String errorMessage = null;
-            
+
             @Override
             protected Boolean doInBackground() throws Exception {
                 try {
@@ -237,7 +223,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
                     return false;
                 }
             }
-            
+
             @Override
             protected void done() {
                 try {
@@ -280,7 +266,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
             }
         }.execute();
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -371,7 +357,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
 
         saleIdCmb.setPreferredSize(new java.awt.Dimension(180, 40));
 
-        statusCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecione", "PENDENTE", "EM ANDAMENTO", "CANCELADA", "FINALIZADA" }));
+        statusCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PENDENTE", "EM ANDAMENTO", "CANCELADA", "FINALIZADA" }));
         statusCmb.setPreferredSize(new java.awt.Dimension(180, 40));
 
         javax.swing.GroupLayout serviceOrderPnlLayout = new javax.swing.GroupLayout(serviceOrderPnl);
@@ -499,7 +485,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
             // Validate all required fields
             ServiceOrderFormValidator.validateAllFields(
                     selectedCustomer,
-                    statusCmb,
+                    saleIdCmb,
                     descriptionField);
             // If validation passes, add a small delay to ensure any previous transactions are complete
             try {
@@ -531,7 +517,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
             // Use SwingWorker to avoid freezing the UI
             new SwingWorker<Boolean, Void>() {
                 private String errorMessage = null;
-                
+
                 @Override
                 protected Boolean doInBackground() throws Exception {
                     try {
@@ -564,7 +550,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
                         return false;
                     }
                 }
-                
+
                 @Override
                 protected void done() {
                     try {
@@ -578,7 +564,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
                                         preparedServiceOrder.getId(),
                                         preparedServiceOrder.getCustomer().getName());
                             } else {
-                                // Log the activity if MainAppView has an instance method
+                                // Log the activity ONLY if the operation was successful
                                 if (MainAppView.getInstance() != null) {
                                     MainAppView.getInstance().registerUserActivity(
                                             (finalIsEditMode ? "Atualizou" : "Registrou") + " a ordem de serviço para o cliente: "
@@ -592,6 +578,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
                                 // Redirect to service orders panel
                                 MainAppView.redirectToPanel(
                                         MainAppView.SERVICE_ORDERS_PANEL);
+                                ServiceOrdersForm.
                             }
                         } else if (errorMessage != null) {
                             System.err.println(
@@ -603,6 +590,7 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
                                     JOptionPane.ERROR_MESSAGE);
                         }
                     } catch (InterruptedException | ExecutionException e) {
+                        // Handle exceptions without logging activity
                         System.err.println(
                                 "Exception in done(): " + e.getMessage());
                         e.printStackTrace();
@@ -629,6 +617,47 @@ public class NewServiceOrderForm extends javax.swing.JFrame {
             saveBtn.setEnabled(true);
         }
     }//GEN-LAST:event_saveBtnActionPerformed
+
+    private void findCustomerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findCustomerBtnActionPerformed
+        // Disable the button and show wait cursor to indicate processing
+        findCustomerBtn.setEnabled(false);
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        // Use SwingWorker to perform database operation in background
+        SwingWorker<Customer, Void> worker = new SwingWorker<Customer, Void>() {
+            @Override
+            protected Customer doInBackground() throws Exception {
+                // Use the utility class to select a customer
+                return CustomerSelectionDialog.selectCustomer(
+                        NewServiceOrderForm.this);
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    // Get the selected customer from the background task
+                    Customer customer = get();
+                    // Update the form if a customer was selected
+                    if (customer != null) {
+                        selectedCustomer = customer;
+                        customerField.setText(selectedCustomer.getName());
+                        // Carregar as vendas do cliente
+                        loadCustomerSales(selectedCustomer.getId());
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    JOptionPane.showMessageDialog(NewServiceOrderForm.this,
+                            "Erro ao buscar cliente: " + e.getMessage(),
+                            "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                } finally {
+                    // Restore cursor and enable button regardless of outcome
+                    setCursor(Cursor.getDefaultCursor());
+                    findCustomerBtn.setEnabled(true);
+                }
+            }
+        };
+        // Start the background task
+        worker.execute();
+    }//GEN-LAST:event_findCustomerBtnActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelBtn;
