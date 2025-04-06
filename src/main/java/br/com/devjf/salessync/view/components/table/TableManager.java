@@ -1,6 +1,7 @@
 package br.com.devjf.salessync.view.components.table;
 
 import java.awt.Component;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -39,18 +40,60 @@ public class TableManager {
      */
     public static DefaultTableModel setupTableModel(JTable table, String[] columnNames,
             Class<?>[] columnClasses, boolean[] editableColumns) {
+        // Extensive validation
+        if (columnNames == null || columnClasses == null || editableColumns == null) {
+            throw new IllegalArgumentException(
+                    "Parâmetros de configuração da tabela não podem ser nulos");
+        }
+        // Validate column configuration
+        if (columnNames.length != columnClasses.length
+                || columnNames.length != editableColumns.length) {
+            throw new IllegalStateException(
+                    "Número de colunas inconsistente: "
+                    + columnNames.length + " nomes, "
+                    + columnClasses.length + " classes, "
+                    + editableColumns.length + " editabilidade"
+            );
+        }
+        // Custom DefaultTableModel with extensive error checking
         DefaultTableModel model = new DefaultTableModel(null,
                 columnNames) {
             @Override
             public Class<?> getColumnClass(int columnIndex) {
-                return columnClasses[columnIndex];
+                try {
+                    return columnClasses[columnIndex];
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    System.err.println(
+                            "ERRO: Índice de coluna inválido: " + columnIndex);
+                    System.err.println(
+                            "Número total de classes: " + columnClasses.length);
+                    throw new RuntimeException(
+                            "Índice de coluna inválido: " + columnIndex,
+                            e);
+                }
             }
 
             @Override
             public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return editableColumns != null && editableColumns[columnIndex];
+                try {
+                    return editableColumns != null && editableColumns[columnIndex];
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    System.err.println(
+                            "ERRO: Índice de coluna inválido para editabilidade: " + columnIndex);
+                    System.err.println(
+                            "Número total de colunas editáveis: " + editableColumns.length);
+                    throw new RuntimeException(
+                            "Índice de coluna inválido para editabilidade: " + columnIndex,
+                            e);
+                }
             }
         };
+        // Additional validation after model creation
+        if (model.getColumnCount() != columnNames.length) {
+            throw new IllegalStateException(
+                    "Número de colunas inconsistente após criação do modelo");
+        }
+        // Set the model to the table
         table.setModel(model);
         return model;
     }
@@ -153,7 +196,18 @@ public class TableManager {
      * @return A string formatada ou uma string vazia se a data for nula
      */
     public static String formatDate(LocalDateTime dateTime) {
-        return dateTime != null ? dateTime.format(DEFAULT_DATE_ONLY_FORMATTER) : "";
+        return dateTime != null ? dateTime.toLocalDate().format(
+                DEFAULT_DATE_ONLY_FORMATTER) : "";
+    }
+
+    /**
+     * Formata uma data LocalDate para exibição na tabela (sem a hora).
+     *
+     * @param date A data a ser formatada
+     * @return A string formatada ou uma string vazia se a data for nula
+     */
+    public static String formatDate(LocalDate date) {
+        return date != null ? date.format(DEFAULT_DATE_ONLY_FORMATTER) : "";
     }
 
     /**
@@ -230,13 +284,30 @@ public class TableManager {
     }
 
     /**
-     * Adiciona uma linha à tabela.
+     * Adiciona uma nova linha a um modelo de tabela.
      *
      * @param model O modelo de tabela
-     * @param rowData Os dados da linha a ser adicionada
+     * @param rowData Os dados da linha a serem adicionados
      */
     public static void addRow(DefaultTableModel model, Object[] rowData) {
-        model.addRow(rowData);
+        if (model == null) {
+            System.err.println("Modelo de tabela não pode ser nulo");
+            return;
+        }
+        // Validate row data
+        if (rowData == null || rowData.length != model.getColumnCount()) {
+            System.err.println("Dados da linha inválidos. Esperado "
+                    + model.getColumnCount() + " colunas, recebido "
+                    + (rowData != null ? rowData.length : "null"));
+            return;
+        }
+        try {
+            model.addRow(rowData);
+        } catch (Exception e) {
+            System.err.println(
+                    "Erro ao adicionar linha à tabela: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**

@@ -65,7 +65,7 @@ CREATE TABLE expenses (
     amount DECIMAL(10,2) NOT NULL,
     date DATE NOT NULL,
     category_id INT,
-    recurrence_type ENUM('DAILY', 'WEEKLY', 'MONTHLY', 'ANNUAL'),
+    recurrence_type ENUM('DAILY', 'WEEKLY', 'MONTHLY', 'ANNUAL') NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES expense_categories(id)

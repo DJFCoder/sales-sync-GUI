@@ -1,5 +1,7 @@
 package br.com.devjf.salessync.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -482,7 +484,7 @@ public class ReportService {
         double netCashFlow = totalIncome - totalExpenses;
         // Agrupar por dia
         Map<LocalDate, Double> dailyIncome = new HashMap<>();
-        Map<LocalDate, Double> dailyExpenses = new HashMap<>();
+        Map<LocalDateTime, Double> dailyExpenses = new HashMap<>();
         Map<LocalDate, Double> dailyNetCashFlow = new HashMap<>();
         for (Sale sale : sales) {
             LocalDate saleDate = sale.getDate().toLocalDate();
@@ -491,7 +493,7 @@ public class ReportService {
                             0.0) + sale.getTotalAmount());
         }
         for (Expense expense : expenses) {
-            LocalDate expenseDate = expense.getDate();
+            LocalDateTime expenseDate = expense.getDate();
             dailyExpenses.put(expenseDate,
                     dailyExpenses.getOrDefault(expenseDate,
                             0.0) + expense.getAmount());
@@ -525,40 +527,90 @@ public class ReportService {
                 dailyNetCashFlow);
         return result;
     }
-//    /**
-//     * Gera um relatório resumo de impostos.
-//     *
-//     * @param parameters Os parâmetros para o relatório
-//     * @return Um mapa contendo os dados do resumo de impostos
-//     */
-//    public Map<String, Object> generateTaxSummaryReport(Map<String, Object> parameters) {
-//        Map<String, Object> result = new HashMap<>();
-//        // Extrair parâmetros
-//        LocalDate startDate = (LocalDate) parameters.getOrDefault("startDate",
-//                LocalDate.now().minusMonths(1));
-//        LocalDate endDate = (LocalDate) parameters.getOrDefault("endDate",
-//                LocalDate.now());
-//        // Converter LocalDate para LocalDateTime para consulta de vendas
-//        LocalDateTime startDateTime = startDate.atStartOfDay();
-//        LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay().minusNanos(
-//                1);
-//        // Obter vendas para o período
-//        List<Sale> sales = saleDAO.findByDateRange(startDateTime,
-//                endDateTime);
-//        // Calcular impostos (assumindo que cada venda tem um campo de imposto)
-//        double totalTax = sales.stream().mapToDouble(sale -> sale.getTaxAmount()).sum();
-//        double totalRevenue = sales.stream().mapToDouble(Sale::getTotalAmount).sum();
-//        // Preencher resultado
-//        result.put("startDate",
-//                startDate);
-//        result.put("endDate",
-//                endDate);
-//        result.put("totalTax",
-//                totalTax);
-//        result.put("totalRevenue",
-//                totalRevenue);
-//        result.put("taxPercentage",
-//                (totalTax / totalRevenue) * 100);
-//        return result;
-//    }
+
+    /**
+     * Enum para definir o tipo de negócio para cálculo de impostos.
+     */
+    public enum BusinessType {
+        PRODUCT_SALES,   // Venda de mercadorias e produtos
+        SERVICE_BASED    // Serviços como manutenção, contabilidade, etc.
+    }
+
+    /**
+     * Classe interna para representar a faixa de tributação.
+     */
+    private static class TaxBracket {
+        final BigDecimal minValue;
+        final BigDecimal maxValue;
+        final BigDecimal taxRate;
+        final BigDecimal deduction;
+
+        TaxBracket(double minValue, double maxValue, double taxRate, double deduction) {
+            this.minValue = BigDecimal.valueOf(minValue);
+            this.maxValue = BigDecimal.valueOf(maxValue);
+            this.taxRate = BigDecimal.valueOf(taxRate / 100);
+            this.deduction = BigDecimal.valueOf(deduction);
+        }
+    }
+
+    // Faixas de tributação para vendas de produtos
+    private static final TaxBracket[] PRODUCT_TAX_BRACKETS = {
+        new TaxBracket(0, 180_000.00, 4.00, 0.00),
+        new TaxBracket(180_000.01, 360_000.00, 7.30, 5_940.00),
+        new TaxBracket(360_000.01, 720_000.00, 9.50, 13_860.00),
+        new TaxBracket(720_000.01, 1_800_000.00, 10.70, 22_500.00),
+        new TaxBracket(1_800_000.01, 3_600_000.00, 14.30, 87_300.00),
+        new TaxBracket(3_600_000.01, 4_800_000.00, 19.00, 378_000.00)
+    };
+
+    // Faixas de tributação para serviços
+    private static final TaxBracket[] SERVICE_TAX_BRACKETS = {
+        new TaxBracket(0, 180_000.00, 6.00, 0.00),
+        new TaxBracket(180_000.01, 360_000.00, 11.20, 9_360.00),
+        new TaxBracket(360_000.01, 720_000.00, 13.50, 17_640.00),
+        new TaxBracket(720_000.01, 1_800_000.00, 16.00, 35_640.00),
+        new TaxBracket(1_800_000.01, 3_600_000.00, 21.00, 125_640.00),
+        new TaxBracket(3_600_000.01, 4_800_000.00, 33.00, 648_000.00)
+    };
+
+    /**
+     * Calcula o valor de impostos com base no tipo de negócio e receita bruta.
+     *
+     * @param grossRevenue Receita bruta dos últimos 12 meses
+     * @param businessType Tipo de negócio (produtos ou serviços)
+     * @return Valor calculado de impostos
+     */
+    public BigDecimal calculateTaxes(BigDecimal grossRevenue, BusinessType businessType) {
+        TaxBracket[] brackets = (businessType == BusinessType.PRODUCT_SALES) 
+            ? PRODUCT_TAX_BRACKETS 
+            : SERVICE_TAX_BRACKETS;
+
+        for (TaxBracket bracket : brackets) {
+            if (grossRevenue.compareTo(bracket.minValue) >= 0 && 
+                grossRevenue.compareTo(bracket.maxValue) <= 0) {
+                
+                // Cálculo do imposto: (Receita * Alíquota) - Dedução
+                BigDecimal taxAmount = grossRevenue
+                    .multiply(bracket.taxRate)
+                    .subtract(bracket.deduction)
+                    .setScale(2, RoundingMode.HALF_UP);
+
+                return taxAmount;
+            }
+        }
+
+        // Se não encontrar uma faixa, retorna 0 ou lança exceção
+        return BigDecimal.ZERO;
+    }
+
+    /**
+     * Calcula o lucro líquido subtraindo impostos do lucro bruto.
+     *
+     * @param grossProfit Lucro bruto
+     * @param taxes Valor de impostos
+     * @return Lucro líquido
+     */
+    public BigDecimal calculateNetProfit(BigDecimal grossProfit, BigDecimal taxes) {
+        return grossProfit.subtract(taxes).setScale(2, RoundingMode.HALF_UP);
+    }
 }

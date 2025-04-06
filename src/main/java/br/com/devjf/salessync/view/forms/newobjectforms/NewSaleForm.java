@@ -25,6 +25,7 @@ import br.com.devjf.salessync.view.MainAppView;
 import br.com.devjf.salessync.view.components.CustomerSelectionDialog;
 import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.components.table.SaleTableManager;
+import br.com.devjf.salessync.view.forms.ReportsForm;
 import br.com.devjf.salessync.view.forms.SalesForm;
 import br.com.devjf.salessync.view.forms.validators.SaleFormValidator;
 import java.util.HashMap;
@@ -840,6 +841,7 @@ public class NewSaleForm extends javax.swing.JFrame {
                     // Restore cursor and enable button regardless of outcome
                     setCursor(Cursor.getDefaultCursor());
                     newSaleBtn.setEnabled(true);
+                    ReportsForm.getInstance().updateReportValues();
                     initNewSale();
                 }
             }

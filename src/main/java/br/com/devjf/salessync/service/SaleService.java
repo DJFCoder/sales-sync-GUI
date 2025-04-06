@@ -1,11 +1,12 @@
 package br.com.devjf.salessync.service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -291,23 +292,19 @@ public class SaleService {
             if (!dateStr.isEmpty()) {
                 try {
                     // Parse date string in format dd/MM/yyyy
-                    SimpleDateFormat dateFormat = new SimpleDateFormat(
-                            "dd/MM/yyyy");
-                    Date filterDate = dateFormat.parse(dateStr);
-                    LocalDateTime filterDateTime = filterDate.toInstant()
-                            .atZone(ZoneId.systemDefault())
-                            .toLocalDateTime();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    LocalDate filterDate = LocalDate.parse(dateStr, formatter);
                     // Keep only sales on the specified date
                     filteredSales.removeIf(sale -> {
                         if (sale.getDate() == null) {
                             return true;
                         }
-                        LocalDateTime saleDate = sale.getDate();
-                        return saleDate.getYear() != filterDateTime.getYear()
-                                || saleDate.getMonthValue() != filterDateTime.getMonthValue()
-                                || saleDate.getDayOfMonth() != filterDateTime.getDayOfMonth();
+                        LocalDate saleDate = sale.getDate().toLocalDate();
+                        return saleDate.getYear() != filterDate.getYear()
+                                || saleDate.getMonthValue() != filterDate.getMonthValue()
+                                || saleDate.getDayOfMonth() != filterDate.getDayOfMonth();
                     });
-                } catch (ParseException e) {
+                } catch (DateTimeParseException e) {
                     // If date parsing fails, ignore this filter
                     System.err.println(
                             "Error parsing date filter: " + e.getMessage());
@@ -544,5 +541,39 @@ public class SaleService {
         sale.setItems(newItems);
         
         return sale;
+    }
+
+    /**
+     * Calculates the total sales amount for a specific period.
+     *
+     * @param startDateTime The start date and time of the period
+     * @param endDateTime The end date and time of the period
+     * @return Total sales amount for the specified period
+     */
+    public BigDecimal calculateTotalSalesInPeriod(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        // Find sales within the specified date range
+        List<Sale> salesInPeriod = saleDAO.findByDateRange(startDateTime, endDateTime);
+        
+        // Calculate total sales amount
+        return salesInPeriod.stream()
+            .map(Sale::getTotalAmount)
+            .map(BigDecimal::valueOf)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    /**
+     * Calculates the total sales amount up to the current moment.
+     *
+     * @return Total sales amount for all non-canceled sales
+     */
+    public BigDecimal calculateTotalSales() {
+        // Get all sales
+        List<Sale> allSales = listAllSales();
+        
+        // Calculate total sales amount
+        return allSales.stream()
+            .map(Sale::getTotalAmount)
+            .map(BigDecimal::valueOf)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

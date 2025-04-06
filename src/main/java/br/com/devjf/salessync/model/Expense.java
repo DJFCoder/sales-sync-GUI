@@ -7,63 +7,52 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "expenses")
 public class Expense {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    
     @Column(nullable = false, length = 255)
     private String description;
-    
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private ExpenseCategory category;
-    
     @Column(nullable = false)
-    private LocalDate date;
-    
+    private LocalDateTime date;
     @Column(nullable = false)
     private Double amount;
-    
     @Enumerated(EnumType.STRING)
-    @Column(name = "recurrence_type_id", nullable = false)
+    @Column(name = "recurrence_type", nullable = false)
     private RecurrenceType recurrence;
-    
-    @Column(columnDefinition = "TEXT")
-    private String notes;
-    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-    
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         if (this.date == null) {
-            this.date = LocalDate.now();
+            this.date = LocalDateTime.now();
         }
     }
-    
+
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-    
+
     // Constructors
     public Expense() {
     }
-    
+
     public Expense(String description, ExpenseCategory category, Double amount, RecurrenceType recurrence) {
         this.description = description;
         this.category = category;
         this.amount = amount;
         this.recurrence = recurrence;
-        this.date = LocalDate.now();
+        this.date = LocalDateTime.now();
     }
-    
+
     // Getters and Setters
     public Integer getId() {
         return id;
@@ -89,11 +78,11 @@ public class Expense {
         this.category = category;
     }
 
-    public LocalDate getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 
@@ -111,14 +100,6 @@ public class Expense {
 
     public void setRecurrence(RecurrenceType recurrence) {
         this.recurrence = recurrence;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
     }
 
     public LocalDateTime getCreatedAt() {
