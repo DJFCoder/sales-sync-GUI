@@ -24,6 +24,7 @@ buildNumber.properties
 # IDE - VS Code
 .vscode/
 .code-workspace
+.windsurfrules
 
 # IDE - NetBeans
 nbproject/
