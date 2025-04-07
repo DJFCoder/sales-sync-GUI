@@ -93,4 +93,26 @@ public class UserActivityDAO {
             em.close();
         }
     }
+    
+    /**
+     * Retrieves all user activities ordered by activity time in descending order.
+     *
+     * @return List of all UserActivity entries
+     */
+    public List<UserActivity> findAllUserActivities() {
+        EntityManager em = HibernateUtil.getEntityManager();
+        try {
+            TypedQuery<UserActivity> query = em.createQuery(
+                "SELECT ua FROM UserActivity ua ORDER BY ua.activityTime DESC", 
+                UserActivity.class
+            );
+            return query.getResultList();
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar todas as atividades: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        } finally {
+            em.close();
+        }
+    }
 }

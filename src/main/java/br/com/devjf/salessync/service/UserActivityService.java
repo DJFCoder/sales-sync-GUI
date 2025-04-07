@@ -5,6 +5,7 @@ import br.com.devjf.salessync.model.User;
 import br.com.devjf.salessync.model.UserActivity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserActivityService {
@@ -75,5 +76,20 @@ public class UserActivityService {
         }
         
         return activities.get(0).getActivityTime();
+    }
+    
+    /**
+     * Retrieves all user activities.
+     *
+     * @return List of all UserActivity entries
+     */
+    public List<UserActivity> findAllUserActivities() {
+        try {
+            return activityDAO.findAllUserActivities();
+        } catch (Exception e) {
+            System.err.println("Erro no serviço ao buscar todas as atividades: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 }

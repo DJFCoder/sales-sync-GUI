@@ -7,13 +7,17 @@ import java.util.Map;
 
 import br.com.devjf.salessync.model.SystemLog;
 import br.com.devjf.salessync.model.User;
+import br.com.devjf.salessync.model.UserActivity;
 import br.com.devjf.salessync.service.LogService;
+import br.com.devjf.salessync.service.UserActivityService;
 
 public class LogController {
     private final LogService logService;
+    private final UserActivityService userActivityService;
     
     public LogController() {
         this.logService = new LogService();
+        this.userActivityService = new UserActivityService();
     }
     
     public void recordLog(User user, String action, String details) {
@@ -41,6 +45,17 @@ public class LogController {
         Map<String, Object> filters = new HashMap<>();
         filters.put("action", action);
         return logService.listLogs(filters);
+    }
+    
+    public List<UserActivity> listUserActivities(Map<String, Object> filters) {
+        // If no filters are provided, return all activities
+        if (filters == null || filters.isEmpty()) {
+            return userActivityService.findAllUserActivities();
+        }
+        
+        // TODO: Implement more specific filtering if needed
+        // For now, just return all activities
+        return userActivityService.findAllUserActivities();
     }
     
     public boolean clearOldLogs(String period) {
