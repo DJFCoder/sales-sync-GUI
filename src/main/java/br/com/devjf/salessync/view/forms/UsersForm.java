@@ -1,11 +1,248 @@
 package br.com.devjf.salessync.view.forms;
 
+import br.com.devjf.salessync.controller.UserController;
+import br.com.devjf.salessync.model.User;
+import br.com.devjf.salessync.model.UserType;
 import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.MainAppView;
+import br.com.devjf.salessync.view.components.table.TableFormInterface;
+import br.com.devjf.salessync.view.components.table.TableManager;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
-public class UsersForm extends javax.swing.JFrame {
+public class UsersForm extends javax.swing.JFrame implements TableFormInterface {
+    private static UsersForm instance;
+    private UserController userController;
+
     public UsersForm() {
+        this.userController = new UserController();
+        instance = this;
         initComponents();
+        setupTableColumns();
+        TableManager.setupFilters(nameField,
+                statusField,
+                userTypeField,
+                userTable);
+        loadTableData();
+    }
+
+    public static UsersForm getInstance() {
+        return instance;
+    }
+
+    @Override
+    public final void setupTableColumns() {
+        // Define column names
+        String[] columnNames = {
+            "Código", "Nome", "Login", "Tipo", "Status", "Ações"
+        };
+        // Define column classes
+        Class<?>[] columnClasses = {
+            Integer.class, String.class, String.class, String.class, String.class, String.class
+        };
+        // Define which columns are editable
+        boolean[] editableColumns = {
+            false, false, false, false, false, true
+        };
+        // Setup table model
+        TableManager.setupTableModel(userTable,
+                columnNames,
+                columnClasses,
+                editableColumns);
+        // Setup edit button
+        setupEditButton();
+        // Configure table selection behavior
+        configureTableSelectionBehavior();
+    }
+
+    @Override
+    public final void loadTableData() {
+        try {
+            // Clear table
+            TableManager.clearTable(
+                    (DefaultTableModel) userTable.getModel());
+            // Get filter values
+            Map<String, Object> filters = new HashMap<>();
+            String nameFilter = nameField.getText().trim();
+            String statusFilter = statusField.getText().trim();
+            String typeFilter = userTypeField.getText().trim();
+            // Add filters if they are not empty
+            if (!nameFilter.isEmpty()) {
+                filters.put("name",
+                        nameFilter);
+            }
+            // Modify status filter handling
+            if (!statusFilter.isEmpty()) {
+                // Check if filter is for active or inactive users
+                if (statusFilter.equalsIgnoreCase("ativo")) {
+                    filters.put("active",
+                            true);
+                } else if (statusFilter.equalsIgnoreCase("inativo")) {
+                    filters.put("active",
+                            false);
+                }
+            }
+            if (!typeFilter.isEmpty()) {
+                filters.put("type",
+                        getUserTypeFromDisplayName(typeFilter));
+            }
+            // Get users through controller
+            List<User> users;
+            if (filters.isEmpty()) {
+                // If no filters, fetch all users including inactive
+                users = userController.listAllUsers(new HashMap<>());
+            } else {
+                users = userController.listAllUsers(filters);
+            }
+            // Add users to table
+            if (users != null) {
+                for (User user : users) {
+                    setObjectToTable(user.getId());
+                }
+            }
+            // Adjust column widths
+            TableManager.adjustColumnWidths(userTable,
+                    10);
+        } catch (Exception e) {
+            System.err.println(
+                    "Erro ao carregar dados da tabela: " + e.getMessage());
+            JOptionPane.showMessageDialog(this,
+                    "Erro ao carregar usuários: " + e.getMessage(),
+                    "Erro",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * Convert display name to UserType
+     *
+     * @param displayName Display name of user type
+     * @return Corresponding UserType
+     */
+    private UserType getUserTypeFromDisplayName(String displayName) {
+        switch (displayName) {
+            case "Administrador":
+                return UserType.ADMIN;
+            case "Proprietário":
+                return UserType.OWNER;
+            case "Colaborador":
+                return UserType.EMPLOYEE;
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public void refreshTable() {
+        loadTableData();
+    }
+
+    /**
+     * Convert user type to display name
+     *
+     * @param type UserType enum
+     * @return Display name for user type
+     */
+    private String getUserTypeDisplayName(UserType type) {
+        switch (type) {
+            case ADMIN:
+                return "Administrador";
+            case OWNER:
+                return "Proprietário";
+            case EMPLOYEE:
+                return "Colaborador";
+            default:
+                return "";
+        }
+    }
+
+    @Override
+    public void setObjectToTable(Integer userId) {
+        try {
+            // Get user data
+            User user = userController.findUserById(userId);
+            if (user == null) {
+                return;
+            }
+            Object[] rowData = {
+                user.getId(),
+                user.getName(),
+                user.getLogin(),
+                getUserTypeDisplayName(user.getType()),
+                user.isActive() ? "Ativo" : "Inativo",
+                "Editar"
+            };
+            TableManager.addRow(
+                    (DefaultTableModel) userTable.getModel(),
+                    rowData);
+        } catch (Exception e) {
+            System.err.println(
+                    "Erro ao adicionar usuário à tabela: " + e.getMessage());
+            e.printStackTrace(); // Add stack trace for better debugging
+        }
+    }
+
+    /**
+     * Configure table selection behavior to improve user experience
+     */
+    private void configureTableSelectionBehavior() {
+        // Allow selection of only one row at a time
+        userTable.setSelectionMode(
+                javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        // Configure to start editing immediately on cell click
+        userTable.putClientProperty("terminateEditOnFocusLost",
+                Boolean.TRUE);
+        // Allow editing of the button cell with a single click
+        userTable.setEditingColumn(5);
+    }
+
+    /**
+     * Setup edit button in the actions column
+     */
+    private void setupEditButton() {
+        // Get the actions column (last column)
+        TableColumn actionColumn = userTable.getColumnModel().getColumn(5);
+        // Configure renderer and editor for the actions column
+        actionColumn.setCellRenderer(
+                new br.com.devjf.salessync.view.components.table.TableEditButtonRenderer(
+                        "Editar"));
+        actionColumn.setCellEditor(
+                new br.com.devjf.salessync.view.components.table.TableEditButtonEditor(
+                        "Editar",
+                        row -> editUser(row)));
+        // Set preferred width for the actions column
+        actionColumn.setPreferredWidth(80);
+        actionColumn.setMaxWidth(100);
+        actionColumn.setMinWidth(80);
+    }
+
+    /**
+     * Open edit form for the selected user
+     *
+     * @param selectedRow The index of the selected row in the table
+     */
+    private void editUser(int selectedRow) {
+        try {
+            // Get the ID of the selected user
+            Integer userId = (Integer) userTable.getValueAt(selectedRow,
+                    0);
+            System.out.println("Editando usuário com ID: " + userId);
+            // Open the NewUserForm in edit mode with the selected user
+            User user = userController.findUserById(userId);
+            MainAppView.redirectToPanel(MainAppView.EDIT_USER_PANEL,
+                    user);
+        } catch (Exception e) {
+            System.err.println("Erro ao editar usuário: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Erro ao editar usuário: " + e.getMessage(),
+                    "Erro",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -177,8 +414,6 @@ public class UsersForm extends javax.swing.JFrame {
     private void newUserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newUserButtonActionPerformed
         MainAppView.redirectToPanel(MainAppView.NEW_USER_PANEL);
     }//GEN-LAST:event_newUserButtonActionPerformed
-    
-    // new UsersForm().setVisible(true);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel filterLbl;

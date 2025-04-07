@@ -3,6 +3,8 @@ package br.com.devjf.salessync.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
+
 import br.com.devjf.salessync.model.User;
 import br.com.devjf.salessync.model.UserActivity;
 import br.com.devjf.salessync.model.UserType;
@@ -118,12 +120,49 @@ public class UserController {
     }
 
     /**
-     * Lists all users in the system.
+     * List all users with optional filtering
      *
-     * @return A list of all users
+     * @param filters Map of filter criteria
+     * @return List of users matching the filter criteria
+     */
+    public List<User> listAllUsers(Map<String, Object> filters) {
+        try {
+            // If filters are null or empty, return all users
+            if (filters == null || filters.isEmpty()) {
+                return userService.listAllUsers();
+            }
+
+            // Prepare filter criteria
+            String nameFilter = filters.containsKey("name") ? 
+                    (String) filters.get("name") : null;
+            String loginFilter = filters.containsKey("login") ? 
+                    (String) filters.get("login") : null;
+            UserType typeFilter = filters.containsKey("type") ? 
+                    (UserType) filters.get("type") : null;
+            Boolean activeFilter = filters.containsKey("active") ? 
+                    (Boolean) filters.get("active") : null;
+
+            // Delegate filtering to UserService
+            return userService.listUsersWithFilters(
+                    nameFilter, 
+                    loginFilter, 
+                    typeFilter,
+                    activeFilter
+            );
+        } catch (Exception e) {
+            System.err.println("Erro ao listar usuários: " + e.getMessage());
+            e.printStackTrace();
+            return userService.listAllUsers(); // Fallback to listing all users
+        }
+    }
+
+    /**
+     * List all users without filters (default method)
+     *
+     * @return List of all users
      */
     public List<User> listAllUsers() {
-        return userService.getAllUsers();
+        return userService.listAllUsers();
     }
 
     /**

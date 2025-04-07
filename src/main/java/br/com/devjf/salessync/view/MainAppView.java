@@ -1,11 +1,13 @@
 package br.com.devjf.salessync.view;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import br.com.devjf.salessync.controller.UserController;
 import br.com.devjf.salessync.controller.navigation.PanelFactory;
 import br.com.devjf.salessync.controller.navigation.PanelNavigationController;
 import br.com.devjf.salessync.model.User;
+import br.com.devjf.salessync.model.UserType;
 import br.com.devjf.salessync.service.auth.UserSessionManager;
 import br.com.devjf.salessync.service.navigation.PanelNavigationService;
 import br.com.devjf.salessync.service.navigation.PanelNavigationServiceImpl;
@@ -50,6 +52,7 @@ public final class MainAppView extends javax.swing.JFrame {
                 navigationService,
                 panelFactory);
         initializePermissionLabel();
+        getSelectionList();
         initPanels();
         setupListeners();
         // Add window listener to detect when the application is closing
@@ -88,15 +91,37 @@ public final class MainAppView extends javax.swing.JFrame {
         // Refresh title label when selected and navigate to the corresponding panel
         selectionList.addListSelectionListener((ListSelectionEvent e) -> {
             if (!e.getValueIsAdjusting()) {
+                // Safely get selected item
                 String selectedItem = selectionList.getSelectedValue();
+                // Check for null or empty selected item
+                if (selectedItem == null || selectedItem.trim().isEmpty()) {
+                    return;
+                }
+                // Update title
                 updateTitle(selectedItem);
-                // Check if user has permission to access this panel
+                // Check user authentication and panel access
                 User loggedUser = UserSessionManager.getInstance().getLoggedUser();
+                if (loggedUser == null) {
+                    JOptionPane.showMessageDialog(this,
+                            "Usuário não autenticado",
+                            "Erro de Autenticação",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                // Get panel key safely
+                String panelKey = getPanelKeyFromName(selectedItem);
+                if (panelKey == null) {
+                    JOptionPane.showMessageDialog(this,
+                            "Painel não encontrado: " + selectedItem,
+                            "Erro de Navegação",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                // Check panel access
                 if (userController.hasAccessToPanel(loggedUser,
                         selectedItem)) {
                     // Navigate to the panel
-                    navigationController.navigateToPanel(getPanelKeyFromName(
-                            selectedItem));
+                    navigationController.navigateToPanel(panelKey);
                 } else {
                     JOptionPane.showMessageDialog(this,
                             "Você não tem permissão para acessar este painel",
@@ -114,7 +139,10 @@ public final class MainAppView extends javax.swing.JFrame {
     public void initializePermissionLabel() {
         if (permitionLabel != null && userController != null) {
             User loggedUser = UserSessionManager.getInstance().getLoggedUser();
-            permitionLabel.setText(userController.getPermissionLabel(loggedUser));
+            if (loggedUser != null) {
+                permitionLabel.setText(userController.getPermissionLabel(
+                        loggedUser));
+            }
         }
     }
 
@@ -124,7 +152,10 @@ public final class MainAppView extends javax.swing.JFrame {
     public void updatePermissionLabel() {
         if (permitionLabel != null && userController != null) {
             User loggedUser = UserSessionManager.getInstance().getLoggedUser();
-            permitionLabel.setText(userController.getPermissionLabel(loggedUser));
+            if (loggedUser != null) {
+                permitionLabel.setText(userController.getPermissionLabel(
+                        loggedUser));
+            }
         }
     }
 
@@ -135,8 +166,10 @@ public final class MainAppView extends javax.swing.JFrame {
      */
     public void registerUserActivity(String description) {
         User loggedUser = UserSessionManager.getInstance().getLoggedUser();
-        userController.registerUserActivity(loggedUser,
-                description);
+        if (loggedUser != null) {
+            userController.registerUserActivity(loggedUser,
+                    description);
+        }
     }
 
     /**
@@ -218,12 +251,48 @@ public final class MainAppView extends javax.swing.JFrame {
     }
 
     /**
-     * Retorna a lista de seleção do menu lateral
+     * Retorna a lista de seleção do menu lateral filtrada por permissões do
+     * usuário
      *
      * @return Lista de seleção do menu lateral
      */
     public javax.swing.JList<String> getSelectionList() {
-        return this.selectionList;
+        // Check if user is logged in
+        User currentUser = UserSessionManager.getInstance().getLoggedUser();
+        if (currentUser == null) {
+            // Return an empty list if no user is logged in
+            DefaultListModel<String> emptyModel = new DefaultListModel<>();
+            javax.swing.JList<String> emptyList = new javax.swing.JList<>(
+                    emptyModel);
+            return emptyList;
+        }
+        UserType loggedUser = currentUser.getType();
+        // Ensure the list model is a DefaultListModel
+        if (!(selectionList.getModel() instanceof DefaultListModel)) {
+            // If not, create a new DefaultListModel and set it
+            DefaultListModel<String> newModel = new DefaultListModel<>();
+            selectionList.setModel(newModel);
+        }
+        // Now we can safely cast
+        DefaultListModel<String> listModel = (DefaultListModel<String>) selectionList.getModel();
+        listModel.clear();
+        // Common items for all users
+        listModel.addElement(DASHBOARD_PANEL);
+        // Add items based on user type
+        switch (loggedUser) {
+            case ADMIN:
+                listModel.addElement(USERS_PANEL);
+                listModel.addElement(SYSTEM_LOGS_PANEL);
+                break;
+            case OWNER:
+            case EMPLOYEE:
+                listModel.addElement(SALES_PANEL);
+                listModel.addElement(CUSTOMERS_PANEL);
+                listModel.addElement(EXPENSES_PANEL);
+                listModel.addElement(REPORTS_PANEL);
+                break;
+        }
+        return selectionList;
     }
 
     /**

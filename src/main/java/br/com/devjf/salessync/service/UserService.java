@@ -93,4 +93,45 @@ public class UserService {
     public List<User> getAllUsers() {
         return userDAO.findAll();
     }
+    
+    /**
+     * List all users
+     *
+     * @return List of all users
+     */
+    public List<User> listAllUsers() {
+        return userDAO.findAll();
+    }
+
+    /**
+     * List users with optional filtering
+     *
+     * @param nameFilter Optional name filter
+     * @param loginFilter Optional login filter
+     * @param typeFilter Optional user type filter
+     * @param activeFilter Optional active status filter
+     * @return List of users matching the filter criteria
+     */
+    public List<User> listUsersWithFilters(String nameFilter, String loginFilter, 
+                                           UserType typeFilter, Boolean activeFilter) {
+        try {
+            // If no filters are provided, return all users
+            if (nameFilter == null && loginFilter == null && 
+                typeFilter == null && activeFilter == null) {
+                return listAllUsers();
+            }
+
+            // Use UserDAO to fetch filtered users
+            return userDAO.findUsersWithFilters(
+                    nameFilter, 
+                    loginFilter, 
+                    typeFilter,
+                    activeFilter
+            );
+        } catch (Exception e) {
+            System.err.println("Erro ao filtrar usuários: " + e.getMessage());
+            e.printStackTrace();
+            return listAllUsers(); // Fallback to listing all users
+        }
+    }
 }

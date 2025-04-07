@@ -29,17 +29,26 @@ public class UserPermissionServiceImpl implements UserPermissionService {
     
     @Override
     public boolean hasAccessToPanel(User user, String panelKey) {
-        // Basic implementation - can be expanded with more complex permission logic
         if (user == null) {
             return false;
         }
         
-        // Example: Only ADMIN and OWNER can access Users panel
-        if ("Usuários".equals(panelKey)) {
-            return user.getType() == UserType.ADMIN || user.getType() == UserType.OWNER;
+        switch (user.getType()) {
+            case ADMIN:
+                return panelKey.equals("Dashboard") || 
+                       panelKey.equals("Usuários") || 
+                       panelKey.equals("Logs do Sistema");
+            
+            case OWNER:
+            case EMPLOYEE:
+                return panelKey.equals("Dashboard") || 
+                       panelKey.equals("Vendas") || 
+                       panelKey.equals("Clientes") || 
+                       panelKey.equals("Despesas") || 
+                       panelKey.equals("Relatórios");
+            
+            default:
+                return false;
         }
-        
-        // By default, all authenticated users have access to other panels
-        return true;
     }
 }

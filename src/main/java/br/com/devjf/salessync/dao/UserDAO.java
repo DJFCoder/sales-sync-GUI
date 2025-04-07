@@ -1,6 +1,7 @@
 package br.com.devjf.salessync.dao;
 
 import br.com.devjf.salessync.model.User;
+import br.com.devjf.salessync.model.UserType;
 import br.com.devjf.salessync.util.HibernateUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -86,7 +87,7 @@ public class UserDAO implements DAO<User> {
     public List<User> findAll() {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
-            TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.active = true", User.class);
+            TypedQuery<User> query = em.createQuery("SELECT u FROM User u", User.class);
             return query.getResultList();
         } finally {
             em.close();
@@ -102,6 +103,60 @@ public class UserDAO implements DAO<User> {
             return query.getSingleResult();
         } catch (NoResultException e) {
             return null;
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * Find users with optional filtering
+     *
+     * @param nameFilter Optional name filter
+     * @param loginFilter Optional login filter
+     * @param typeFilter Optional user type filter
+     * @param activeFilter Optional active status filter
+     * @return List of users matching the filter criteria
+     */
+    public List<User> findUsersWithFilters(String nameFilter, String loginFilter, 
+                                           UserType typeFilter, Boolean activeFilter) {
+        EntityManager em = HibernateUtil.getEntityManager();
+        try {
+            // Start building the JPQL query
+            StringBuilder queryBuilder = new StringBuilder("SELECT u FROM User u WHERE 1=1");
+            
+            // Add filter conditions
+            if (nameFilter != null && !nameFilter.isEmpty()) {
+                queryBuilder.append(" AND LOWER(u.name) LIKE LOWER(:name)");
+            }
+            if (loginFilter != null && !loginFilter.isEmpty()) {
+                queryBuilder.append(" AND LOWER(u.login) LIKE LOWER(:login)");
+            }
+            if (typeFilter != null) {
+                queryBuilder.append(" AND u.type = :type");
+            }
+            if (activeFilter != null) {
+                queryBuilder.append(" AND u.active = :active");
+            }
+            
+            // Create the query
+            TypedQuery<User> query = em.createQuery(queryBuilder.toString(), User.class);
+
+            // Set parameters if filters are provided
+            if (nameFilter != null && !nameFilter.isEmpty()) {
+                query.setParameter("name", "%" + nameFilter + "%");
+            }
+            if (loginFilter != null && !loginFilter.isEmpty()) {
+                query.setParameter("login", "%" + loginFilter + "%");
+            }
+            if (typeFilter != null) {
+                query.setParameter("type", typeFilter);
+            }
+            if (activeFilter != null) {
+                query.setParameter("active", activeFilter);
+            }
+
+            // Return filtered results
+            return query.getResultList();
         } finally {
             em.close();
         }

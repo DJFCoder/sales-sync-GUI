@@ -5,6 +5,13 @@ import br.com.devjf.salessync.model.User;
 import br.com.devjf.salessync.model.UserType;
 import br.com.devjf.salessync.view.components.style.ViewComponentStyle;
 import br.com.devjf.salessync.view.MainAppView;
+import br.com.devjf.salessync.view.forms.UsersForm;
+import br.com.devjf.salessync.view.forms.validators.UserFormValidator;
+import java.awt.Cursor;
+import java.awt.HeadlessException;
+import java.util.concurrent.ExecutionException;
+import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 
 public class NewUserForm extends javax.swing.JFrame {
     private User userToEdit;
@@ -87,7 +94,7 @@ public class NewUserForm extends javax.swing.JFrame {
             case OWNER:
                 return "Proprietário";
             case EMPLOYEE:
-                return "Funcionário";
+                return "Colaborador";
             default:
                 return "";
         }
@@ -105,11 +112,33 @@ public class NewUserForm extends javax.swing.JFrame {
                 return UserType.ADMIN;
             case "Proprietário":
                 return UserType.OWNER;
-            case "Funcionário":
+            case "Colaborador":
                 return UserType.EMPLOYEE;
             default:
                 return null;
         }
+    }
+
+    /**
+     * Prepare user object from form fields
+     *
+     * @return User object
+     */
+    private User prepareUserObject() {
+        // Use existing user object if in edit mode, otherwise create new
+        User user = isEditMode ? userToEdit : new User();
+        // Set name
+        user.setName(nameField.getText().trim());
+        // Set login only for new users
+        if (!isEditMode) {
+            user.setLogin(loginField.getText().trim());
+        }
+        // Set user type from combo box
+        String selectedType = (String) userTypeCmb.getSelectedItem();
+        user.setType(getUserTypeFromDisplayName(selectedType));
+        // Set active status from checkbox
+        user.setActive(statusCheckBox.isSelected());
+        return user;
     }
 
     @SuppressWarnings("unchecked")
@@ -194,6 +223,7 @@ public class NewUserForm extends javax.swing.JFrame {
 
         passwordField.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         passwordField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        passwordField.setToolTipText("A senha deve ter pelo menos 8 caracteres;\nA senha deve conter pelo menos uma letra maiúscula;\nA senha deve conter pelo menos uma letra minúscula;\nA senha deve conter pelo menos um número.");
         passwordField.setPreferredSize(new java.awt.Dimension(376, 40));
         ViewComponentStyle.standardCornerRadius(passwordField);
 
@@ -240,7 +270,7 @@ public class NewUserForm extends javax.swing.JFrame {
                                 .addGroup(userPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(statusLbl)
                                     .addComponent(statusCheckBox))
-                                .addGap(0, 130, Short.MAX_VALUE))
+                                .addGap(0, 127, Short.MAX_VALUE))
                             .addGroup(userPnlLayout.createSequentialGroup()
                                 .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -280,7 +310,7 @@ public class NewUserForm extends javax.swing.JFrame {
                         .addComponent(statusLbl)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(statusCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
                 .addGroup(userPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(saveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cancelBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -336,9 +366,140 @@ public class NewUserForm extends javax.swing.JFrame {
     }//GEN-LAST:event_cancelBtnActionPerformed
 
     private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
+        // Disable save button and set wait cursor
+        saveBtn.setEnabled(false);
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        try {
+            // Validate input fields using UserFormValidator
+            UserFormValidator.validateUserForm(
+                    nameField.getText().trim(),
+                    loginField.getText().trim(),
+                    getUserTypeFromDisplayName(
+                            (String) userTypeCmb.getSelectedItem()),
+                    passwordField.getText(),
+                    confirmPasswordField.getText(),
+                    isEditMode
+            );
+            // Prepare user object
+            final User preparedUserToSave = prepareUserObject();
+            // Use SwingWorker to avoid freezing the UI
+            new SwingWorker<Boolean, Void>() {
+                private String errorMessage = null;
 
+                @Override
+                protected Boolean doInBackground() throws Exception {
+                    try {
+                        Boolean result;
+                        User userToSave = preparedUserToSave;
+                        if (isEditMode) {
+                            userToSave = userToEdit;
+                            userToSave.setName(nameField.getText());
+                            userToSave.setType(getUserTypeFromDisplayName(
+                                    (String) userTypeCmb.getSelectedItem()));
+                            // Update user status
+                            userToSave.setActive(statusCheckBox.isSelected());
+                            result = userController.updateUser(
+                                    userToSave.getId(),
+                                    userToSave.getName(),
+                                    userToSave.getType());
+                            // If update was successful and status changed, 
+                            // explicitly handle user activation/deactivation
+                            if (result) {
+                                if (statusCheckBox.isSelected()) {
+                                    result = result && userController.reactivateUser(
+                                            userToSave.getId());
+                                } else {
+                                    result = result && userController.deactivateUser(
+                                            userToSave.getId());
+                                }
+                            }
+                            // Optional: Change password if new password provided
+                            if (!passwordField.getText().isEmpty()) {
+                                result = result && userController.changePassword(
+                                        userToEdit.getId(),
+                                        userToEdit.getPassword(),
+                                        passwordField.getText());
+                            }
+                            if (!result) {
+                                errorMessage = "Não foi possível atualizar o usuário. Verifique os dados e tente novamente.";
+                                System.err.println("Failed to update user");
+                            }
+                            return result;
+                        } else {
+                            // Handle new user creation logic
+                            result = userController.createUser(
+                                    userToSave.getName(),
+                                    userToSave.getLogin(),
+                                    userToSave.getPassword(),
+                                    userToSave.getType());
+                            if (!result) {
+                                errorMessage = "Não foi possível criar o usuário. Verifique os dados e tente novamente.";
+                                System.err.println("Failed to create user");
+                            }
+                            return result;
+                        }
+                    } catch (Exception e) {
+                        errorMessage = "Erro ao processar usuário: " + e.getMessage();
+                        System.err.println(
+                                "Exception during user processing: " + e.getMessage());
+                        e.printStackTrace();
+                        return false;
+                    }
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        Boolean success = get();
+                        if (success) {
+                            // Log the activity
+                            MainAppView.getInstance().registerUserActivity(
+                                    (isEditMode ? "Atualizou" : "Registrou") + " o usuário: " + preparedUserToSave.getName());
+                            JOptionPane.showMessageDialog(NewUserForm.this,
+                                    "Usuário " + (isEditMode ? "atualizado" : "registrado") + " com sucesso!",
+                                    "Sucesso",
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            // Close this form
+                            dispose();
+                            // Redirect to users panel
+                            MainAppView.redirectToPanel(
+                                    MainAppView.USERS_PANEL);
+                        } else if (errorMessage != null) {
+                            System.err.println(
+                                    "Error message: " + errorMessage);
+                            JOptionPane.showMessageDialog(NewUserForm.this,
+                                    errorMessage,
+                                    "Erro",
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (HeadlessException | InterruptedException | ExecutionException e) {
+                        System.err.println(
+                                "Exception in done(): " + e.getMessage());
+                        e.printStackTrace();
+                        JOptionPane.showMessageDialog(NewUserForm.this,
+                                "Erro ao processar usuário: " + e.getMessage(),
+                                "Erro",
+                                JOptionPane.ERROR_MESSAGE);
+                    } finally {
+                        // Restore the default cursor
+                        UsersForm.getInstance().refreshTable();
+                        setCursor(Cursor.getDefaultCursor());
+                        saveBtn.setEnabled(true);
+                    }
+                }
+            }.execute();
+        } catch (IllegalStateException e) {
+            // Handle validation errors
+            System.err.println("Validation error: " + e.getMessage());
+            JOptionPane.showMessageDialog(NewUserForm.this,
+                    e.getMessage(),
+                    "Erro de Validação",
+                    JOptionPane.WARNING_MESSAGE);
+            // Restore the default cursor and re-enable the save button
+            setCursor(Cursor.getDefaultCursor());
+            saveBtn.setEnabled(true);
+        }
     }//GEN-LAST:event_saveBtnActionPerformed
-    // new NewUserForm().setVisible(true);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelBtn;
