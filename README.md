@@ -61,7 +61,7 @@ cd sales-sync
 
 2. Configure o banco de dados:
 ```bash
-mysql -u root -p < src/main/resources/db/script.sql
+src/main/resources/db/script.sql
 ```
 
 3. Popule o banco de dados:
