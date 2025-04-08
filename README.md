@@ -163,10 +163,29 @@ O SalesSync utiliza uma **Arquitetura em Camadas (Layered Architecture)** com im
    - Localização: `br.com.devjf.salessync.model`
    - Representa as estruturas de dados fundamentais
 
-5. **Camada de Persistência (DAO)**
+5. **Camada de Transferência de Dados (DTO)**
+   - Facilita a transferência de dados entre camadas
+   - Localização: `br.com.devjf.salessync.dto`
+   - Otimiza a comunicação entre serviços e interface gráfica
+     
+6. **Camada de Persistência (DAO)**
    - Responsável pelo acesso e manipulação de dados
    - Localização: `br.com.devjf.salessync.dao`
    - Utiliza JPA/Hibernate para interação com banco de dados
+  
+### Princípios de Design
+O projeto implementa os seguintes princípios de design de software:
+
+- **SOLID**:
+
+  - **Single Responsibility Principle**: Cada classe possui uma única responsabilidade
+  - **Open/Closed Principle**: Componentes extensíveis sem modificação do código existente
+  - **Liskov Substitution Principle**: Uso adequado de herança e polimorfismo
+  - **Interface Segregation Principle**: Interfaces específicas para diferentes necessidades
+  - **Dependency Inversion Principle**: Dependência de abstrações, não implementações
+
+
+- **DRY (Don't Repeat Yourself)**: Eliminação de redundância através de componentes reutilizáveis
 
 ### Padrões Adicionais
 
