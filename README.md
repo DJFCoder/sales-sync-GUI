@@ -64,15 +64,20 @@ cd sales-sync
 mysql -u root -p < src/main/resources/db/script.sql
 ```
 
-3. Configure as credenciais do banco de dados:
+3. Popule o banco de dados:
+```bash
+src/main/resources/db/data.sql
+```
+
+4. Configure as credenciais do banco de dados:
    - Edite o arquivo `src/main/resources/META-INF/persistence.xml` com as credenciais do seu banco de dados
 
-4. Compile o projeto:
+5. Compile o projeto:
 ```bash
 mvn clean package
 ```
 
-5. Execute a aplicação:
+6. Execute a aplicação:
 ```bash
 java -jar target/salessync-1.0-SNAPSHOT.jar
 ```
