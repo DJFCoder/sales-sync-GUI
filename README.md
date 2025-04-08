@@ -116,10 +116,22 @@ sales-sync/
         │                   ├── SalesSyncApp.java                # Classe de chamada do programa
         │                   ├── controller                       # Controladores da aplicação
         │                   ├── dao                              # Camada de acesso a dados
+        |                   ├── dto                              # Objetos de transferência de dados
         │                   ├── model                            # Entidades e modelos de dados
         │                   ├── service                          # Lógica de negócio
+        │                   │   ├── activity                     # Gerenciamento de atividades
+        │                   │   ├── auth                         # Autenticação e segurança
+        │                   │   ├── navigation                   # Serviços de navegação
+        │                   │   └── permission                   # Gestão de permissões
         │                   ├── util                             # Classes utilitárias
         │                   └── view                             # Interfaces gráficas
+        |                       ├── components                   # Componentes reutilizáveis
+        │                       │   ├── renderers                # Renderizadores customizados
+        │                       │   ├── style                    # Estilos visuais
+        │                       │   └── table                    # Componentes de tabela
+        │                       └── forms                        # Formulários da aplicação
+        │                           ├── newobjectforms           # Formulários para novos objetos
+        │                           └── validators               # Validadores de formulários
         └── resources
             ├── META-INF                                         # Configuração JPA
             ├── db                                               # Scripts SQL
