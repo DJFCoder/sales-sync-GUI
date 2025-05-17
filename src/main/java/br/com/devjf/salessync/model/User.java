@@ -59,8 +59,8 @@ public final class User {
     }
 
     public void changePassword(String newPassword) {
-        this.password = BCrypt.hashpw(newPassword,
-                BCrypt.gensalt());
+        // Always hash the new password
+        this.password = BCrypt.hashpw(newPassword, BCrypt.gensalt());
     }
 
     // Getters and Setters
@@ -93,7 +93,13 @@ public final class User {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        // Check if the password is already hashed (starts with $2a$)
+        if (password.startsWith("$2a$")) {
+            this.password = password;
+        } else {
+            // Hash the raw password
+            this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+        }
     }
 
     public final UserType getType() {

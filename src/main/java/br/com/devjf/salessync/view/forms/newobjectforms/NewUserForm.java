@@ -138,6 +138,7 @@ public class NewUserForm extends javax.swing.JFrame {
         user.setType(getUserTypeFromDisplayName(selectedType));
         // Set active status from checkbox
         user.setActive(statusCheckBox.isSelected());
+        
         return user;
     }
 
@@ -417,7 +418,6 @@ public class NewUserForm extends javax.swing.JFrame {
                             if (!passwordField.getText().isEmpty()) {
                                 result = result && userController.changePassword(
                                         userToEdit.getId(),
-                                        userToEdit.getPassword(),
                                         passwordField.getText());
                             }
                             if (!result) {
@@ -430,7 +430,7 @@ public class NewUserForm extends javax.swing.JFrame {
                             result = userController.createUser(
                                     userToSave.getName(),
                                     userToSave.getLogin(),
-                                    userToSave.getPassword(),
+                                    passwordField.getText(),
                                     userToSave.getType());
                             if (!result) {
                                 errorMessage = "Não foi possível criar o usuário. Verifique os dados e tente novamente.";

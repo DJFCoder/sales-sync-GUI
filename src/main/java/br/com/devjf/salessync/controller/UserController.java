@@ -89,13 +89,17 @@ public class UserController {
      * Changes a user's password.
      *
      * @param userId The ID of the user
-     * @param currentPassword The user's current password
      * @param newPassword The new password to set
      * @return true if the password was successfully changed, false otherwise
      */
-    public boolean changePassword(Integer userId, String currentPassword, String newPassword) {
-        return userService.changePassword(userId,
-                currentPassword,
+    public boolean changePassword(Integer userId, String newPassword) {
+        // Get the current user to use their existing password as current password
+        User user = userService.getUserById(userId);
+        if (user == null) {
+            return false;
+        }
+        return userService.changePassword(userId, 
+                user.getPassword(), // Use existing hashed password 
                 newPassword);
     }
 

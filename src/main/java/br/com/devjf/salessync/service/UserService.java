@@ -21,6 +21,7 @@ public class UserService {
             return false;
         }
         
+        // Create user directly, password will be hashed in the User constructor
         User user = new User(name, login, password, type);
         return userDAO.save(user);
     }
@@ -29,29 +30,68 @@ public class UserService {
         try {
             User user = userDAO.findByLogin(login);
             if (user != null && user.getPassword() != null) {
-                // Verifica se a senha está no formato BCrypt
-                if (user.getPassword().startsWith("$2a$") && BCrypt.checkpw(password, user.getPassword())) {
-                    return user;
+                System.out.println("User found: " + login);
+                System.out.println("Stored password format: " + user.getPassword());
+                System.out.println("Password provided: " + password);
+                // password encrypted
+                Boolean passwordEncrypted = BCrypt.checkpw(password, user.getPassword());
+                System.out.println("Password encrypted: " + passwordEncrypted);
+                
+                // Only allow BCrypt authentication
+                if (user.getPassword().startsWith("$2a$")) {
+                    try {
+                        // Verify password using BCrypt
+                        if (BCrypt.checkpw(password, user.getPassword())) {
+                            System.out.println("BCrypt authentication successful");
+                            return user;
+                        } else {
+                            System.out.println("Authentication failed: Incorrect password");
+                        }
+                    } catch (Exception e) {
+                        System.err.println("BCrypt verification error: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                } else {
+                    System.err.println("Invalid password format: Missing BCrypt signature");
                 }
-                // Caso a senha não esteja no formato BCrypt, verifica igualdade direta (para testes)
-                else if (user.getPassword().equals(password)) {
-                    return user;
-                }
+            } else {
+                System.out.println("User not found or password is null");
             }
             return null;
         } catch (Exception e) {
-            System.err.println("Erro na autenticação: " + e.getMessage());
+            System.err.println("Authentication error: " + e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }
     
     public boolean changePassword(Integer userId, String currentPassword, String newPassword) {
-        User user = userDAO.findById(userId);
-        if (user != null && BCrypt.checkpw(currentPassword, user.getPassword())) {
-            user.changePassword(newPassword);
-            return userDAO.update(user);
+        try {
+            User user = userDAO.findById(userId);
+            if (user == null) {
+                System.err.println("User not found with ID: " + userId);
+                return false;
+            }
+
+            // Verify current password
+            if (BCrypt.checkpw(currentPassword, user.getPassword())) {
+                // Hash the new password
+                String hashedNewPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+                
+                // Update user's password
+                user.setPassword(hashedNewPassword);
+                
+                // Save updated user
+                return userDAO.update(user);
+            } else {
+                System.err.println("Current password verification failed for user: " + userId);
+                return false;
+            }
+        } catch (Exception e) {
+            System.err.println("Error changing password: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
-        return false;
     }
     
     public boolean updateUser(Integer userId, String name, UserType type) {
